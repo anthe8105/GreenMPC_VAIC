@@ -169,10 +169,6 @@ Stored Stage 6 evidence covers four 72-hour scenarios, three controllers, and 86
 | Safe benchmark execution | The stored 12-run benchmark completed 864 steps with 0 invalid actions and 0 hard-constraint violations. |
 | Transparent trade-offs | Expected GreenMPC reduced Normal Operations renewable shortfall to 0.0 kWh; Risk-Aware GreenMPC preserved higher final SOC but used labelled fallbacks when P90/P10 planning became infeasible. |
 
-![Grouped Stage 6 controller comparison chart](docs/assets/readme/controller_comparison.svg)
-
-Caption: This figure is generated from `data/outputs/stage6_benchmark/controller_scenario_metrics.csv`. It compares realized operating-cost proxy and peak grid import across the stored controller/scenario runs.
-
 ### Concise Controller Comparison
 
 | Scenario | Controller | Cost (M VND) | Renewable share | Peak grid (kW) | Final SOC | Shortfall (kWh) | Fallbacks |
@@ -368,7 +364,11 @@ In-memory web sessions are suitable for the competition demo. Production deploym
 
 ## Team
 
-The repository identifies the author as the GreenMPC Twin Team in `pyproject.toml`. Individual team-member roles will be listed after confirmation by the project team.
+| Member | Role | Primary responsibilities |
+|---|---|---|
+| Nguyen The An | Team Lead & AI/Optimization Lead | Project direction, system architecture, probabilistic forecasting and MPC integration, technical evaluation, product strategy, and technical presentation. |
+| Nguyen Quang Huy | Full-Stack & Deployment Engineer | Frontend–backend integration, application engineering, Docker packaging, Fly.io deployment, runtime reliability, and live-demo support. |
+| Tran Gia Bao | Business Strategy & Market Validation Lead | Problem framing, target-user and market analysis, business model development, pilot pathway design, commercial positioning, and pitch preparation. |
 
 ## Data Sources
 
