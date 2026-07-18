@@ -118,7 +118,7 @@ python scripts/verify_stage4.py
 
 Stage 4 trains direct multi-horizon P10/P50/P90 forecasters for tenant load and park PV availability. Forecast features use observations available at the forecast origin and known target-calendar metadata only; future actual weather and runtime events are excluded.
 
-Forecast reporting distinguishes AI versus reactive persistence from AI versus seasonal persistence. The current derived PV dataset is heavily capacity-clipped during positive-PV hours, so previous-day and previous-week solar persistence may legitimately score zero WAPE; `scripts/audit_forecast_baselines.py` independently verifies this from processed data and records the limitation.
+Forecast reporting distinguishes AI versus reactive persistence from AI versus seasonal persistence. A pre-Stage 5 upstream correction fixed the Stage 2 PV unit conversion from NASA `Wh/m^2`; old forecasting artifacts trained on the saturated PV series are incompatible and must be regenerated after rebuilding the dataset. `scripts/audit_forecast_baselines.py` independently verifies solar persistence baselines from processed data.
 
 ## Streamlit Demo
 

@@ -1,9 +1,9 @@
 {
   "build_script": "scripts/build_hybrid_dataset.py",
-  "build_timestamp_utc": "2026-07-17T23:00:37+00:00",
+  "build_timestamp_utc": "2026-07-18T01:10:04+00:00",
   "configuration_fingerprints": {
-    "dataset_build": "24c24d4c08cb6f62cdd833ed31a2c1b6066cbfbdb91245c3efa907b43da021b6",
-    "demo": "e1e578c3e2c84c9a21c6b537e9014718d3dfe7c0c728d3c6e630d75622a26c63"
+    "dataset_build": "db216ea951b2bfa1141050e836f8efd7112ea57f69134367a5635e4d6885efa2",
+    "demo": "24c5f8d386db40019edd9f00cbd172f4f18cc567cef2e33cc025700b49d939ce"
   },
   "dataset_name": "GreenMPC Twin hybrid industrial-park dataset",
   "dataset_version": "stage2_v1",
@@ -20,10 +20,10 @@
   "output_fingerprints": {
     "candidate_profile_metrics_path": "789639beabe5cef2631f732aedb23abe8df241c9ab5b87f974ac54329c2d5779",
     "event_catalog_path": "efe9083958eaddf840c5e93d7484d867867b4e62e01c766519f65f51a7cea857",
-    "park_hourly_path": "4b36c0d7de6f09a5fdacff53a86f34dd27b40d9fb099ba8fa5a8893ed5b891c6",
+    "park_hourly_path": "f883bb0bcae240a2699209f115fd51f4329612f9386cd62c47bbb19d083eacff",
     "selected_profiles_path": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
     "steel_reference_path": "965db443dd83eba0aaec85b0af58399737f7b3212cbda6473382d40af7edfe79",
-    "tenant_hourly_path": "853ca7b4c486bd2f5a6a9c1ef2c743377755d19654c66f5a6d1db17a831fbd27"
+    "tenant_hourly_path": "93eb3df8c8bdc6302030c8477a66e6b81acc87ef464bc8a3d107ae419ee53590"
   },
   "prohibited_interpretations": [
     "not actual VRG data",
@@ -34,19 +34,22 @@
     "DPPA is not an observed market transaction"
   ],
   "pv_model": {
-    "formula_type": "unit-aware performance-ratio model",
+    "formula_type": "simple capacity-factor model with explicit unit normalization",
+    "formula_version": "simple_capacity_factor_v2",
     "input_parameter": "ALLSKY_SFC_SW_DWN",
-    "input_unit": "kWh/m^2",
+    "input_unit": "Wh/m^2",
     "installed_capacity": 2500.0,
     "measured_status": false,
-    "performance_ratio": 0.86
+    "performance_ratio": 0.86,
+    "reference_hourly_irradiation_kwh_m2": 1.0,
+    "reference_irradiance_wm2": 1000.0
   },
   "quality": {
     "events": {
       "baseline_modification_count": 0,
       "event_count": 4
     },
-    "final_status": "PASS_WITH_WARNINGS",
+    "final_status": "PASS",
     "park_dataset": {
       "load_sum_mismatch_count": 0,
       "row_count": 8736,
@@ -63,10 +66,22 @@
     },
     "profiles_excluded": 22,
     "pv": {
+      "capacity_factor": 0.18572821071428572,
       "capacity_violation_count": 0,
-      "clipped_outputs": 4475,
-      "maximum_output": 2500.0,
-      "negative_inputs": 0
+      "clipped_outputs": 0,
+      "conversion_branch": "hourly_irradiation_wh_m2",
+      "daylight_clipped_fraction": 0.0,
+      "formula_version": "simple_capacity_factor_v2",
+      "maximum_output": 2110.6549999999997,
+      "median_positive_pv": 931.81,
+      "negative_inputs": 0,
+      "p95_positive_pv": 1819.934149999999,
+      "positive_pv_clipped_fraction": 0.0,
+      "positive_pv_count": 4484,
+      "positive_solar_resource_count": 4484,
+      "processed_period_pv_energy_kwh": 4056304.122,
+      "unique_positive_pv_values": 4174,
+      "unique_positive_raw_resource_values": 4174
     },
     "selected_profiles": [
       {
@@ -204,11 +219,11 @@
       "raw_timestamp_count": 8760,
       "removed_boundary_timestamps": 24,
       "units": {
-        "ALLSKY_SFC_SW_DWN": "kWh/m^2",
-        "PRECTOTCORR": "2 Precipitation Corrected (mm/day)",
-        "RH2M": "2 Relative Humidity at 2 Meters (%)",
-        "T2M": "2 Temperature at 2 Meters (C)",
-        "WS10M": "2 Wind Speed at 10 Meters (m/s)"
+        "ALLSKY_SFC_SW_DWN": "Wh/m^2",
+        "PRECTOTCORR": "mm/day",
+        "RH2M": "%",
+        "T2M": "C",
+        "WS10M": "m/s"
       },
       "unknown_unit_incidents": []
     }

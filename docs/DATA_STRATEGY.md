@@ -36,6 +36,10 @@ The UCI Electricity Load Diagrams archive is intentionally not extracted by defa
 
 Stage 2 constructs hourly processed datasets from cached raw files only. It reads the UCI load archive directly from ZIP, analyzes anonymous profile shapes, selects five source clients deterministically, rescales them to scenario tenant sizes, processes NASA POWER weather in UTC and Vietnam-local time, derives PV availability with a unit-aware formula, adds demo tariff and DPPA assumptions, and writes a separate synthetic event catalog.
 
+NASA POWER `ALLSKY_SFC_SW_DWN` is preserved as a raw `Wh/m^2` field in the cached CSV. The processed PV derivation normalizes this hourly irradiation to a one-sun equivalent before applying installed capacity and performance ratio. This remains derived availability, not measured inverter output.
+
+A pre-Stage 5 correction fixed an earlier unit parser defect that had treated `Wh/m^2` as `kWh/m^2` and caused excessive capacity clipping. The correction history is documented in `docs/PV_DERIVATION.md`.
+
 Stage 2 does not implement forecasting features, train models, simulate dispatch, optimize controls, allocate renewable energy, or calculate investment results.
 
 ## VRG Data Disclaimer

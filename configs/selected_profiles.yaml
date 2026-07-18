@@ -2,7 +2,7 @@ selection_version: 1
 source_dataset_fingerprint: f6c4d0e0df12ecdb9ea008dd6eef3518adb52c559d04a9bac2e1b81dcfc8d4e1
 source_year: 2013
 random_seed: 42
-profile_selection_date: '2026-07-17T23:00:35+00:00'
+profile_selection_date: '2026-07-18T01:10:01+00:00'
 generated_by_script: scripts/build_hybrid_dataset.py
 manual_override: false
 selected_profiles:

@@ -47,6 +47,32 @@ def validate_park_hourly(park: pd.DataFrame, tenant: pd.DataFrame, cfg: object) 
         raise ValueError("PV must be nonnegative")
     if (park["pv_available_kw"] > cfg.pv.installed_capacity_kw * cfg.pv.maximum_output_fraction + 1e-6).any():
         raise ValueError("PV exceeds configured capacity cap")
+    required_pv_columns = {
+        "solar_resource_raw",
+        "solar_resource_unit",
+        "solar_resource_normalized",
+        "pv_conversion_branch",
+        "pv_formula_version",
+        "pv_clipped_to_capacity",
+        "pv_is_derived",
+        "pv_is_measured",
+    }
+    missing_pv = required_pv_columns - set(park.columns)
+    if missing_pv:
+        raise ValueError(f"park_hourly missing PV quality columns: {sorted(missing_pv)}")
+    if not park["pv_formula_version"].eq(cfg.pv.formula_version).all():
+        raise ValueError("PV formula version does not match configuration")
+    if not park["pv_is_derived"].eq(True).all() or not park["pv_is_measured"].eq(False).all():
+        raise ValueError("PV must remain derived and not measured")
+    positive = park[park["pv_available_kw"] > 0]
+    if len(positive):
+        clipped_fraction = float(positive["pv_clipped_to_capacity"].mean())
+        if clipped_fraction > cfg.pv.clipping_failure_fraction:
+            raise ValueError(f"positive PV clipping fraction {clipped_fraction:.4f} exceeds failure threshold {cfg.pv.clipping_failure_fraction:.4f}")
+        if positive["solar_resource_raw"].nunique() > 100 and positive["pv_available_kw"].nunique() < 20:
+            raise ValueError("derived PV variation is too low relative to raw solar-resource variation")
+        if (positive["solar_resource_raw"] > 0).any() and (positive["pv_available_kw"] <= 0).all():
+            raise ValueError("positive raw solar unexpectedly produced zero PV")
     if (park["grid_price_vnd_per_kwh"] < 0).any():
         raise ValueError("prices must be nonnegative")
     if (park["dppa_available_kw"] < 0).any():

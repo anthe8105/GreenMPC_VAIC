@@ -102,11 +102,19 @@ class WeatherProcessingConfig:
 @dataclass(frozen=True)
 class PVModelConfig:
     irradiance_parameter: str
+    expected_raw_unit: str
+    reference_irradiance_wm2: float
+    reference_hourly_irradiation_kwh_m2: float
     installed_capacity_kw: float
     performance_ratio: float
     maximum_output_fraction: float
     nighttime_threshold: float
     model_name: str
+    formula_version: str
+    clipping_warning_fraction: float
+    clipping_failure_fraction: float
+    capacity_factor_warning_min: float
+    capacity_factor_warning_max: float
     values_are_derived: bool
     values_are_measured_inverter_output: bool
 
@@ -334,6 +342,18 @@ def _validate_build_config(cfg: HybridDatasetBuildConfig, demo: GreenMPCConfig) 
         raise ValueError("pv.performance_ratio must be >0 and <=1")
     if cfg.pv.installed_capacity_kw <= 0:
         raise ValueError("pv.installed_capacity_kw must be positive")
+    if cfg.pv.reference_irradiance_wm2 <= 0:
+        raise ValueError("pv.reference_irradiance_wm2 must be positive")
+    if cfg.pv.reference_hourly_irradiation_kwh_m2 <= 0:
+        raise ValueError("pv.reference_hourly_irradiation_kwh_m2 must be positive")
+    if cfg.pv.maximum_output_fraction <= 0:
+        raise ValueError("pv.maximum_output_fraction must be positive")
+    if not 0 <= cfg.pv.clipping_warning_fraction < cfg.pv.clipping_failure_fraction:
+        raise ValueError("pv.clipping_warning_fraction must be below pv.clipping_failure_fraction")
+    if cfg.pv.formula_version != "simple_capacity_factor_v2":
+        raise ValueError("pv.formula_version must be simple_capacity_factor_v2")
+    if cfg.pv.values_are_measured_inverter_output:
+        raise ValueError("pv.values_are_measured_inverter_output must be false")
     if cfg.event_catalog.apply_events_to_baseline_dataset:
         raise ValueError("event_catalog.apply_events_to_baseline_dataset must be false")
     if cfg.tariff.customer_category_selected or cfg.tariff.voltage_level_selected:
@@ -453,6 +473,24 @@ def _build_steel_reference(path: Path) -> pd.DataFrame:
 
 
 def _quality_report(load_quality: dict, metrics: pd.DataFrame, selected: pd.DataFrame, weather_meta: dict, pv: pd.DataFrame, tenant: pd.DataFrame, park: pd.DataFrame, events: pd.DataFrame) -> dict:
+    positive_pv = pv[pv["park_pv_available_kw"] > 0]
+    positive_resource = pv[pv["solar_resource_raw"] > 0]
+    daylight = pv[pv["solar_resource_raw"] > 0]
+    clipped_fraction_positive = float(pv.loc[pv["park_pv_available_kw"] > 0, "pv_clipped_to_capacity"].mean()) if len(positive_pv) else 0.0
+    clipped_fraction_daylight = float(daylight["pv_clipped_to_capacity"].mean()) if len(daylight) else 0.0
+    pv_energy = float(pv["park_pv_available_kwh"].sum())
+    capacity_factor = pv_energy / (float(pv["installed_pv_capacity_kw"].iloc[0]) * len(pv)) if len(pv) else 0.0
+    pv_status = "PASS"
+    warnings = ["The industrial-park dataset combines measured public load-profile shapes with Vietnam weather data and transparent scenario assumptions."]
+    if clipped_fraction_positive > 0.10:
+        pv_status = "FAIL"
+        warnings.append("Positive-PV clipping fraction exceeds configured failure threshold.")
+    elif clipped_fraction_positive > 0.01:
+        pv_status = "PASS_WITH_WARNINGS"
+        warnings.append("Positive-PV clipping fraction exceeds configured warning threshold.")
+    if positive_resource["solar_resource_raw"].nunique() > 100 and positive_pv["park_pv_available_kw"].nunique() < 20:
+        pv_status = "FAIL"
+        warnings.append("Derived PV variation is too low relative to raw solar-resource variation.")
     return {
         "uci_source": load_quality,
         "selected_profiles": selected.to_dict("records"),
@@ -460,15 +498,27 @@ def _quality_report(load_quality: dict, metrics: pd.DataFrame, selected: pd.Data
         "weather": weather_meta,
         "pv": {
             "negative_inputs": int((pv["solar_resource_raw"] < 0).sum()),
-            "clipped_outputs": int((pv["pv_quality_flag"] == "clipped_to_capacity").sum()),
+            "positive_solar_resource_count": int(len(positive_resource)),
+            "positive_pv_count": int(len(positive_pv)),
+            "unique_positive_raw_resource_values": int(positive_resource["solar_resource_raw"].nunique()),
+            "unique_positive_pv_values": int(positive_pv["park_pv_available_kw"].nunique()),
+            "clipped_outputs": int(pv["pv_clipped_to_capacity"].sum()),
+            "daylight_clipped_fraction": clipped_fraction_daylight,
+            "positive_pv_clipped_fraction": clipped_fraction_positive,
+            "processed_period_pv_energy_kwh": pv_energy,
+            "capacity_factor": capacity_factor,
             "maximum_output": float(pv["park_pv_available_kw"].max()),
+            "median_positive_pv": float(positive_pv["park_pv_available_kw"].median()) if len(positive_pv) else 0.0,
+            "p95_positive_pv": float(positive_pv["park_pv_available_kw"].quantile(0.95)) if len(positive_pv) else 0.0,
             "capacity_violation_count": 0,
+            "formula_version": str(pv["pv_formula_version"].iloc[0]),
+            "conversion_branch": str(pv["pv_conversion_branch"].iloc[0]),
         },
         "tenant_dataset": {"row_count": int(len(tenant)), "duplicate_rows": int(tenant.duplicated(["timestamp_local", "tenant_id"]).sum()), "negative_loads": int((tenant["load_kw"] < 0).sum())},
         "park_dataset": {"row_count": int(len(park)), "load_sum_mismatch_count": 0, "transformer_ratio_summary": park["load_to_transformer_capacity_ratio"].describe().to_dict()},
         "events": {"event_count": int(len(events)), "baseline_modification_count": int(events["applied_to_baseline_dataset"].sum())},
-        "final_status": "PASS_WITH_WARNINGS",
-        "warnings": ["The industrial-park dataset combines measured public load-profile shapes with Vietnam weather data and transparent scenario assumptions."],
+        "final_status": pv_status if pv_status != "FAIL" else "FAIL",
+        "warnings": warnings,
     }
 
 
@@ -492,7 +542,7 @@ def _manifest(cfg: HybridDatasetBuildConfig, demo: GreenMPCConfig, selected: pd.
         "output_fingerprints": fingerprints,
         "source_classification": {"measured": ["UCI load shapes", "UCI steel reference"], "satellite_model_based": ["NASA POWER"], "derived": ["hourly loads", "PV availability"], "rescaled": ["tenant loads"], "scenario_assumption": ["tenant labels", "tariff schedule", "DPPA"], "actual_vrg_status": False},
         "temporal_alignment": {"source_load_timezone": cfg.uci_load.source_timezone, "nasa_raw_timezone": "UTC", "output_timezone": cfg.build.output_timezone, "calendar_transfer_method": "Scenario alignment by Vietnam-local calendar after calendar-preserving profile transfer.", "boundary_day_policy": "complete-day intersection", "dst_policy": "duplicate local hours averaged; missing hourly slots flagged or interpolated only for isolated gaps"},
-        "pv_model": {"input_parameter": cfg.pv.irradiance_parameter, "input_unit": weather_meta["units"].get(cfg.pv.irradiance_parameter), "formula_type": "unit-aware performance-ratio model", "installed_capacity": cfg.pv.installed_capacity_kw, "performance_ratio": cfg.pv.performance_ratio, "measured_status": False},
+        "pv_model": {"input_parameter": cfg.pv.irradiance_parameter, "input_unit": weather_meta["units"].get(cfg.pv.irradiance_parameter), "formula_type": "simple capacity-factor model with explicit unit normalization", "formula_version": cfg.pv.formula_version, "installed_capacity": cfg.pv.installed_capacity_kw, "performance_ratio": cfg.pv.performance_ratio, "reference_irradiance_wm2": cfg.pv.reference_irradiance_wm2, "reference_hourly_irradiation_kwh_m2": cfg.pv.reference_hourly_irradiation_kwh_m2, "measured_status": False},
         "tariff": {"reference_decision": "Decision No. 1279/QD-BCT", "category_selected": False, "voltage_level_selected": False, "operational_prices_imported_from_official_source": False, "schedule_assumption_status": True, "official_page_retrieval_warning": "Government page cache failed in Stage 1; curated metadata retained."},
         "dppa": {"availability_method": cfg.dppa.availability_method, "price_source_classification": "contract scenario assumption", "assumption_flags": True},
         "quality": quality,

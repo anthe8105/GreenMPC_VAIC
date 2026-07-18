@@ -71,11 +71,19 @@ weather:
 
 pv:
   irradiance_parameter: ALLSKY_SFC_SW_DWN
+  expected_raw_unit: Wh/m^2
+  reference_irradiance_wm2: 1000.0
+  reference_hourly_irradiation_kwh_m2: 1.0
   installed_capacity_kw: 2500.0
   performance_ratio: 0.86
   maximum_output_fraction: 1.0
   nighttime_threshold: 0.0
   model_name: simple_unit_aware_pr_model
+  formula_version: simple_capacity_factor_v2
+  clipping_warning_fraction: 0.01
+  clipping_failure_fraction: 0.10
+  capacity_factor_warning_min: 0.05
+  capacity_factor_warning_max: 0.30
   values_are_derived: true
   values_are_measured_inverter_output: false
 

@@ -233,7 +233,10 @@ def _aggregate_metric_rows(task: str, predictions: pd.DataFrame, target_col: str
 def _baseline_metrics(task: str, frame: pd.DataFrame, cfg: ForecastingConfig) -> list[dict]:
     rows = []
     target = "target_load_kw" if task == "load" else "target_pv_available_kw"
-    baselines = [col for col in frame.columns if col.startswith("baseline_")]
+    baselines = [
+        col for col in frame.columns
+        if col.startswith("baseline_") and not col.endswith("_source_timestamp")
+    ]
     for baseline in baselines:
         for keys, group in frame.groupby(["split", "horizon_hours"] + (["tenant_id"] if task == "load" else []), dropna=False):
             labels = dict(zip(["split", "horizon_hours"] + (["tenant_id"] if task == "load" else []), keys if isinstance(keys, tuple) else (keys,)))

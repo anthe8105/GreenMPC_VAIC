@@ -89,6 +89,7 @@ def main() -> int:
         "data/outputs/baseline_audit/root_cause.md",
         "data/outputs/baseline_audit/forecast_latency_audit.json",
         "data/outputs/forecast_latency_audit.json",
+        "data/outputs/pv_correction/corrected_pv_audit.json",
     ]
     for path in audit_paths:
         checks.append((f"{path} exists", (PROJECT_ROOT / path).exists(), path))
@@ -100,6 +101,11 @@ def main() -> int:
         checks.append(("solar previous-day source differs from target", (pd.to_datetime(day_rows["baseline_source_timestamp"]) != pd.to_datetime(day_rows["target_timestamp"])).all(), "minus 24h"))
         checks.append(("solar previous-week source differs from target", (pd.to_datetime(week_rows["baseline_source_timestamp"]) != pd.to_datetime(week_rows["target_timestamp"])).all(), "minus 168h"))
         checks.append(("PV integrity audit completed", "pv_integrity" in audit and audit["pv_integrity"]["unique_solar_resource_values"] > 1, "raw solar variation"))
+        day_wape = audit["solar_previous_day"]["all_test_hours"]["WAPE"]
+        week_wape = audit["solar_previous_week"]["all_test_hours"]["WAPE"]
+        checks.append(("solar baseline audit is nondegenerate", day_wape and day_wape > 0 and week_wape and week_wape > 0, f"day={day_wape}, week={week_wape}"))
+        corrected = __import__("json").loads((PROJECT_ROOT / "data/outputs/pv_correction/corrected_pv_audit.json").read_text(encoding="utf-8"))
+        checks.append(("corrected PV audit exists", corrected["unique_derived_pv_values"] > 100, str(corrected["unique_derived_pv_values"])))
         checks.append(("latency audit deterministic", bool(audit["latency"]["deterministic_predictions"]) and not bool(audit["latency"]["models_reloaded_per_call"]), "cache and determinism"))
     except Exception as exc:
         checks.append(("baseline audit outputs are readable", False, repr(exc)))

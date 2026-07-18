@@ -68,6 +68,11 @@ def main() -> int:
             ("event validation", True, str(len(events))),
             ("park load equals tenant sum", True, "validated"),
             ("PV within capacity", park["pv_available_kw"].le(cfg.pv.installed_capacity_kw * cfg.pv.maximum_output_fraction + 1e-6).all(), "capacity cap"),
+            ("PV raw unit explicitly supported", park["solar_resource_unit"].eq(cfg.pv.expected_raw_unit).all(), cfg.pv.expected_raw_unit),
+            ("corrected PV formula version", park["pv_formula_version"].eq(cfg.pv.formula_version).all(), cfg.pv.formula_version),
+            ("PV formula reconciliation passes", (abs(park["pv_available_kw"] - (park["installed_pv_capacity_kw"] * park["solar_resource_normalized"] * cfg.pv.performance_ratio).clip(upper=cfg.pv.installed_capacity_kw * cfg.pv.maximum_output_fraction)) < 1e-6).all(), "capacity-factor formula"),
+            ("positive-PV clipping below failure threshold", float(park.loc[park["pv_available_kw"] > 0, "pv_clipped_to_capacity"].mean()) <= cfg.pv.clipping_failure_fraction, "clipping fraction"),
+            ("derived PV retains variation", park.loc[park["pv_available_kw"] > 0, "pv_available_kw"].nunique() >= 20, "unique positive PV values"),
             ("timestamps include local and UTC offsets", tenant["timestamp_local"].str.contains("+07:00", regex=False).all() and tenant["timestamp_utc"].str.contains("+00:00", regex=False).all(), "timezone-aware strings"),
             ("no actual-VRG flags", not tenant["load_is_actual_vrg_data"].any(), "false"),
             ("no measured-PV flags", not tenant["pv_is_measured"].any(), "false"),
@@ -82,6 +87,7 @@ def main() -> int:
     try:
         manifest = json.loads(paths["dataset_manifest_path"].read_text(encoding="utf-8"))
         checks.append(("processed files fingerprinted", bool(manifest.get("output_fingerprints")), "manifest output_fingerprints"))
+        checks.append(("raw files fingerprinted", bool(manifest.get("source_fingerprints", {}).get("nasa")), "source_fingerprints.nasa"))
     except Exception as exc:
         checks.append(("processed files fingerprinted", False, str(exc)))
 

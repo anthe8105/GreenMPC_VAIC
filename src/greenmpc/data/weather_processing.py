@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
 
@@ -56,21 +55,23 @@ def process_nasa_power(path: Path, cfg: object) -> tuple[pd.DataFrame, dict]:
         "unknown_unit_incidents": [],
         "units": units,
     }
+    out.attrs["units"] = units
     return out, meta
 
 
 def _parse_units(text: str) -> dict[str, str]:
-    units = {
-        "ALLSKY_SFC_SW_DWN": "kWh/m^2",
-        "T2M": "C",
-        "RH2M": "%",
-        "PRECTOTCORR": "mm/hour",
-        "WS10M": "m/s",
-    }
+    units: dict[str, str] = {}
     for line in text.splitlines()[:80]:
-        for key in list(units):
-            if key in line and "-" in line:
-                match = re.search(rf"{key}.*?-\s*(.+)$", line)
-                if match:
-                    units[key] = match.group(1).strip()
+        stripped = line.strip()
+        for key in ("ALLSKY_SFC_SW_DWN", "T2M", "RH2M", "PRECTOTCORR", "WS10M"):
+            if stripped.startswith(key):
+                start = stripped.rfind("(")
+                end = stripped.rfind(")")
+                if start == -1 or end == -1 or end <= start:
+                    raise ValueError(f"could not parse NASA unit for {key}: {line}")
+                units[key] = stripped[start + 1:end].strip()
+    required = {"ALLSKY_SFC_SW_DWN", "T2M", "RH2M", "PRECTOTCORR", "WS10M"}
+    missing = required - set(units)
+    if missing:
+        raise ValueError(f"NASA unit metadata missing for: {sorted(missing)}")
     return units

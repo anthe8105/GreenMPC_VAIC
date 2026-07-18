@@ -3,7 +3,7 @@
     "baseline_modification_count": 0,
     "event_count": 4
   },
-  "final_status": "PASS_WITH_WARNINGS",
+  "final_status": "PASS",
   "park_dataset": {
     "load_sum_mismatch_count": 0,
     "row_count": 8736,
@@ -20,10 +20,22 @@
   },
   "profiles_excluded": 22,
   "pv": {
+    "capacity_factor": 0.18572821071428572,
     "capacity_violation_count": 0,
-    "clipped_outputs": 4475,
-    "maximum_output": 2500.0,
-    "negative_inputs": 0
+    "clipped_outputs": 0,
+    "conversion_branch": "hourly_irradiation_wh_m2",
+    "daylight_clipped_fraction": 0.0,
+    "formula_version": "simple_capacity_factor_v2",
+    "maximum_output": 2110.6549999999997,
+    "median_positive_pv": 931.81,
+    "negative_inputs": 0,
+    "p95_positive_pv": 1819.934149999999,
+    "positive_pv_clipped_fraction": 0.0,
+    "positive_pv_count": 4484,
+    "positive_solar_resource_count": 4484,
+    "processed_period_pv_energy_kwh": 4056304.122,
+    "unique_positive_pv_values": 4174,
+    "unique_positive_raw_resource_values": 4174
   },
   "selected_profiles": [
     {
@@ -161,11 +173,11 @@
     "raw_timestamp_count": 8760,
     "removed_boundary_timestamps": 24,
     "units": {
-      "ALLSKY_SFC_SW_DWN": "kWh/m^2",
-      "PRECTOTCORR": "2 Precipitation Corrected (mm/day)",
-      "RH2M": "2 Relative Humidity at 2 Meters (%)",
-      "T2M": "2 Temperature at 2 Meters (C)",
-      "WS10M": "2 Wind Speed at 10 Meters (m/s)"
+      "ALLSKY_SFC_SW_DWN": "Wh/m^2",
+      "PRECTOTCORR": "mm/day",
+      "RH2M": "%",
+      "T2M": "C",
+      "WS10M": "m/s"
     },
     "unknown_unit_incidents": []
   }

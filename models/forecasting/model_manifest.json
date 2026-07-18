@@ -3,19 +3,19 @@
   "feature_manifest_path": "data/outputs/forecast_feature_manifest.json",
   "fingerprints": {
     "forecasting_config_yaml_sha256": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83",
-    "park_hourly_csv_sha256": "4b36c0d7de6f09a5fdacff53a86f34dd27b40d9fb099ba8fa5a8893ed5b891c6",
-    "selected_profiles_lock_yaml_sha256": "2976ea89acb7c14c109232e47e67bce32fa822ff3350957095adff6c066cf931",
+    "park_hourly_csv_sha256": "f883bb0bcae240a2699209f115fd51f4329612f9386cd62c47bbb19d083eacff",
+    "selected_profiles_lock_yaml_sha256": "dfab4561ef646fa1b36f492837042f8d278be966aae2ea75f4c70a50a55a6639",
     "selected_tenant_profiles_csv_sha256": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
-    "tenant_hourly_csv_sha256": "853ca7b4c486bd2f5a6a9c1ef2c743377755d19654c66f5a6d1db17a831fbd27"
+    "tenant_hourly_csv_sha256": "93eb3df8c8bdc6302030c8477a66e6b81acc87ef464bc8a3d107ae419ee53590"
   },
   "forecasting_config_yaml_sha256": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83",
-  "load_training_seconds": 25.937118750007357,
+  "load_training_seconds": 36.09402274999593,
   "metrics_path": "data/outputs/forecast_metrics.csv",
   "model_count": 36,
   "model_version": "stage4_v1",
   "models": [
     {
-      "artifact_sha256": "b7547f753ab46bc440f6c8bb804b787e73ccac0dae0434c988cf4147c4ced3ee",
+      "artifact_sha256": "f75d974f30dc8719fd5f5a7b26436fffdeda1af0ed9a2bc54bace04a78c458c9",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -137,7 +137,7 @@
         "2013-01-09 01:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:44+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:09+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -145,7 +145,7 @@
       ]
     },
     {
-      "artifact_sha256": "903cf8e905f1efb57b1192c811d8068246a1dd66148cfbb57cdb976af900ef3c",
+      "artifact_sha256": "3e3390cd0aee9b9a7e0926e446f0a661a9bb149cbcce68615acd363833dfe8d6",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -267,7 +267,7 @@
         "2013-01-09 01:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:45+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:11+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -275,7 +275,7 @@
       ]
     },
     {
-      "artifact_sha256": "2eac0bebb9fb3d7a9250754910eb90f950b110f620676fa1116dab3ce310f7d3",
+      "artifact_sha256": "b31fc5b1d12c977c143386a691141eb76e97e6fff90ce7884191728587cccdbc",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -397,7 +397,7 @@
         "2013-01-09 01:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:46+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:13+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -405,7 +405,7 @@
       ]
     },
     {
-      "artifact_sha256": "2ca91140cfe5f7e12f89639dadc2c5d0ec000705b2fa17ccb470e0e89999ff58",
+      "artifact_sha256": "f6352bb7ab8ab3809e5a8698cd066fea72374da3aefc996ab9ed7a84d3313d5c",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -527,7 +527,7 @@
         "2013-01-09 02:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:47+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:14+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -535,7 +535,7 @@
       ]
     },
     {
-      "artifact_sha256": "c9beafd8d935e4905b235b9cae7d5067bb6e9b15cc3bedba47e6c2956cdb6a12",
+      "artifact_sha256": "d40232306bafceaefef8eb3d1dd4caf0014752f911293315aafb0b5ba461f531",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -657,7 +657,7 @@
         "2013-01-09 02:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:48+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:16+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -665,7 +665,7 @@
       ]
     },
     {
-      "artifact_sha256": "336ca9a1ceb9cf5e16a84978e13743dd9aa9fa8dafa8374036956ada9c5278d3",
+      "artifact_sha256": "4f20c716a471426acf0f9e5bfbb043df119e91c4214ea73c2c1192480de41184",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -787,7 +787,7 @@
         "2013-01-09 02:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:49+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:17+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -795,7 +795,7 @@
       ]
     },
     {
-      "artifact_sha256": "b9c8265197c852e1e8d7b1b02fc6b9e492799e4516c5fd83ea5b0f95300914af",
+      "artifact_sha256": "e747fddbe4faab021ec2edccd1ce1409736be2c8b747b9798294b797f5e5b1b9",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -917,7 +917,7 @@
         "2013-01-09 03:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:49+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:18+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -925,7 +925,7 @@
       ]
     },
     {
-      "artifact_sha256": "1cbacc3b183f2964673638cc14207b19b35a5a206ebe478265ebe936dbe9659e",
+      "artifact_sha256": "92c6f58d6e407dcce723b2afe5e06c8d7c597155fd2322b05c6befb4ad113c0e",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1047,7 +1047,7 @@
         "2013-01-09 03:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:50+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:20+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1055,7 +1055,7 @@
       ]
     },
     {
-      "artifact_sha256": "49619533175cb2259dc40336635d1fb683d099fe1fc505733044180f4d24dcd2",
+      "artifact_sha256": "4008d8cc11c64db1c0836136727fe5ff73e08e9229611c073fc9f9d48a33f718",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1177,7 +1177,7 @@
         "2013-01-09 03:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:51+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:21+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1185,7 +1185,7 @@
       ]
     },
     {
-      "artifact_sha256": "935b352ede17800a7222331fd4cef1791f70afb47937eccf34156edabfcef67a",
+      "artifact_sha256": "1a3d354bce39d1c3b6b35641085bca888dcaa23122d980559983c0ff901a1cb8",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1307,7 +1307,7 @@
         "2013-01-09 04:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:52+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:22+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1315,7 +1315,7 @@
       ]
     },
     {
-      "artifact_sha256": "7f08af904ab125d8c870e6bca4de2c4f06d45df3df44800f79e1d18549b72a4c",
+      "artifact_sha256": "d047f8b99a601210ec7aca0159c7f7d31c57575bfaa7896c291885586d599933",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1437,7 +1437,7 @@
         "2013-01-09 04:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:53+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:25+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1445,7 +1445,7 @@
       ]
     },
     {
-      "artifact_sha256": "f7ea6989e491e01287fdff81e421c5fab41b74f9e555d19c89745e321b54f7a6",
+      "artifact_sha256": "10cdf88c3f82b82497c27077d64e09b8ebdb5c9d3e62f48821724ed272ccafc1",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1567,7 +1567,7 @@
         "2013-01-09 04:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:54+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:27+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1575,7 +1575,7 @@
       ]
     },
     {
-      "artifact_sha256": "5c30d4817ca0a2e36176316d2ace3ff876c37ad9a32f2686f482321e398f3755",
+      "artifact_sha256": "461cce735362388cfaf632d608556f704bbf139b6a3884b1644ee917ad6224b6",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1697,7 +1697,7 @@
         "2013-01-09 05:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:55+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:27+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1705,7 +1705,7 @@
       ]
     },
     {
-      "artifact_sha256": "a0ac143656ad17cf601a45124b9a1725ea7805f450a2f1c20dd255faeef0be99",
+      "artifact_sha256": "b593976c6e36d922a92d52e1652b9a1d4e5966199962d8e6765cdac389b03261",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1827,7 +1827,7 @@
         "2013-01-09 05:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:55+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:29+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1835,7 +1835,7 @@
       ]
     },
     {
-      "artifact_sha256": "37eb0c11b2eb17465fd1bb6b8b6d2c652c95d83cf27b01127d95c5015c53bf7d",
+      "artifact_sha256": "b6c2c50511d8615e6ddc044d68938f562307c6ea63542a89676bf76111415e52",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -1957,7 +1957,7 @@
         "2013-01-09 05:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:56+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:31+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -1965,7 +1965,7 @@
       ]
     },
     {
-      "artifact_sha256": "ce2cddfd2081cf28289cb59565ab5bde9e5480ea27056ac337ffdaa36cc9fa76",
+      "artifact_sha256": "cba4509e3f430a39aafd126d626babd563d49c867cfb22efc903975e165678bf",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -2087,7 +2087,7 @@
         "2013-01-09 06:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:57+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:32+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2095,7 +2095,7 @@
       ]
     },
     {
-      "artifact_sha256": "3805e79aecab8550e414d230ee667b94373b318c79407ffeebd875b19a772564",
+      "artifact_sha256": "76d32b1a7ed5196aa168f597a86871ee9c65b191333e09c53d4079b08e2fc467",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -2217,7 +2217,7 @@
         "2013-01-09 06:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:58+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:34+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2225,7 +2225,7 @@
       ]
     },
     {
-      "artifact_sha256": "d81c88b8be00ff108124f06a317a8bb2dcd3eafba651d9cca4ab5b4d5fb55895",
+      "artifact_sha256": "16b592eca7fb43476c857992b619af7a386273fb59da72c7fff6bef71d5782e3",
       "categorical_features": [
         "tenant_id",
         "archetype",
@@ -2347,7 +2347,7 @@
         "2013-01-09 06:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:43:59+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:35+00:00",
       "validation_sample_count": 6425,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2355,7 +2355,7 @@
       ]
     },
     {
-      "artifact_sha256": "0a142df5eda3bd2ef78681e5153238a4ef850aa908f4ee7ed7bfed948bb9d24e",
+      "artifact_sha256": "f925b2b7db09b856ecc3e4a6989dad964ea5efd9938b2beb4c1297b43fbec3b5",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -2466,7 +2466,7 @@
         "2013-01-09 01:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:09+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:45+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2474,7 +2474,7 @@
       ]
     },
     {
-      "artifact_sha256": "814c075b7c6641dcd0107562f1b6c3021a825c42a47c61b2aa72206055aeea46",
+      "artifact_sha256": "6c06ebfb3c35fca29ec6867f987c6b5029b1f3a5a716e3ae4130cfe23f2770d3",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -2585,7 +2585,7 @@
         "2013-01-09 01:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:09+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:45+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2593,7 +2593,7 @@
       ]
     },
     {
-      "artifact_sha256": "ab3ab4147603ba2dc6b2f7af02dba77ea84071f2930e2084f3c8d0796b82ebb8",
+      "artifact_sha256": "5e9d82438c84ac291da93e3e85b7f86c10f063d5b00bc3cd56ebe93cc0128e20",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -2704,7 +2704,7 @@
         "2013-01-09 01:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:10+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:46+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2712,7 +2712,7 @@
       ]
     },
     {
-      "artifact_sha256": "25c13bbce412c264124bc30cb9c29c62df3b80e5f5f1b62c97e3f6c0a2f65d1b",
+      "artifact_sha256": "f40f8eb9cb96b6d7e243c8995f2250eda3023c20ccd56f211f7e7caabe83db0c",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -2823,7 +2823,7 @@
         "2013-01-09 02:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:10+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:46+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2831,7 +2831,7 @@
       ]
     },
     {
-      "artifact_sha256": "21e7f576572074ffe5c55665307be9e6ac88d163e551d6b1f919464415cb5a5d",
+      "artifact_sha256": "f8e21020f21157bedeef2e5d7f5dc49104372d59cd46859ab10fe9024f4451be",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -2942,7 +2942,7 @@
         "2013-01-09 02:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:10+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:47+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -2950,7 +2950,7 @@
       ]
     },
     {
-      "artifact_sha256": "1f18987c514d9dda4edb7f23667a6cb324552f3de860b7cadba34076d074592f",
+      "artifact_sha256": "4e4c0fa35faa777d1cb1016b8a2164ea7bc1a353bc34b73e848e9454453e590a",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3061,7 +3061,7 @@
         "2013-01-09 02:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:10+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:48+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3069,7 +3069,7 @@
       ]
     },
     {
-      "artifact_sha256": "30d7beca40eb2a98f6db77be827948724135662dfc765fe06cdcadcbb102a082",
+      "artifact_sha256": "6ff3b5a586296d4752c27c4dccfd7efc81ae375f57efe9840e30634eb316b231",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3180,7 +3180,7 @@
         "2013-01-09 03:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:11+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:48+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3188,7 +3188,7 @@
       ]
     },
     {
-      "artifact_sha256": "4e23bfc2b68b94a1fde3646bb57200c1b36174b89c5ddaf81bd29ab6f62daa35",
+      "artifact_sha256": "2657ae2d8d86f10002c04fee330d79401bf6a2acc898ea7b05b3ca5b3d519f36",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3299,7 +3299,7 @@
         "2013-01-09 03:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:11+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:49+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3307,7 +3307,7 @@
       ]
     },
     {
-      "artifact_sha256": "8cde3add46c70c5b174f6fa06fe59257e8a7c0d79df78fc9b7a1b3d67f7187f1",
+      "artifact_sha256": "94219a26268d5aa43eb2c997c140b879f7efc6c66b1597dc1141044bd77b45e3",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3418,7 +3418,7 @@
         "2013-01-09 03:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:11+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:49+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3426,7 +3426,7 @@
       ]
     },
     {
-      "artifact_sha256": "1fa8011f3dbfd8a45b98c97c409f1c9f362394899deff911a4cfaa7fee72c9ac",
+      "artifact_sha256": "9bced032396f8b817dcd305a3a8fb0f8afeb183e045e81ff8e58155357ead6c0",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3537,7 +3537,7 @@
         "2013-01-09 04:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:11+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:50+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3545,7 +3545,7 @@
       ]
     },
     {
-      "artifact_sha256": "6429a5dc4572dfe385bff7661dbed3d0a60a2e3be3b1ba9780d45d44809ec752",
+      "artifact_sha256": "8e9aa96f0082650bfd6a7d4adca76d164e0ba30e3a6283ec32a7d84217fcdecc",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3656,7 +3656,7 @@
         "2013-01-09 04:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:11+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:50+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3664,7 +3664,7 @@
       ]
     },
     {
-      "artifact_sha256": "e7c55496045c7c3e85c2f0f76013e4d95d17b1e1af70c24fe27c2f8334709cb8",
+      "artifact_sha256": "2f89bb8dfe3c3e010c332e6d796bc170aad93b38fcd0856721462f3a8c189064",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3775,7 +3775,7 @@
         "2013-01-09 04:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:12+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:51+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3783,7 +3783,7 @@
       ]
     },
     {
-      "artifact_sha256": "d4c80463b70036eda46df3c4ad3a20516d233d7390a95bf9ec5ff3b04fb371e7",
+      "artifact_sha256": "e1e8f9317db74e130de85ffd288bc4e089e63bd7c0bbb573cf8c1bb7dd8ad05c",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -3894,7 +3894,7 @@
         "2013-01-09 05:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:12+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:51+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -3902,7 +3902,7 @@
       ]
     },
     {
-      "artifact_sha256": "96fce68bd38b74b1f3d79e902961e1ffbe5d8a6ead3ead3698e2613b8e7f6c1f",
+      "artifact_sha256": "b99b4b2f540e00bf260b53abd6b11c1b02535d0b53cf94365e22e1559f518e02",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -4013,7 +4013,7 @@
         "2013-01-09 05:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:12+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:52+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -4021,7 +4021,7 @@
       ]
     },
     {
-      "artifact_sha256": "0cf35d3dfaf81e004d402af9b7b3ac16766fbda16a26d98151ca7199a353eddf",
+      "artifact_sha256": "c5a57a76342a2d965aedb6b5f84b29d687b7a8c92a47ab13118b809c77c67f1e",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -4132,7 +4132,7 @@
         "2013-01-09 05:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:13+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:52+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -4140,7 +4140,7 @@
       ]
     },
     {
-      "artifact_sha256": "feea26f666651518b48bfb6b3a72532775fa18c7530ba16a09ceab718d75ae23",
+      "artifact_sha256": "9948f934bfdbb1da75d81e4b8de1ccb2b5eef9f6ca730aaa154afd9e64cd211e",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -4251,7 +4251,7 @@
         "2013-01-09 06:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:13+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:53+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -4259,7 +4259,7 @@
       ]
     },
     {
-      "artifact_sha256": "68a00a0bb2ef778862b59a050e5323a6ff050693246e6a30e189ca33179f3516",
+      "artifact_sha256": "18ab24313fa3265b80e50bd327908a6d614af47e6227607454c28ed6bc8156df",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -4370,7 +4370,7 @@
         "2013-01-09 06:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:13+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:53+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -4378,7 +4378,7 @@
       ]
     },
     {
-      "artifact_sha256": "a2ff76e7c51eba7aff2750da17ea41d4a8cbf4066c72caf30bac7bf2380e4a0b",
+      "artifact_sha256": "13c31dfaffb093923d5c8dc3f3c98da636fcb03552d63433e736b92b2b8807e4",
       "categorical_features": [
         "target_tariff_period"
       ],
@@ -4489,7 +4489,7 @@
         "2013-01-09 06:00:00+07:00",
         "2013-09-15 20:00:00+07:00"
       ],
-      "training_timestamp_utc": "2026-07-17T23:44:13+00:00",
+      "training_timestamp_utc": "2026-07-18T01:12:54+00:00",
       "validation_sample_count": 1285,
       "validation_target_period": [
         "2013-09-15 21:00:00+07:00",
@@ -4497,10 +4497,10 @@
       ]
     }
   ],
-  "selected_profiles_lock_yaml_sha256": "2976ea89acb7c14c109232e47e67bce32fa822ff3350957095adff6c066cf931",
+  "selected_profiles_lock_yaml_sha256": "dfab4561ef646fa1b36f492837042f8d278be966aae2ea75f4c70a50a55a6639",
   "selected_tenant_profiles_csv_sha256": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
-  "solar_training_seconds": 5.595164083002601,
+  "solar_training_seconds": 10.681305874997634,
   "split_manifest_path": "data/outputs/forecast_split_manifest.json",
-  "trained_at_utc": "2026-07-17T23:44:16+00:00",
-  "training_runtime_seconds": 34.87207287500496
+  "trained_at_utc": "2026-07-18T01:12:56+00:00",
+  "training_runtime_seconds": 51.035859083000105
 }

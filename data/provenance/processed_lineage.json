@@ -36,10 +36,37 @@
     "measured_inverter_output": false,
     "source": "NASA POWER ALLSKY_SFC_SW_DWN",
     "transformation": [
-      "unit-aware PV derivation",
+      "explicit Wh/m^2 to kWh/m^2 normalization",
+      "simple_capacity_factor_v2 PV derivation",
       "performance-ratio adjustment",
-      "capacity clipping"
+      "post-conversion capacity clipping"
     ]
+  },
+  "pv_clipped_to_capacity": {
+    "classification": [
+      "quality flag"
+    ],
+    "source": "derived PV availability",
+    "transformation": [
+      "post-conversion cap check"
+    ]
+  },
+  "pv_conversion_branch": {
+    "actual_vrg_data": false,
+    "classification": [
+      "provenance metadata"
+    ],
+    "source": "NASA POWER unit metadata",
+    "transformation": [
+      "explicit unit mapping only"
+    ]
+  },
+  "pv_formula_version": {
+    "classification": [
+      "processing metadata"
+    ],
+    "source": "configs/dataset_build.yaml",
+    "value": "simple_capacity_factor_v2"
   },
   "scenario_events": {
     "applied_to_baseline_dataset": false,
@@ -47,6 +74,16 @@
       "synthetic scenario assumption"
     ],
     "source": "configs/dataset_build.yaml"
+  },
+  "solar_resource_normalized": {
+    "actual_vrg_data": false,
+    "classification": [
+      "derived intermediate"
+    ],
+    "source": "NASA POWER ALLSKY_SFC_SW_DWN",
+    "transformation": [
+      "raw Wh/m^2 divided by 1000 and reference hourly irradiation"
+    ]
   },
   "temperature_c": {
     "classification": [

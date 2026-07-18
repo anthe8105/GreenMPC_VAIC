@@ -16,6 +16,8 @@ Stage 2 outputs are analysis-ready inputs for later forecasting, simulation, con
 - `data/processed/data_quality_report.json`: validation and quality summary.
 - `data/provenance/processed_lineage.json`: field-level processed lineage.
 
+PV fields include raw NASA solar resource, raw unit, normalized solar input, conversion branch, formula version, clipping flag, and derived/not-measured flags.
+
 ## Classification
 
 - Real measured shapes: UCI anonymous electricity clients and UCI steel reference data.
@@ -27,3 +29,7 @@ Stage 2 outputs are analysis-ready inputs for later forecasting, simulation, con
 ## Prohibited Interpretations
 
 The processed dataset is not actual VRG data, not co-located source measurements, and not a confirmed pilot tariff or DPPA contract. Derived PV is not measured inverter output. Tenant industries are scenario labels only.
+
+## Correction History
+
+Before Stage 5, the PV formula was corrected from an over-clipped `kWh/m^2` interpretation to explicit NASA `Wh/m^2` normalization in `simple_capacity_factor_v2`. Historical Stage 4 model artifacts trained on the saturated PV series are incompatible with the corrected processed dataset.
