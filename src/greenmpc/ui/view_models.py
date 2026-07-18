@@ -356,7 +356,16 @@ def benchmark_view(resources: ControlRoomResources, valuation_price_vnd_per_kwh:
         return metrics
     scenarios = tuple(metrics["scenario_id"].drop_duplicates())
     controllers = tuple(metrics["controller_id"].drop_duplicates())
-    adjusted = resources.terminal_inventory_costs.copy(deep=True)
+    # Committed inventory-adjusted costs are split across two files: the base
+    # valuation lives in terminal_inventory_costs while the alternate valuation
+    # prices live in terminal_inventory_sensitivity. Combine them so every price
+    # offered by the API resolves from committed data before falling back to the
+    # (optional, not shipped) per-scenario history CSVs.
+    committed = [
+        df for df in (resources.terminal_inventory_costs, resources.terminal_inventory_sensitivity)
+        if not df.empty
+    ]
+    adjusted = pd.concat(committed, ignore_index=True) if committed else pd.DataFrame()
     if not adjusted.empty and "valuation_price_vnd_per_kwh" in adjusted.columns:
         adjusted = adjusted[adjusted["valuation_price_vnd_per_kwh"].round(6) == round(float(valuation_price_vnd_per_kwh), 6)]
     if adjusted.empty:
