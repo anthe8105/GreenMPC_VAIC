@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="electronics factory">
+  <path d="M12 76V42l24 12V42l24 12V30h24v46H12Z" fill="#F1F5F9" stroke="#0F172A" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M27 64h10M48 64h10M69 64h7" stroke="#0EA5E9" stroke-width="4" stroke-linecap="round"/>
+  <path d="M64 20h16" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+</svg>

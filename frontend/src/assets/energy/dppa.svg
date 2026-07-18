@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="renewable supply contract">
+  <rect x="20" y="10" width="50" height="68" rx="8" fill="#FFF7ED" stroke="#D97706" stroke-width="4"/>
+  <path d="M33 30h25M33 44h18M33 58h27" stroke="#92400E" stroke-width="4" stroke-linecap="round"/>
+  <path d="M64 63c12-13 23-14 23-14s-1 16-15 23c-8 4-13 2-16-2 2-2 5-5 8-7Z" fill="#22C55E"/>
+  <path d="M58 72c5-9 13-15 23-19" stroke="#166534" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -5,6 +5,8 @@ __pycache__/
 .streamlit/
 .DS_Store
 *.egg-info/
+frontend/node_modules/
+frontend/dist/
 
 # Generated local artifacts.
 models/*

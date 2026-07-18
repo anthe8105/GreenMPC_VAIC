@@ -18,6 +18,8 @@ dependencies = [
   "cvxpy",
   "highspy",
   "streamlit",
+  "fastapi",
+  "uvicorn",
   "plotly",
   "pyyaml",
   "joblib",

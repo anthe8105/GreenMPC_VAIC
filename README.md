@@ -1,10 +1,10 @@
 # GreenMPC Twin
 
-GreenMPC Twin is an offline-capable AI energy digital twin foundation for industrial-park electricity and renewable-energy management. The MVP models five scenario tenants, rooftop solar, battery storage, grid purchases, DPPA renewable purchasing, transformer constraints, renewable allocation, controller comparison, and a live Streamlit Control Room.
+GreenMPC Twin is an offline-capable AI energy digital twin foundation for industrial-park electricity and renewable-energy management. The MVP models five scenario tenants, rooftop solar, battery storage, grid purchases, DPPA renewable purchasing, transformer constraints, renewable allocation, controller comparison, and a live web Command Center.
 
 ## Current Status
 
-Stages 0-7 are implemented: scope, public-data acquisition, hybrid dataset construction, the controller-independent digital twin, leakage-safe forecasting, continuous GreenMPC control, closed-loop evaluation, and the offline Streamlit Control Room. Investment simulation, final tenant evidence reports, and physical SCADA integration remain future-stage work.
+Stages 0-7 are implemented: scope, public-data acquisition, hybrid dataset construction, the controller-independent digital twin, leakage-safe forecasting, continuous GreenMPC control, closed-loop evaluation, and the offline React/FastAPI Command Center. Investment simulation, final tenant evidence reports, and physical SCADA integration remain future-stage work.
 
 ## Architecture Summary
 
@@ -16,7 +16,9 @@ The repository uses a layered Python `src` layout:
 - `greenmpc.control`: rule-based control, MPC formulation, solver execution, validation, and fallback behavior.
 - `greenmpc.evaluation`: closed-loop backtesting, controller comparison, KPIs, and scenario evaluation.
 - `greenmpc.reporting`: renewable ledger, tenant summaries, CSV export, and audit-ready HTML evidence reports.
-- `greenmpc.ui`: Streamlit session state, live controls, forecast/plan/execute workflow, benchmark displays, and provenance views.
+- `greenmpc.ui`: shared live-session and view-model helpers used by the Streamlit fallback and the web API adapter.
+- `backend`: FastAPI adapter exposing session, forecast, planning, execution, benchmark, and provenance endpoints.
+- `frontend`: React + TypeScript industrial command-center interface.
 
 ## Hybrid Data Strategy
 
@@ -24,9 +26,9 @@ The project will combine public measured electricity profiles, hourly Vietnam we
 
 ## Technology Stack
 
-Python >=3.11 and <3.13, NumPy, pandas, scikit-learn, CVXPY, HiGHS through highspy, Streamlit, Plotly, PyYAML, joblib, pytest, standard-library dataclasses, and standard-library logging.
+Python >=3.11 and <3.13, NumPy, pandas, scikit-learn, CVXPY, HiGHS through highspy, FastAPI, Uvicorn, Streamlit, Plotly, PyYAML, joblib, pytest, React, TypeScript, Vite, standard-library dataclasses, and standard-library logging.
 
-No Gurobi, gurobipy, CPLEX, proprietary optimization solvers, TensorFlow, PyTorch, React, FastAPI, cloud databases, or online services are required for the live demo.
+No Gurobi, gurobipy, CPLEX, proprietary optimization solvers, TensorFlow, PyTorch, cloud databases, or online services are required for the live demo.
 
 ## Installation
 
@@ -142,14 +144,52 @@ python scripts/verify_stage6.py
 
 Stage 6 compares `rule_based`, `deterministic_mpc`, and `greenmpc_conservative` in receding-horizon simulation. KPIs are realized from simulator histories. Stress events are synthetic and unannounced, and results are not actual VRG operational savings.
 
-## Streamlit Control Room
+## Web Command Center
+
+Development:
+
+Terminal 1:
+
+```bash
+python -m uvicorn backend.main:app --reload --port 8000
+```
+
+Terminal 2:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Final local demo:
+
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+python scripts/run_command_center.py
+```
+
+Focused web verification:
+
+```bash
+python -m pytest tests/test_api_control_room.py -q -x
+cd frontend && npm test -- --run
+python scripts/verify_web_control_room.py
+```
+
+The React/FastAPI interface is the primary competition interface. It provides Manual Approval, Auto Pilot Demo, and Shadow Mode workflows, all backed by the approved simulator, forecasters, controllers, action validation, and read-only Stage 6 evidence.
+
+## Streamlit Fallback
 
 ```bash
 streamlit run streamlit_app.py
 python scripts/verify_stage7.py
 ```
 
-Stage 7 provides a fully offline interactive Control Room. A judge can inspect current state, generate forecasts, solve a six-hour MPC plan, validate and execute one simulated hour, view KPI updates, inspect fallback status, and read Stage 6 benchmark evidence without rerunning the benchmark. The UI includes Manual Approval, bounded Auto Pilot Demo, and Shadow Mode operation.
+The Streamlit interface remains a technical fallback and debugging interface. The React/FastAPI command center should be used for the polished demo.
 
 ## Repository Structure
 

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="transformer substation">
+  <rect x="18" y="30" width="60" height="42" rx="8" fill="#F8FAFC" stroke="#334155" stroke-width="4"/>
+  <path d="M30 30V18M48 30V18M66 30V18M26 18h44" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="36" cy="51" r="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="4"/>
+  <circle cx="60" cy="51" r="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="4"/>
+  <path d="M24 78h48" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+</svg>

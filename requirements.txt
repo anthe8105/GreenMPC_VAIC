@@ -4,6 +4,8 @@ scikit-learn
 cvxpy
 highspy
 streamlit
+fastapi
+uvicorn
 plotly
 pyyaml
 joblib

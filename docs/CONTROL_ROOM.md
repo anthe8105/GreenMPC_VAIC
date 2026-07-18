@@ -1,8 +1,20 @@
 # Control Room
 
-Stage 7 adds a fully offline Streamlit Live Control Room for the approved GreenMPC Twin stack.
+Stage 7 adds a fully offline Live Control Room for the approved GreenMPC Twin stack. The primary competition interface is the React + FastAPI command center documented in [WEB_COMMAND_CENTER.md](WEB_COMMAND_CENTER.md). The Streamlit app remains as a technical fallback and debugging interface.
 
 ## Launch
+
+Primary web command center:
+
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+python scripts/run_command_center.py
+```
+
+Streamlit fallback:
 
 ```bash
 streamlit run streamlit_app.py

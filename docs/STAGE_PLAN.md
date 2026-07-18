@@ -28,9 +28,9 @@ Implement the continuous linear GreenMPC control engine with expected P50/P50 mo
 
 Run receding-horizon benchmarks for `rule_based`, `deterministic_mpc`, and `greenmpc_conservative`, calculate realized KPIs from simulator histories, and evaluate normal plus synthetic stress scenarios. Stage 6 does not implement the Streamlit Control Room.
 
-## Stage 7: Live Streamlit Demonstration
+## Stage 7: Live Control Room
 
-Implemented the offline Streamlit Control Room with cached resources, deterministic session reset, forecast/replan/execute workflow, controller selection, scenario events, current KPIs, plan diagnostics, read-only benchmark evidence, terminal inventory-adjusted cost diagnostics, and provenance disclosures. Stage 7 does not implement investment simulation or final tenant reports.
+Implemented the offline Live Control Room. The primary competition interface is a React + FastAPI industrial command center, while Streamlit remains available as a technical fallback. Stage 7 includes cached resources, isolated mutable sessions, deterministic reset, Manual Approval, bounded Auto Pilot Demo, Shadow Mode, forecast/replan/execute workflow, controller selection, scenario events, current KPIs, topology, plan diagnostics, read-only benchmark evidence, terminal inventory-adjusted cost diagnostics, and provenance disclosures. Stage 7 does not implement investment simulation or final tenant reports.
 
 ## Stage 8: Investment Lab and Tenant Renewable Ledger
 
