@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import resource
 import platform
 import time
 from pathlib import Path
@@ -92,9 +93,15 @@ def _execute(
     rule_trace_rows: list[dict] = []
     fallback_rows: list[dict] = []
 
-    for scenario_id, scenario in scenarios.items():
+    completed_scenario_hours = 0
+    total_scenario_hours = len(scenarios) * hours
+    for scenario_index, (scenario_id, scenario) in enumerate(scenarios.items(), start=1):
         if profile:
-            print(f"[profile] scenario={scenario_id} hours={hours} controllers={','.join(controllers)}", flush=True)
+            print(
+                f"[profile] scenario={scenario_id} ({scenario_index}/{len(scenarios)}) "
+                f"hours={hours} controllers={','.join(controllers)} memory_mb={_memory_mb():.1f}",
+                flush=True,
+            )
         base_sim = IndustrialParkSimulator.from_processed_files(start_timestamp=cfg.start_timestamp)
         for event in scenario.events:
             base_sim.inject_event(event)
@@ -184,13 +191,28 @@ def _execute(
                 sim.step(action)
                 runtimes[controller_id]["step_time_seconds"] += time.perf_counter() - step_start
                 all_plan_diag.append(plan_diag)
+            completed_scenario_hours += 1
             if profile:
                 elapsed_step = time.perf_counter() - step_profile_start
-                print(
-                    f"[profile] scenario={scenario_id} step={step + 1}/{hours} origin={origin.isoformat()} "
-                    f"elapsed={elapsed_step:.3f}s forecast_cache={len(forecast_cache)}",
-                    flush=True,
-                )
+                if (step + 1) % 6 == 0 or step == 0 or step + 1 == hours:
+                    elapsed_total = time.perf_counter() - started
+                    avg_seconds = elapsed_total / max(1, completed_scenario_hours)
+                    eta_seconds = avg_seconds * max(0, total_scenario_hours - completed_scenario_hours)
+                    forecast_seconds = sum(row["forecast_time_seconds"] for row in runtimes.values())
+                    mpc_seconds = sum(
+                        row["planning_time_seconds"]
+                        for controller_id, row in runtimes.items()
+                        if controller_id in {"deterministic_mpc", "greenmpc_conservative"}
+                    )
+                    print(
+                        f"[profile] elapsed={elapsed_total:.1f}s scenario={scenario_id} "
+                        f"scenario_progress={step + 1}/{hours} total_progress={completed_scenario_hours}/{total_scenario_hours} "
+                        f"controller_progress={len(controllers)}/{len(controllers)} current_timestamp={origin.isoformat()} "
+                        f"avg_seconds_per_benchmark_hour={avg_seconds:.3f} eta_seconds={eta_seconds:.1f} "
+                        f"last_step_seconds={elapsed_step:.3f} forecast_time_seconds={forecast_seconds:.3f} "
+                        f"mpc_time_seconds={mpc_seconds:.3f} memory_mb={_memory_mb():.1f}",
+                        flush=True,
+                    )
         elapsed = time.perf_counter() - scenario_start
         scenario_predictions = [row for row in forecast_prediction_rows if row["scenario"] == scenario_id]
         forecast_diag_rows.extend(_forecast_diagnostic_rows(scenario_predictions, actual_by_timestamp))
@@ -255,8 +277,12 @@ def _execute(
                 f"validation={row['validation_time_seconds']:.3f}s step={row['step_time_seconds']:.3f}s",
                 flush=True,
             )
-    (output_dir / "benchmark_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    (output_dir / "benchmark_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    _atomic_write_json(output_dir / "benchmark_summary.json", summary)
+    _atomic_write_json(output_dir / "benchmark_manifest.json", summary)
+    for stale_name in ("INCOMPLETE.json", "STALE_PARTIAL_OUTPUTS_NOTE.json"):
+        stale_path = output_dir / stale_name
+        if stale_path.exists():
+            stale_path.unlink()
     _write_html(metrics, paired, forecast_diag, PROJECT_ROOT / cfg.artifact_path)
     return summary
 
@@ -515,6 +541,18 @@ def _file_sha(path: Path) -> str:
 
 def _object_hash(value: Any) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+
+
+def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    tmp.replace(path)
+
+
+def _memory_mb() -> float:
+    usage = float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+    # macOS reports bytes; Linux generally reports KiB.
+    return usage / (1024 * 1024) if usage > 10_000_000 else usage / 1024
 
 
 def _write_html(metrics: pd.DataFrame, paired: pd.DataFrame, forecast: pd.DataFrame, path: Path) -> None:
