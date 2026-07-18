@@ -5,6 +5,8 @@ import { ActionPanel } from "./components/ActionPanel";
 import { PlaybackControls } from "./components/PlaybackControls";
 import { Topology } from "./components/Topology";
 import { InvestmentLabPage } from "./pages/InvestmentLabPage";
+import { App } from "./App";
+import { LanguageProvider } from "./i18n/LanguageContext";
 import { useCommandCenter } from "./hooks/useCommandCenter";
 import type { CommandState } from "./types/api";
 
@@ -238,6 +240,24 @@ describe("frontend live controls", () => {
     fireEvent.click(screen.getByText("guided"));
     await screen.findByText("hours 3", {}, { timeout: 6000 });
     expect(screen.getByText("2013-06-01T01:00:00+07:00")).toBeInTheDocument();
+  });
+});
+
+describe("language switch", () => {
+  it("switches the whole interface between English and Vietnamese", async () => {
+    window.localStorage.clear();
+    render(
+      <LanguageProvider>
+        <App />
+      </LanguageProvider>
+    );
+    await screen.findByText("Live Demo");
+    fireEvent.click(screen.getByText("VI"));
+    expect(screen.getByText("Trình diễn trực tiếp")).toBeInTheDocument();
+    expect(screen.queryByText("Live Demo")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("EN"));
+    expect(screen.getByText("Live Demo")).toBeInTheDocument();
+    window.localStorage.clear();
   });
 });
 

@@ -1,11 +1,13 @@
 import type { ForecastPayload, CommandState } from "../types/api";
+import { useI18n } from "../i18n/LanguageContext";
 
 export function ForecastPanel({ forecast, state }: { forecast: ForecastPayload | null; state: CommandState }) {
+  const { t } = useI18n();
   if (!forecast?.aggregate?.length) {
     return (
       <div className="empty-guidance">
-        <strong>Forecast appears here during the first live cycle.</strong>
-        <span>Press Start Live Demo and GreenMPC will forecast demand and solar availability for the next six hours.</span>
+        <strong>{t("forecast.empty.title")}</strong>
+        <span>{t("forecast.empty.desc")}</span>
       </div>
     );
   }
@@ -18,8 +20,8 @@ export function ForecastPanel({ forecast, state }: { forecast: ForecastPayload |
   return (
     <div className="forecast-card">
       <div className="insight-row">
-        <Insight label="Demand insight" value={`Demand is expected to peak at ${kw(loadPeak?.p50_kw)} around t+${loadPeak?.horizon_hours ?? 0}.`} />
-        <Insight label="Solar insight" value={`Solar availability is expected to reach ${kw(solarPeak?.p50_kw)} around t+${solarPeak?.horizon_hours ?? 0}.`} />
+        <Insight label={t("forecast.demandInsight")} value={t("forecast.demandInsightValue", { value: kw(loadPeak?.p50_kw), h: loadPeak?.horizon_hours ?? 0 })} />
+        <Insight label={t("forecast.solarInsight")} value={t("forecast.solarInsightValue", { value: kw(solarPeak?.p50_kw), h: solarPeak?.horizon_hours ?? 0 })} />
       </div>
       <svg viewBox="0 0 920 360" className="forecast-chart" role="img" aria-label="six hour load and solar forecast">
         <line x1="70" x2="875" y1="300" y2="300" className="axis" />
@@ -39,8 +41,8 @@ export function ForecastPanel({ forecast, state }: { forecast: ForecastPayload |
         <circle cx="70" cy={y(Number(state.kpis.pv_available_kw ?? 0), maxY)} r="5" className="solar-dot" />
         <g transform="translate(660 36)">
           <rect width="205" height="58" rx="10" className="legend-box" />
-          <line x1="14" x2="46" y1="20" y2="20" className="load-line" /><text x="55" y="24" className="legend-text">Load P50 + P10-P90</text>
-          <line x1="14" x2="46" y1="42" y2="42" className="solar-line" /><text x="55" y="46" className="legend-text">Solar P50 + P10-P90</text>
+          <line x1="14" x2="46" y1="20" y2="20" className="load-line" /><text x="55" y="24" className="legend-text">{t("forecast.legendLoad")}</text>
+          <line x1="14" x2="46" y1="42" y2="42" className="solar-line" /><text x="55" y="46" className="legend-text">{t("forecast.legendSolar")}</text>
         </g>
       </svg>
     </div>
@@ -70,12 +72,13 @@ export function HistoryPanel({
   fallbackCount: number;
   invalidActionCount: number;
 }) {
+  const { t } = useI18n();
   const rows = state.history.slice(-24);
   if (!rows.length) {
     return (
       <div className="empty-guidance">
-        <strong>The outcome timeline will grow after the first executed hour.</strong>
-        <span>This chart shows demand served, grid import, renewable supply, battery power, and SOC over the live run.</span>
+        <strong>{t("history.empty.title")}</strong>
+        <span>{t("history.empty.desc")}</span>
       </div>
     );
   }
@@ -91,19 +94,19 @@ export function HistoryPanel({
         <HistoryLine rows={rows} field="battery_power_kw" maxY={maxY} className="battery-line-series" />
         <g transform="translate(612 34)">
           <rect width="260" height="78" rx="10" className="legend-box" />
-          <text x="14" y="24" className="legend-text">Demand / Grid / DPPA / Battery power</text>
-          <text x="14" y="50" className="legend-text">One point per executed simulated hour</text>
+          <text x="14" y="24" className="legend-text">{t("history.legendSeries")}</text>
+          <text x="14" y="50" className="legend-text">{t("history.legendPoint")}</text>
         </g>
       </svg>
       <div className="outcome-copy">
-        <p>This timeline shows how GreenMPC has supplied demand and adapted its source mix during the simulated operating period.</p>
+        <p>{t("history.copy")}</p>
         <div className="outcome-metrics">
-          <span><strong>{completedHours}</strong> simulated hours</span>
-          <span><strong>{money(state.kpis.operating_cost_vnd)}</strong> operating cost</span>
-          <span><strong>{kw(state.kpis.grid_import_kw_last_peak)}</strong> grid peak</span>
-          <span><strong>{kwh(state.kpis.renewable_energy_to_tenants_kwh)}</strong> renewable energy</span>
-          <span><strong>{kwh(state.kpis.renewable_shortfall_kwh)}</strong> renewable shortfall</span>
-          <span><strong>{fallbackCount}</strong> fallbacks · <strong>{invalidActionCount}</strong> invalid actions</span>
+          <span><strong>{completedHours}</strong> {t("history.simulatedHours")}</span>
+          <span><strong>{money(state.kpis.operating_cost_vnd)}</strong> {t("history.operatingCost")}</span>
+          <span><strong>{kw(state.kpis.grid_import_kw_last_peak)}</strong> {t("history.gridPeak")}</span>
+          <span><strong>{kwh(state.kpis.renewable_energy_to_tenants_kwh)}</strong> {t("history.renewableEnergy")}</span>
+          <span><strong>{kwh(state.kpis.renewable_shortfall_kwh)}</strong> {t("history.renewableShortfall")}</span>
+          <span><strong>{fallbackCount}</strong> {t("history.fallbacks")} · <strong>{invalidActionCount}</strong> {t("history.invalidActions")}</span>
         </div>
       </div>
     </div>

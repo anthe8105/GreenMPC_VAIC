@@ -5,7 +5,8 @@ import { PlaybackControls } from "../components/PlaybackControls";
 import { Topology } from "../components/Topology";
 import type { CommandState, ControlPhase, ControllerId, ForecastPayload, OperationMode, PlanPayload, ScenarioId } from "../types/api";
 import type { ReactNode } from "react";
-import { controllerLabel, phaseLabel, scenarioLabel } from "../types/labels";
+import { useI18n } from "../i18n/LanguageContext";
+import type { Narrative } from "../i18n/translations";
 
 interface ControlsProps {
   mode: OperationMode;
@@ -41,24 +42,25 @@ export function LiveTwinPage(props: {
   maxHours: number;
   fallbackCount: number;
   invalidActionCount: number;
-  eventBanner: string | null;
-  decisionReason: string;
+  eventBanner: Narrative | null;
+  decisionReason: Narrative;
   onForecastPlan: () => void;
   onExecute: () => void;
   loading: boolean;
   error: string;
 }) {
-  const countdown = props.running && props.nextTickAt ? `${Math.max(0, Math.ceil((props.nextTickAt - props.nowMs) / 1000))}s` : "paused";
+  const { t } = useI18n();
+  const countdown = props.running && props.nextTickAt ? `${Math.max(0, Math.ceil((props.nextTickAt - props.nowMs) / 1000))}s` : t("countdown.paused");
   return (
     <main className="story-page">
       <section className="intro-strip">
         <div>
-          <h1>See GreenMPC forecast, optimize, and control the park in real time.</h1>
-          <p>Follow one industrial park as GreenMPC observes current conditions, predicts the next six hours, chooses an energy mix, and executes one validated simulated hour.</p>
+          <h1>{t("live.h1")}</h1>
+          <p>{t("live.intro")}</p>
         </div>
         <div className="intro-actions">
-          <button className="start-button" onClick={props.controls.startLiveSimulation} disabled={props.loading || props.running}>Start Live Demo</button>
-          <button onClick={props.controls.runGuidedDemo} disabled={props.loading}>Run 3-Hour Guided Demo</button>
+          <button className="start-button" onClick={props.controls.startLiveSimulation} disabled={props.loading || props.running}>{t("action.startLiveDemo")}</button>
+          <button onClick={props.controls.runGuidedDemo} disabled={props.loading}>{t("live.guidedDemo")}</button>
         </div>
       </section>
 
@@ -68,12 +70,12 @@ export function LiveTwinPage(props: {
       <StorySection
         id="now"
         number="1"
-        title="WHAT IS HAPPENING NOW?"
-        subtitle="Live energy flow across the industrial park"
+        title={t("story.now.title")}
+        subtitle={t("story.now.subtitle")}
         active={["READY", "UPDATED", "WAITING", "PAUSED", "EXECUTING"].includes(props.phase)}
       >
         <div className="now-layout">
-          <Topology state={props.state} plan={props.plan} viewModeLabel={props.plan ? "Next-hour AI plan available" : "Live executed flow"} />
+          <Topology state={props.state} plan={props.plan} viewModeLabel={props.plan ? t("topology.planAvailable") : t("topology.liveExecutedFlow")} />
           <CurrentNarrative
             state={props.state}
             controls={props.controls}
@@ -93,8 +95,8 @@ export function LiveTwinPage(props: {
       <StorySection
         id="forecast"
         number="2"
-        title="WHAT WILL HAPPEN NEXT?"
-        subtitle="AI forecast for the next six hours"
+        title={t("story.forecast.title")}
+        subtitle={t("story.forecast.subtitle")}
         active={props.phase === "FORECASTING"}
       >
         <ForecastPanel forecast={props.forecast} state={props.state} />
@@ -103,8 +105,8 @@ export function LiveTwinPage(props: {
       <StorySection
         id="decision"
         number="3"
-        title="WHAT DOES GREENMPC DECIDE?"
-        subtitle="Recommended dispatch for the next operating hour"
+        title={t("story.decision.title")}
+        subtitle={t("story.decision.subtitle")}
         active={["OPTIMIZING", "REVIEWING_DECISION", "EXECUTING"].includes(props.phase)}
       >
         <ActionPanel plan={props.plan} state={props.state} mode={props.controls.mode} running={props.running} countdown={countdown} onExecute={props.onExecute} />
@@ -113,8 +115,8 @@ export function LiveTwinPage(props: {
       <StorySection
         id="value"
         number="4"
-        title="WHAT VALUE IS GREENMPC CREATING?"
-        subtitle="Executed operating outcomes from the simulated period"
+        title={t("story.value.title")}
+        subtitle={t("story.value.subtitle")}
         active={props.phase === "UPDATED"}
       >
         <HistoryPanel state={props.state} completedHours={props.completedHours} fallbackCount={props.fallbackCount} invalidActionCount={props.invalidActionCount} />
@@ -122,21 +124,21 @@ export function LiveTwinPage(props: {
 
       <section className="story-section stress-story">
         <div className="section-heading">
-          <p className="section-kicker">Test a stress event</p>
-          <h2>See how the controller responds to disruption</h2>
-          <p>Stress events are synthetic and unannounced. If selected, the demo restarts clearly so the approved event model can apply safely.</p>
+          <p className="section-kicker">{t("stress.kicker")}</p>
+          <h2>{t("stress.title")}</h2>
+          <p>{t("stress.desc")}</p>
         </div>
         <div className="stress-buttons">
-          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("cloudy")}>Solar Drop</button>
-          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("production_shift")}>Production Surge</button>
-          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("combined_stress")}>DPPA Reduction</button>
-          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("combined_stress")}>Combined Stress</button>
-          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("normal")}>Restore Normal</button>
+          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("cloudy")}>{t("stress.solarDrop")}</button>
+          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("production_shift")}>{t("stress.productionSurge")}</button>
+          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("combined_stress")}>{t("stress.dppaReduction")}</button>
+          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("combined_stress")}>{t("stress.combined")}</button>
+          <button disabled={props.loading || props.running} onClick={() => props.controls.activateStressScenario("normal")}>{t("stress.restoreNormal")}</button>
         </div>
       </section>
 
       <details className="story-section advanced-controls">
-        <summary>Advanced Settings</summary>
+        <summary>{t("advanced.summary")}</summary>
         <PlaybackControls {...props.controls} loading={props.loading} onForecastPlan={props.onForecastPlan} />
       </details>
     </main>
@@ -157,10 +159,11 @@ function StorySection({
   active: boolean;
   children: ReactNode;
 }) {
+  const { t } = useI18n();
   return (
     <section className={`story-section ${active ? "section-active" : ""}`}>
       <div className="section-heading">
-        <p className="section-kicker">Stage {number}</p>
+        <p className="section-kicker">{t("section.stage", { number })}</p>
         <h2>{title}</h2>
         <p>{subtitle}</p>
       </div>
@@ -189,47 +192,49 @@ function CurrentNarrative({
   completedHours: number;
   maxHours: number;
   phase: ControlPhase;
-  decisionReason: string;
-  eventBanner: string | null;
+  decisionReason: Narrative;
+  eventBanner: Narrative | null;
   error: string;
   loading: boolean;
 }) {
+  const { t, tn } = useI18n();
   const kpis = state.kpis;
   return (
     <aside className="current-summary">
-      <h3>Current situation</h3>
+      <h3>{t("situation.title")}</h3>
       <dl>
-        <div><dt>Demand</dt><dd>{kw(kpis.park_load_kw)}</dd></div>
-        <div><dt>Solar</dt><dd>{Number(kpis.pv_available_kw ?? 0) <= 1 ? "unavailable" : `${kw(kpis.pv_available_kw)} available`}</dd></div>
-        <div><dt>Renewable supply</dt><dd>{kw(kpis.dppa_available_kw)} DPPA available</dd></div>
-        <div><dt>Battery</dt><dd>{percent(kpis.battery_soc_fraction)} SOC</dd></div>
-        <div><dt>Transformer</dt><dd>{percent(kpis.transformer_utilization_fraction)} utilized</dd></div>
+        <div><dt>{t("situation.demand")}</dt><dd>{kw(kpis.park_load_kw)}</dd></div>
+        <div><dt>{t("situation.solar")}</dt><dd>{Number(kpis.pv_available_kw ?? 0) <= 1 ? t("situation.solarUnavailable") : t("situation.solarAvailable", { value: kw(kpis.pv_available_kw) })}</dd></div>
+        <div><dt>{t("situation.renewable")}</dt><dd>{t("situation.dppaAvailable", { value: kw(kpis.dppa_available_kw) })}</dd></div>
+        <div><dt>{t("situation.battery")}</dt><dd>{t("situation.soc", { value: percent(kpis.battery_soc_fraction) })}</dd></div>
+        <div><dt>{t("situation.transformer")}</dt><dd>{t("situation.utilized", { value: percent(kpis.transformer_utilization_fraction) })}</dd></div>
       </dl>
-      <div className="ai-interpretation">{decisionReason}</div>
-      {eventBanner && <div className="event-banner compact"><strong>Stress active:</strong> {eventBanner}</div>}
-      {error && <div className="alert error"><strong>Paused:</strong> {error}</div>}
-      {!error && <div className="alert ok">System operating within configured limits.</div>}
+      <div className="ai-interpretation">{tn(decisionReason)}</div>
+      {eventBanner && <div className="event-banner compact"><strong>{t("situation.stressActive")}</strong> {tn(eventBanner)}</div>}
+      {error && <div className="alert error"><strong>{t("situation.paused")}</strong> {error}</div>}
+      {!error && <div className="alert ok">{t("situation.ok")}</div>}
       <div className="live-controls">
-        <div><span>Phase</span><strong>{phaseLabel(phase)}</strong></div>
-        <div><span>Next cycle</span><strong>{countdown}</strong></div>
-        <div><span>Progress</span><strong>{completedHours} / {maxHours} hours</strong></div>
+        <div><span>{t("situation.phase")}</span><strong>{t(`phase.${phase}`)}</strong></div>
+        <div><span>{t("situation.nextCycle")}</span><strong>{countdown}</strong></div>
+        <div><span>{t("situation.progress")}</span><strong>{t("situation.progressValue", { done: completedHours, total: maxHours })}</strong></div>
       </div>
       <div className="control-buttons">
-        <button onClick={controls.pause} disabled={!running}>Pause</button>
-        <button onClick={controls.onStep} disabled={loading || running}>Step One Hour</button>
-        <button onClick={controls.onReset} disabled={loading}>Reset</button>
+        <button onClick={controls.pause} disabled={!running}>{t("action.pause")}</button>
+        <button onClick={controls.onStep} disabled={loading || running}>{t("action.stepOneHour")}</button>
+        <button onClick={controls.onReset} disabled={loading}>{t("action.reset")}</button>
       </div>
     </aside>
   );
 }
 
 function Pipeline({ phase }: { phase: ControlPhase }) {
+  const { t } = useI18n();
   const steps: Array<[string, ControlPhase[]]> = [
-    ["Observe", ["READY", "WAITING", "PAUSED"]],
-    ["Forecast", ["FORECASTING"]],
-    ["Optimize", ["OPTIMIZING"]],
-    ["Validate", ["REVIEWING_DECISION"]],
-    ["Execute", ["EXECUTING", "UPDATED"]]
+    [t("pipeline.observe"), ["READY", "WAITING", "PAUSED"]],
+    [t("pipeline.forecast"), ["FORECASTING"]],
+    [t("pipeline.optimize"), ["OPTIMIZING"]],
+    [t("pipeline.validate"), ["REVIEWING_DECISION"]],
+    [t("pipeline.execute"), ["EXECUTING", "UPDATED"]]
   ];
   return (
     <section className="pipeline compact-pipeline" aria-label="AI control pipeline">

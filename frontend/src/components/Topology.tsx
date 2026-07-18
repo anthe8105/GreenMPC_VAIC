@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
 import type { CommandState, PlanPayload, TopologyEdge } from "../types/api";
+import { useI18n } from "../i18n/LanguageContext";
+import type { I18n } from "../i18n/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 import solarIcon from "../assets/energy/solar.svg";
 import dppaIcon from "../assets/energy/dppa.svg";
 import gridIcon from "../assets/energy/grid.svg";
@@ -10,18 +13,18 @@ import semiconductorIcon from "../assets/energy/factory-semiconductor.svg";
 import textileIcon from "../assets/energy/factory-textile.svg";
 import warehouseIcon from "../assets/energy/warehouse.svg";
 
-const nodes: Record<string, { x: number; y: number; icon: string; label: string; kind: string }> = {
-  "Rooftop Solar": { x: 90, y: 80, icon: solarIcon, label: "Rooftop Solar", kind: "source" },
-  "DPPA Renewable Supply": { x: 90, y: 210, icon: dppaIcon, label: "DPPA Renewable Supply", kind: "source" },
-  Grid: { x: 90, y: 340, icon: gridIcon, label: "Grid", kind: "source" },
-  "Battery Storage": { x: 90, y: 470, icon: batteryIcon, label: "Battery Storage", kind: "source" },
-  "Curtailed Solar": { x: 410, y: 80, icon: solarIcon, label: "Curtailed Solar", kind: "sink" },
-  "Shared Park Bus / Transformer": { x: 410, y: 270, icon: transformerIcon, label: "Shared Transformer", kind: "bus" },
-  Electronics_A: { x: 735, y: 70, icon: electronicsIcon, label: "Electronics Plant A", kind: "tenant" },
-  Semiconductor_B: { x: 735, y: 170, icon: semiconductorIcon, label: "Semiconductor Plant B", kind: "tenant" },
-  Textile_C: { x: 735, y: 270, icon: textileIcon, label: "Textile Plant C", kind: "tenant" },
-  Warehouse_D: { x: 735, y: 370, icon: warehouseIcon, label: "Warehouse D", kind: "tenant" },
-  Electronics_E: { x: 735, y: 470, icon: electronicsIcon, label: "Electronics Plant E", kind: "tenant" }
+const nodes: Record<string, { x: number; y: number; icon: string; labelKey: TranslationKey; kind: string }> = {
+  "Rooftop Solar": { x: 90, y: 80, icon: solarIcon, labelKey: "node.rooftopSolar", kind: "source" },
+  "DPPA Renewable Supply": { x: 90, y: 210, icon: dppaIcon, labelKey: "node.dppa", kind: "source" },
+  Grid: { x: 90, y: 340, icon: gridIcon, labelKey: "node.grid", kind: "source" },
+  "Battery Storage": { x: 90, y: 470, icon: batteryIcon, labelKey: "node.batteryStorage", kind: "source" },
+  "Curtailed Solar": { x: 410, y: 80, icon: solarIcon, labelKey: "node.curtailedSolar", kind: "sink" },
+  "Shared Park Bus / Transformer": { x: 410, y: 270, icon: transformerIcon, labelKey: "node.transformer", kind: "bus" },
+  Electronics_A: { x: 735, y: 70, icon: electronicsIcon, labelKey: "node.electronicsA", kind: "tenant" },
+  Semiconductor_B: { x: 735, y: 170, icon: semiconductorIcon, labelKey: "node.semiconductorB", kind: "tenant" },
+  Textile_C: { x: 735, y: 270, icon: textileIcon, labelKey: "node.textileC", kind: "tenant" },
+  Warehouse_D: { x: 735, y: 370, icon: warehouseIcon, labelKey: "node.warehouseD", kind: "tenant" },
+  Electronics_E: { x: 735, y: 470, icon: electronicsIcon, labelKey: "node.electronicsE", kind: "tenant" }
 };
 
 const colors: Record<string, string> = {
@@ -41,6 +44,7 @@ const sourceLabels: Record<string, string> = {
 };
 
 export function Topology({ state, plan, viewModeLabel }: { state: CommandState; plan: PlanPayload | null; viewModeLabel: string }) {
+  const { t } = useI18n();
   const [viewMode, setViewMode] = useState<"executed" | "plan">("executed");
   const edges = useMemo(() => {
     if (viewMode === "plan" && plan?.tenant_plan?.length) return plannedEdges(plan);
@@ -53,12 +57,12 @@ export function Topology({ state, plan, viewModeLabel }: { state: CommandState; 
     <section className="topology-card">
       <div className="topology-controls">
         <div>
-          <strong>{viewMode === "plan" ? "Next-hour AI plan" : hasExecutedHistory ? "Live executed flow" : "Current measurements"}</strong>
-          <span>{viewMode === "executed" && !hasExecutedHistory ? "Awaiting first AI dispatch" : viewModeLabel}</span>
+          <strong>{viewMode === "plan" ? t("topology.nextHourPlan") : hasExecutedHistory ? t("topology.liveExecutedFlow") : t("topology.currentMeasurements")}</strong>
+          <span>{viewMode === "executed" && !hasExecutedHistory ? t("topology.awaitingDispatch") : viewModeLabel}</span>
         </div>
         <div className="segmented">
-          <button className={viewMode === "executed" ? "active" : ""} onClick={() => setViewMode("executed")}>Live Flow</button>
-          <button className={viewMode === "plan" ? "active" : ""} onClick={() => setViewMode("plan")} disabled={!plan}>Next-Hour Plan</button>
+          <button className={viewMode === "executed" ? "active" : ""} onClick={() => setViewMode("executed")}>{t("topology.liveFlow")}</button>
+          <button className={viewMode === "plan" ? "active" : ""} onClick={() => setViewMode("plan")} disabled={!plan}>{t("topology.nextHourPlanBtn")}</button>
         </div>
       </div>
       <svg className="topology-svg" viewBox="0 0 880 560" role="img" aria-label="live energy topology with renewable, grid, battery, transformer, and tenants">
@@ -79,18 +83,19 @@ function Node({
   tenantDemand
 }: {
   nodeKey: string;
-  node: { x: number; y: number; icon: string; label: string; kind: string };
+  node: { x: number; y: number; icon: string; labelKey: TranslationKey; kind: string };
   state: CommandState;
   sourceSummaries: Record<string, number>;
   tenantDemand: Record<string, number>;
 }) {
-  const value = nodeValue(nodeKey, state, sourceSummaries, tenantDemand);
-  const status = nodeStatus(nodeKey, state, sourceSummaries);
+  const { t } = useI18n();
+  const value = nodeValue(nodeKey, state, sourceSummaries, tenantDemand, t);
+  const status = nodeStatus(nodeKey, state, sourceSummaries, t);
   return (
     <foreignObject x={node.x - 64} y={node.y - 44} width="128" height="88">
       <div className={`asset-node ${node.kind}`}>
         <img src={node.icon} alt="" />
-        <strong>{node.label}</strong>
+        <strong>{t(node.labelKey)}</strong>
         <span>{value}</span>
         <em>{status}</em>
       </div>
@@ -164,27 +169,27 @@ function tenantDemandMap(state: CommandState) {
   return result;
 }
 
-function nodeValue(nodeKey: string, state: CommandState, sourceSummaries: Record<string, number>, tenantDemand: Record<string, number>) {
-  if (nodeKey === "Rooftop Solar") return `${kw(state.kpis.pv_available_kw)} available`;
-  if (nodeKey === "DPPA Renewable Supply") return `${kw(sourceSummaries[nodeKey] ?? state.kpis.dppa_import_kw)} supplied`;
-  if (nodeKey === "Grid") return `${kw(sourceSummaries[nodeKey] ?? state.kpis.grid_import_kw)} supplied`;
-  if (nodeKey === "Battery Storage") return `${percent(state.kpis.battery_soc_fraction)} SOC`;
-  if (nodeKey === "Curtailed Solar") return `${kw(sourceSummaries[nodeKey] ?? 0)} curtailed`;
-  if (nodeKey === "Shared Park Bus / Transformer") return `${percent(state.kpis.transformer_utilization_fraction)} utilized`;
-  return `${kw(tenantDemand[nodeKey] ?? 0)} demand`;
+function nodeValue(nodeKey: string, state: CommandState, sourceSummaries: Record<string, number>, tenantDemand: Record<string, number>, t: I18n["t"]) {
+  if (nodeKey === "Rooftop Solar") return t("node.val.available", { value: kw(state.kpis.pv_available_kw) });
+  if (nodeKey === "DPPA Renewable Supply") return t("node.val.supplied", { value: kw(sourceSummaries[nodeKey] ?? state.kpis.dppa_import_kw) });
+  if (nodeKey === "Grid") return t("node.val.supplied", { value: kw(sourceSummaries[nodeKey] ?? state.kpis.grid_import_kw) });
+  if (nodeKey === "Battery Storage") return t("node.val.soc", { value: percent(state.kpis.battery_soc_fraction) });
+  if (nodeKey === "Curtailed Solar") return t("node.val.curtailed", { value: kw(sourceSummaries[nodeKey] ?? 0) });
+  if (nodeKey === "Shared Park Bus / Transformer") return t("node.val.utilized", { value: percent(state.kpis.transformer_utilization_fraction) });
+  return t("node.val.demand", { value: kw(tenantDemand[nodeKey] ?? 0) });
 }
 
-function nodeStatus(nodeKey: string, state: CommandState, sourceSummaries: Record<string, number>) {
-  if (nodeKey === "Rooftop Solar") return Number(state.kpis.pv_available_kw ?? 0) <= 1 ? "No generation" : "Available";
+function nodeStatus(nodeKey: string, state: CommandState, sourceSummaries: Record<string, number>, t: I18n["t"]) {
+  if (nodeKey === "Rooftop Solar") return Number(state.kpis.pv_available_kw ?? 0) <= 1 ? t("node.status.noGeneration") : t("node.status.available");
   if (nodeKey === "Battery Storage") {
     const battery = sourceSummaries[nodeKey] ?? 0;
-    return battery > 1 ? "Discharging" : "Idle";
+    return battery > 1 ? t("node.status.discharging") : t("node.status.idle");
   }
-  if (nodeKey === "Shared Park Bus / Transformer") return "External import limit";
-  if (nodeKey === "Curtailed Solar") return (sourceSummaries[nodeKey] ?? 0) > 1 ? "Unused PV" : "No curtailment";
-  if (nodeKey === "DPPA Renewable Supply") return "Renewable contract";
-  if (nodeKey === "Grid") return "Utility import";
-  return "Industrial tenant";
+  if (nodeKey === "Shared Park Bus / Transformer") return t("node.status.importLimit");
+  if (nodeKey === "Curtailed Solar") return (sourceSummaries[nodeKey] ?? 0) > 1 ? t("node.status.unusedPV") : t("node.status.noCurtailment");
+  if (nodeKey === "DPPA Renewable Supply") return t("node.status.renewableContract");
+  if (nodeKey === "Grid") return t("node.status.utilityImport");
+  return t("node.status.industrialTenant");
 }
 
 function kw(value: unknown) {

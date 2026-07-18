@@ -1,6 +1,8 @@
 import { Fragment, useEffect, useState } from "react";
 import { listInvestmentAnalyses } from "../api/client";
 import type { InvestmentJobStatus } from "../types/api";
+import { useI18n } from "../i18n/LanguageContext";
+import type { I18n } from "../i18n/LanguageContext";
 
 export function ScenarioBenchmarkPage({
   benchmark,
@@ -13,6 +15,7 @@ export function ScenarioBenchmarkPage({
   valuationPrice: number;
   setValuationPrice: (value: number) => void;
 }) {
+  const { t } = useI18n();
   const rows = Array.isArray(benchmark?.rows) ? benchmark.rows as Array<Record<string, unknown>> : [];
   const data = (provenance?.data ?? {}) as Record<string, unknown>;
   const disclosures = Array.isArray(data.disclosures) ? data.disclosures as string[] : [];
@@ -24,11 +27,11 @@ export function ScenarioBenchmarkPage({
     <main className="story-page">
       <section className="story-section">
         <div>
-          <p className="section-kicker">Results and Evidence</p>
-          <h1>Controller benchmark evidence</h1>
-          <p>Read-only Stage 6 realized histories. Changing valuation recalculates terminal battery inventory diagnostics only.</p>
+          <p className="section-kicker">{t("bench.kicker")}</p>
+          <h1>{t("bench.h1")}</h1>
+          <p>{t("bench.desc")}</p>
         </div>
-        <label className="valuation-select">Terminal valuation
+        <label className="valuation-select">{t("bench.terminalValuation")}
           <select value={valuationPrice} onChange={(event) => setValuationPrice(Number(event.target.value))}>
             <option value={1100}>1,100 VND/kWh</option>
             <option value={1500}>1,500 VND/kWh</option>
@@ -39,71 +42,78 @@ export function ScenarioBenchmarkPage({
       </section>
 
       <section className="story-section">
-        <h2>Saved investment analyses</h2>
-        <p>Completed Stage 8 analyses are loaded from the local Investment Lab cache. Partial or failed jobs are not accepted as completed evidence.</p>
+        <h2>{t("bench.savedTitle")}</h2>
+        <p>{t("bench.savedDesc")}</p>
         <div className="benchmark-grid investment-saved-grid" role="table" aria-label="saved investment analyses">
-          <div className="table-head">Analysis</div>
-          <div className="table-head">Status</div>
-          <div className="table-head">Completed hours</div>
-          <div className="table-head">Elapsed</div>
-          <div className="table-head">Cache</div>
-          {analyses.length === 0 && <div className="empty-row">No completed investment analyses in this runtime yet.</div>}
+          <div className="table-head">{t("bench.colAnalysis")}</div>
+          <div className="table-head">{t("bench.colStatus")}</div>
+          <div className="table-head">{t("bench.colCompletedHours")}</div>
+          <div className="table-head">{t("bench.colElapsed")}</div>
+          <div className="table-head">{t("bench.colCache")}</div>
+          {analyses.length === 0 && <div className="empty-row">{t("bench.noAnalyses")}</div>}
           {analyses.map((row) => (
             <Fragment key={row.analysis_id}>
               <div>{row.analysis_id}</div>
               <div>{row.status}</div>
               <div>{row.completed_hours} / {row.requested_hours}</div>
               <div>{Number(row.elapsed_seconds ?? 0).toFixed(1)}s</div>
-              <div>{row.loaded_from_cache ? "cached" : "runtime"}</div>
+              <div>{row.loaded_from_cache ? t("bench.cached") : t("bench.runtime")}</div>
             </Fragment>
           ))}
         </div>
       </section>
 
       <section className="story-section">
-        <h2>Controller comparison by scenario</h2>
+        <h2>{t("bench.comparisonTitle")}</h2>
         <div className="benchmark-grid" role="table" aria-label="controller benchmark comparison">
-          <div className="table-head">Scenario</div>
-          <div className="table-head">Controller</div>
-          <div className="table-head">Raw cost</div>
-          <div className="table-head">Inventory-adjusted cost</div>
-          <div className="table-head">Renewable share</div>
-          <div className="table-head">Peak grid</div>
-          <div className="table-head">Fallbacks</div>
+          <div className="table-head">{t("bench.colScenario")}</div>
+          <div className="table-head">{t("bench.colController")}</div>
+          <div className="table-head">{t("bench.colRawCost")}</div>
+          <div className="table-head">{t("bench.colInvAdjCost")}</div>
+          <div className="table-head">{t("bench.colRenewableShare")}</div>
+          <div className="table-head">{t("bench.colPeakGrid")}</div>
+          <div className="table-head">{t("bench.colFallbacks")}</div>
           {rows.map((row, index) => (
-            <BenchmarkRow key={index} row={row} />
+            <BenchmarkRow key={index} row={row} t={t} />
           ))}
         </div>
       </section>
 
       <section className="story-section subtle-section">
-        <h2>How to interpret the results</h2>
-        <p>Rule-based is the transparent baseline. Deterministic MPC is the stable operational default. Conservative GreenMPC is a quantile-conservative stress comparison and may fall back under hard forecast infeasibility.</p>
-        <p>No controller is universally best. Raw operating cost is unchanged by the terminal inventory diagnostic.</p>
+        <h2>{t("bench.interpretTitle")}</h2>
+        <p>{t("bench.interpret1")}</p>
+        <p>{t("bench.interpret2")}</p>
       </section>
 
       <section className="story-section subtle-section">
-        <h2>Data trust and provenance</h2>
+        <h2>{t("bench.provenanceTitle")}</h2>
         <div className="provenance-line">
-          <span>Dataset version: <strong>{String(data.dataset_version ?? "unknown")}</strong></span>
-          <span>Model registry: <strong>{String(data.model_version ?? "unknown")}</strong></span>
-          <span>PV formula: <strong>{String(data.pv_formula_version ?? "simple_capacity_factor_v2")}</strong></span>
+          <span>{t("bench.datasetVersion")} <strong>{String(data.dataset_version ?? t("common.unknown"))}</strong></span>
+          <span>{t("bench.modelRegistry")} <strong>{String(data.model_version ?? t("common.unknown"))}</strong></span>
+          <span>{t("bench.pvFormula")} <strong>{String(data.pv_formula_version ?? "simple_capacity_factor_v2")}</strong></span>
         </div>
         <ul className="disclosure-list">
           {disclosures.map((item) => <li key={item}>{item}</li>)}
-          <li>NASA POWER weather and irradiance are public source inputs; PV is derived rather than measured inverter output.</li>
-          <li>Tariff, DPPA volume, DPPA price, tenant labels, tenant scaling, and stress events are transparent scenario assumptions.</li>
+          <li>{t("disclosure.nasa")}</li>
+          <li>{t("disclosure.tariff")}</li>
         </ul>
       </section>
     </main>
   );
 }
 
-function BenchmarkRow({ row }: { row: Record<string, unknown> }) {
+function benchLabel(prefix: "scenario" | "controller", id: string, t: I18n["t"]) {
+  if (!id) return "";
+  const key = `${prefix}.${id}`;
+  const label = t(key);
+  return label === key ? id : label;
+}
+
+function BenchmarkRow({ row, t }: { row: Record<string, unknown>; t: I18n["t"] }) {
   return (
     <>
-      <div>{String(row.scenario_id ?? "")}</div>
-      <div>{String(row.controller_id ?? "")}</div>
+      <div>{benchLabel("scenario", String(row.scenario_id ?? ""), t)}</div>
+      <div>{benchLabel("controller", String(row.controller_id ?? ""), t)}</div>
       <div>{money(row.total_realized_operating_cost_proxy_vnd)}</div>
       <div>{money(row.inventory_adjusted_operating_cost_vnd)}</div>
       <div>{pct(row.renewable_share_fraction ?? row.park_renewable_share)}</div>

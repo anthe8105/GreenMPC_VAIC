@@ -1,31 +1,34 @@
+import { useI18n } from "../i18n/LanguageContext";
+
 export function ProvenancePage({ provenance }: { provenance: Record<string, unknown> | null }) {
+  const { t } = useI18n();
   const data = (provenance?.data ?? {}) as Record<string, unknown>;
   const disclosures = Array.isArray(data.disclosures) ? data.disclosures as string[] : [];
   return (
     <main className="page-grid">
       <section className="hero compact">
         <div>
-          <h1>Data Trust and Provenance</h1>
-          <p>Offline traceability for dataset, model, controller, assumptions, and benchmark evidence.</p>
+          <h1>{t("prov.h1")}</h1>
+          <p>{t("prov.desc")}</p>
         </div>
-        <span className="healthy">offline runtime</span>
+        <span className="healthy">{t("prov.offlineRuntime")}</span>
       </section>
 
       <section className="provenance-grid">
-        <InfoCard label="Dataset version" value={String(data.dataset_version ?? "unknown")} />
-        <InfoCard label="Model registry" value={String(data.model_version ?? "unknown")} />
-        <InfoCard label="Controller version" value={String(data.controller_version ?? "GreenMPC")} />
-        <InfoCard label="PV formula" value={String(data.pv_formula_version ?? "simple_capacity_factor_v2")} />
-        <InfoCard label="Tenant fingerprint" value={short(String(data.tenant_dataset_fingerprint ?? "unknown"))} />
-        <InfoCard label="Park fingerprint" value={short(String(data.park_dataset_fingerprint ?? "unknown"))} />
+        <InfoCard label={t("prov.datasetVersion")} value={String(data.dataset_version ?? t("common.unknown"))} />
+        <InfoCard label={t("prov.modelRegistry")} value={String(data.model_version ?? t("common.unknown"))} />
+        <InfoCard label={t("prov.controllerVersion")} value={String(data.controller_version ?? "GreenMPC")} />
+        <InfoCard label={t("prov.pvFormula")} value={String(data.pv_formula_version ?? "simple_capacity_factor_v2")} />
+        <InfoCard label={t("prov.tenantFingerprint")} value={short(String(data.tenant_dataset_fingerprint ?? t("common.unknown")))} />
+        <InfoCard label={t("prov.parkFingerprint")} value={short(String(data.park_dataset_fingerprint ?? t("common.unknown")))} />
       </section>
 
       <section className="panel note-panel">
-        <div className="panel-title">Required Disclosures</div>
+        <div className="panel-title">{t("prov.requiredDisclosures")}</div>
         <ul className="disclosure-list">
           {disclosures.map((item) => <li key={item}>{item}</li>)}
-          <li>NASA POWER weather and irradiance are public source inputs; PV is derived rather than measured inverter output.</li>
-          <li>Tariff, DPPA volume, DPPA price, tenant labels, tenant scaling, and stress events are transparent scenario assumptions.</li>
+          <li>{t("disclosure.nasa")}</li>
+          <li>{t("disclosure.tariff")}</li>
         </ul>
       </section>
     </main>

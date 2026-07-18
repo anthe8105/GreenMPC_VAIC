@@ -4,12 +4,14 @@ import { ScenarioBenchmarkPage } from "./pages/ScenarioBenchmarkPage";
 import { InvestmentLabPage } from "./pages/InvestmentLabPage";
 import { useCommandCenter } from "./hooks/useCommandCenter";
 import { loadBenchmark, loadProvenance } from "./api/client";
-import { controllerLabel, scenarioLabel } from "./types/labels";
+import { useI18n } from "./i18n/LanguageContext";
+import { LanguageSwitch } from "./components/LanguageSwitch";
 
 type Page = "live" | "investment" | "results";
 
 export function App() {
   const command = useCommandCenter();
+  const { t } = useI18n();
   const [page, setPage] = useState<Page>("live");
   const [valuationPrice, setValuationPrice] = useState(1500);
   const [benchmark, setBenchmark] = useState<Record<string, unknown> | null>(null);
@@ -26,7 +28,7 @@ export function App() {
   if (!command.state) {
     return (
       <div className="app-shell">
-        <section className="loading-panel">Loading the offline GreenMPC digital twin...</section>
+        <section className="loading-panel">{t("app.loading")}</section>
       </div>
     );
   }
@@ -38,24 +40,25 @@ export function App() {
           <div className="logo-mark">GM</div>
           <div>
             <strong>GreenMPC Twin</strong>
-            <span>AI energy orchestration for industrial parks</span>
+            <span>{t("brand.tagline")}</span>
           </div>
         </div>
         <nav className="top-nav" aria-label="Primary navigation">
-          <button className={page === "live" ? "active" : ""} onClick={() => setPage("live")}>Live Demo</button>
-          <button className={page === "investment" ? "active" : ""} onClick={() => setPage("investment")}>Investment Lab</button>
-          <button className={page === "results" ? "active" : ""} onClick={() => setPage("results")}>Results and Evidence</button>
+          <button className={page === "live" ? "active" : ""} onClick={() => setPage("live")}>{t("nav.live")}</button>
+          <button className={page === "investment" ? "active" : ""} onClick={() => setPage("investment")}>{t("nav.investment")}</button>
+          <button className={page === "results" ? "active" : ""} onClick={() => setPage("results")}>{t("nav.results")}</button>
         </nav>
         <div className="header-status">
           <span>{command.state.timestamp}</span>
-          <span>{scenarioLabel(command.scenario)}</span>
-          <span>{controllerLabel(command.controller)}</span>
-          <span>{command.running ? "Running" : "Paused"}</span>
+          <span>{t(`scenario.${command.scenario}`)}</span>
+          <span>{t(`controller.${command.controller}`)}</span>
+          <span>{command.running ? t("status.running") : t("status.paused")}</span>
         </div>
         <div className="header-actions">
-          <button className="start-demo-small" onClick={command.startLiveSimulation} disabled={command.loading || command.running}>Start Live Demo</button>
-          <button onClick={command.pause} disabled={!command.running}>Pause</button>
-          <button onClick={command.reset} disabled={command.loading}>Reset</button>
+          <LanguageSwitch />
+          <button className="start-demo-small" onClick={command.startLiveSimulation} disabled={command.loading || command.running}>{t("action.startLiveDemo")}</button>
+          <button onClick={command.pause} disabled={!command.running}>{t("action.pause")}</button>
+          <button onClick={command.reset} disabled={command.loading}>{t("action.reset")}</button>
         </div>
       </header>
 

@@ -1,12 +1,14 @@
 import type { CommandState } from "../types/api";
+import { useI18n } from "../i18n/LanguageContext";
 
 export function KpiCards({ state }: { state: CommandState }) {
+  const { t } = useI18n();
   const kpis = state.kpis;
   const items = [
-    ["Park demand", kw(kpis.park_load_kw)],
-    ["Renewable share", percent(kpis.renewable_share_fraction)],
-    ["Battery SOC", percent(kpis.battery_soc_fraction)],
-    ["Operating cost", `${millions(kpis.operating_cost_vnd)}M VND`]
+    [t("kpi.parkDemand"), kw(kpis.park_load_kw)],
+    [t("kpi.renewableShare"), percent(kpis.renewable_share_fraction)],
+    [t("kpi.batterySOC"), percent(kpis.battery_soc_fraction)],
+    [t("kpi.operatingCost"), `${millions(kpis.operating_cost_vnd)}M VND`]
   ];
   return (
     <section className="headline-metrics" aria-label="Live headline metrics">

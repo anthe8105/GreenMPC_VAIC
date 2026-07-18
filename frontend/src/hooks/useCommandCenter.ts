@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as api from "../api/client";
 import type { ApiResponse, CommandState, ControlPhase, ControllerId, ForecastPayload, OperationMode, PlanPayload, ScenarioId, SessionResponse } from "../types/api";
+import type { Narrative } from "../i18n/translations";
 
 type SessionLike = ApiResponse | SessionResponse;
 
@@ -26,8 +27,8 @@ export function useCommandCenter() {
   const [error, setError] = useState("");
   const [nextTickAt, setNextTickAt] = useState<number | null>(null);
   const [nowMs, setNowMs] = useState(Date.now());
-  const [eventBanner, setEventBanner] = useState<string | null>(null);
-  const [lastDecisionReason, setLastDecisionReason] = useState("Press Start Live Simulation to watch GreenMPC forecast, optimize, validate, and execute one simulated hour at a time.");
+  const [eventBanner, setEventBanner] = useState<Narrative | null>(null);
+  const [lastDecisionReason, setLastDecisionReason] = useState<Narrative>({ key: "reason.initial" });
   const activeRequest = useRef(false);
   const timeoutRef = useRef<number | null>(null);
   const latestSnapshot = useRef<{ sessionId: string; runId: string; state: CommandState | null }>({ sessionId: "", runId: "", state: null });
@@ -84,7 +85,7 @@ export function useCommandCenter() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const resetTo = useCallback(async (nextScenario = scenario, nextController = controller, banner: string | null = null) => {
+  const resetTo = useCallback(async (nextScenario = scenario, nextController = controller, banner: Narrative | null = null) => {
     clearScheduledTimer();
     setRunningState(false);
     runningRef.current = false;
@@ -106,7 +107,7 @@ export function useCommandCenter() {
       setInvalidActionCount(0);
       setNextTickAt(null);
       setPhase("READY");
-      setLastDecisionReason(banner ?? "Digital twin reset. Press Start Live Simulation to begin a visible control cycle.");
+      setLastDecisionReason(banner ?? { key: "reason.reset" });
     } catch (exc) {
       setError(readError(exc));
       setPhase("ERROR");
@@ -271,8 +272,7 @@ export function useCommandCenter() {
   }, [resetTo, runOneVisibleCycle]);
 
   const activateStressScenario = useCallback(async (nextScenario: ScenarioId) => {
-    const label = scenarioLabel(nextScenario);
-    await resetTo(nextScenario, controller, `${label} activated as an unannounced synthetic stress scenario. The session restarted so the existing approved event model can apply safely.`);
+    await resetTo(nextScenario, controller, { key: "banner.stress", scenarioId: nextScenario });
   }, [resetTo, controller]);
 
   const updateController = useCallback((value: ControllerId) => {
@@ -338,9 +338,9 @@ function readError(exc: unknown) {
   return exc instanceof Error ? exc.message : String(exc);
 }
 
-function explainDecision(plan: PlanPayload, state: CommandState) {
+function explainDecision(plan: PlanPayload, state: CommandState): Narrative {
   const first = plan.park_plan?.[0];
-  if (!first) return "The controller produced a validated next-hour action.";
+  if (!first) return { key: "reason.validatedAction" };
   const load = Number(state.kpis.park_load_kw ?? 0);
   const solar = Number(state.kpis.pv_available_kw ?? 0);
   const soc = Number(state.kpis.battery_soc_fraction ?? 0);
@@ -348,19 +348,10 @@ function explainDecision(plan: PlanPayload, state: CommandState) {
   const dppa = Number(first.dppa_import_kw ?? 0);
   const discharge = Number(first.battery_discharge_kw ?? 0);
   const charge = Number(first.battery_charge_kw ?? 0);
-  if (plan.fallback_active) return `Optimization could not provide an executable plan, so the validated safe fallback dispatch is shown for the current hour.`;
-  if (solar < load * 0.2 && discharge > 1) return `Solar availability is low relative to demand. The optimizer uses DPPA and battery discharge to reduce grid import while respecting transformer and battery limits.`;
-  if (charge > 1) return `Solar or DPPA supply exceeds immediate tenant use, so the optimizer charges the battery for later hours while keeping all tenant load served.`;
-  if (grid > dppa) return `The optimizer serves the current load with available renewable supply first, then uses grid import for the remaining demand within the transformer limit.`;
-  if (soc < 0.25) return `Battery state of charge is low, so the plan preserves battery inventory and uses external supply for this hour.`;
-  return `The optimizer balances PV, DPPA, grid, and battery flows to serve ${load.toFixed(0)} kW of park demand without violating the transformer limit.`;
-}
-
-function scenarioLabel(value: ScenarioId) {
-  return {
-    normal: "Normal Operations",
-    cloudy: "Solar Drop",
-    production_shift: "Production Demand Surge",
-    combined_stress: "Combined Stress Event"
-  }[value];
+  if (plan.fallback_active) return { key: "reason.fallback" };
+  if (solar < load * 0.2 && discharge > 1) return { key: "reason.lowSolar" };
+  if (charge > 1) return { key: "reason.charging" };
+  if (grid > dppa) return { key: "reason.gridImport" };
+  if (soc < 0.25) return { key: "reason.lowSOC" };
+  return { key: "reason.balanced", params: { load: load.toFixed(0) } };
 }
