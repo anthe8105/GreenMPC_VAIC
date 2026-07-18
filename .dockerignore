@@ -1,0 +1,19 @@
+# Version control / tooling
+.git
+.gitignore
+.claude
+
+# Python virtualenvs and caches (image installs its own deps)
+venv
+.venv
+**/__pycache__
+*.pyc
+.pytest_cache
+
+# Frontend: node_modules and prebuilt dist are rebuilt inside the image
+frontend/node_modules
+frontend/dist
+
+# Untracked raw data (not used at runtime) and generated smoke artifacts
+data/raw
+artifacts

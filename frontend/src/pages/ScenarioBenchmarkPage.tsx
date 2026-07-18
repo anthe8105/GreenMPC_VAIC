@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { listInvestmentAnalyses } from "../api/client";
 import type { InvestmentJobStatus } from "../types/api";
 
@@ -49,13 +49,13 @@ export function ScenarioBenchmarkPage({
           <div className="table-head">Cache</div>
           {analyses.length === 0 && <div className="empty-row">No completed investment analyses in this runtime yet.</div>}
           {analyses.map((row) => (
-            <>
+            <Fragment key={row.analysis_id}>
               <div>{row.analysis_id}</div>
               <div>{row.status}</div>
               <div>{row.completed_hours} / {row.requested_hours}</div>
               <div>{Number(row.elapsed_seconds ?? 0).toFixed(1)}s</div>
               <div>{row.loaded_from_cache ? "cached" : "runtime"}</div>
-            </>
+            </Fragment>
           ))}
         </div>
       </section>
@@ -104,7 +104,7 @@ function BenchmarkRow({ row }: { row: Record<string, unknown> }) {
     <>
       <div>{String(row.scenario_id ?? "")}</div>
       <div>{String(row.controller_id ?? "")}</div>
-      <div>{money(row.total_realized_operating_cost_vnd ?? row.total_operating_cost_vnd)}</div>
+      <div>{money(row.total_realized_operating_cost_proxy_vnd)}</div>
       <div>{money(row.inventory_adjusted_operating_cost_vnd)}</div>
       <div>{pct(row.renewable_share_fraction ?? row.park_renewable_share)}</div>
       <div>{kw(row.peak_grid_import_kw)}</div>

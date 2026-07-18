@@ -17,7 +17,7 @@ from backend.session_store import StoredSession
 from greenmpc.control.types import MPCMode
 from greenmpc.evaluation.rule_based import build_rule_based_action
 from greenmpc.ui.session import can_execute_latest_plan, execute_next_hour, switch_controller
-from greenmpc.ui.state import ControlRoomResources, LiveControlSession, initialize_live_session, invalidate_plan
+from greenmpc.ui.state import PROJECT_ROOT, ControlRoomResources, LiveControlSession, initialize_live_session, invalidate_plan
 from greenmpc.ui.view_models import (
     action_preview,
     aggregate_forecast_frame,
@@ -289,6 +289,8 @@ def _safe_json(path: str) -> dict[str, Any]:
     from pathlib import Path
 
     p = Path(path)
+    if not p.is_absolute():
+        p = PROJECT_ROOT / p
     if not p.exists():
         return {}
     return json.loads(p.read_text(encoding="utf-8"))

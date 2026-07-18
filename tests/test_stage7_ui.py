@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
 import subprocess
 
 import pytest
@@ -214,6 +215,8 @@ def test_stage7_benchmark_adjusted_cost_recalculates_without_simulation(resource
 
 
 def test_stage7_core_packages_do_not_import_streamlit():
+    if shutil.which("rg") is None:
+        pytest.skip("ripgrep (rg) not installed")
     paths = [str(PROJECT_ROOT / "src/greenmpc" / package) for package in ("simulation", "forecasting", "control", "evaluation")]
     result = subprocess.run(["rg", "-n", "-i", "streamlit", *paths], text=True, capture_output=True, timeout=10)
     assert result.returncode == 1, result.stdout

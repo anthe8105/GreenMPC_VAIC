@@ -1,0 +1,12 @@
+# Render Blueprint for the GreenMPC Twin command center.
+# Single-instance Docker web service: the app keeps sessions and investment-job
+# state in memory, so it must NOT be scaled horizontally.
+services:
+  - type: web
+    name: greenmpc-twin
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free            # bump to "starter" if the container OOMs on the 512MB free tier
+    numInstances: 1       # required: in-memory session store + single-worker job executor
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
