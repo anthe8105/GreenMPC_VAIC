@@ -34,10 +34,11 @@ MODEL_VERSION = "stage4_v1"
 
 def current_fingerprints(forecast_config_path: Path = PROJECT_ROOT / "configs/forecasting.yaml") -> dict[str, str]:
     return {
-        "tenant_hourly": file_sha256(PROJECT_ROOT / "data/processed/tenant_hourly.csv"),
-        "park_hourly": file_sha256(PROJECT_ROOT / "data/processed/park_hourly.csv"),
-        "selected_profiles": file_sha256(PROJECT_ROOT / "configs/selected_profiles.yaml"),
-        "forecasting_config": file_sha256(forecast_config_path),
+        "tenant_hourly_csv_sha256": file_sha256(PROJECT_ROOT / "data/processed/tenant_hourly.csv"),
+        "park_hourly_csv_sha256": file_sha256(PROJECT_ROOT / "data/processed/park_hourly.csv"),
+        "selected_tenant_profiles_csv_sha256": file_sha256(PROJECT_ROOT / "data/processed/selected_tenant_profiles.csv"),
+        "selected_profiles_lock_yaml_sha256": file_sha256(PROJECT_ROOT / "configs/selected_profiles.yaml"),
+        "forecasting_config_yaml_sha256": file_sha256(forecast_config_path),
     }
 
 
@@ -168,8 +169,9 @@ def train_forecasters(
         "model_version": MODEL_VERSION,
         "dataset_version": dataset_manifest.get("dataset_version"),
         "fingerprints": current_fingerprints(forecast_config_path),
-        "forecasting_config_fingerprint": file_sha256(forecast_config_path),
-        "selected_profile_lock_fingerprint": file_sha256(PROJECT_ROOT / "configs/selected_profiles.yaml"),
+        "forecasting_config_yaml_sha256": file_sha256(forecast_config_path),
+        "selected_profiles_lock_yaml_sha256": file_sha256(PROJECT_ROOT / "configs/selected_profiles.yaml"),
+        "selected_tenant_profiles_csv_sha256": file_sha256(PROJECT_ROOT / "data/processed/selected_tenant_profiles.csv"),
         "model_count": len(models),
         "models": models,
         "trained_at_utc": utc_now(),

@@ -13,7 +13,14 @@ There are 18 load models and 18 solar models: six horizons times three quantiles
 
 ## Compatibility
 
-The manifest records dataset version, tenant and park dataset fingerprints, selected-profile lock fingerprint, forecasting-config fingerprint, Python version, scikit-learn version, model metadata, and artifact hashes.
+The manifest records dataset version, tenant and park dataset fingerprints, selected-profile fingerprints, forecasting-config fingerprint, Python version, scikit-learn version, model metadata, and artifact hashes.
+
+Selected-profile fingerprints are file-specific:
+
+- `selected_tenant_profiles_csv_sha256`: `data/processed/selected_tenant_profiles.csv`, the Stage 2 processed profile-selection table.
+- `selected_profiles_lock_yaml_sha256`: `configs/selected_profiles.yaml`, the deterministic profile-selection lock.
+
+The ambiguous key `selected_profiles` is intentionally not used.
 
 Inference validates compatibility by default and rejects mismatched datasets or configuration fingerprints.
 

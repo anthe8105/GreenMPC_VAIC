@@ -25,3 +25,18 @@ def test_invalid_horizon_fails() -> None:
     park = pd.read_csv("data/processed/park_hourly.csv")
     with pytest.raises(ForecastDataError):
         service.forecast_tenant_load(tenant, park, pd.Timestamp("2013-11-08 09:00:00+07:00"), 7)
+
+
+def test_cached_model_loader_does_not_reload(monkeypatch) -> None:
+    service = ForecastService.from_registry()
+    calls = []
+    sentinel = object()
+
+    def fake_load_model(path):
+        calls.append(path)
+        return sentinel
+
+    monkeypatch.setattr("greenmpc.forecasting.inference.load_model", fake_load_model)
+    assert service._load_cached_model("load", 1, 0.5) is sentinel
+    assert service._load_cached_model("load", 1, 0.5) is sentinel
+    assert len(calls) == 1

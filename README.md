@@ -4,7 +4,7 @@ GreenMPC Twin is an offline-capable AI energy digital twin foundation for indust
 
 ## Current Status
 
-Stages 0-3 are initialized: scope, architecture, public-data acquisition, hybrid dataset construction, and the controller-independent digital-twin simulator are in place. Forecasting, MPC optimization, controller comparison, investment simulation, final reporting, and advanced UI behavior remain future-stage work.
+Stages 0-4 are initialized: scope, architecture, public-data acquisition, hybrid dataset construction, the controller-independent digital-twin simulator, and leakage-safe forecasting are in place. MPC optimization, controller comparison, investment simulation, final reporting, and advanced UI behavior remain future-stage work.
 
 ## Architecture Summary
 
@@ -112,10 +112,13 @@ python scripts/train_forecasters.py --task all
 python scripts/train_forecasters.py --status
 python scripts/evaluate_forecasters.py --split test --task all
 python scripts/run_forecast_example.py
+python scripts/audit_forecast_baselines.py
 python scripts/verify_stage4.py
 ```
 
 Stage 4 trains direct multi-horizon P10/P50/P90 forecasters for tenant load and park PV availability. Forecast features use observations available at the forecast origin and known target-calendar metadata only; future actual weather and runtime events are excluded.
+
+Forecast reporting distinguishes AI versus reactive persistence from AI versus seasonal persistence. The current derived PV dataset is heavily capacity-clipped during positive-PV hours, so previous-day and previous-week solar persistence may legitimately score zero WAPE; `scripts/audit_forecast_baselines.py` independently verifies this from processed data and records the limitation.
 
 ## Streamlit Demo
 

@@ -75,6 +75,9 @@ class ForecastService:
         self.cfg = cfg
         self.manifest = manifest
         self.model_root = model_root
+        self._model_cache: dict[tuple[str, int, float], object] = {}
+        self._load_feature_cache: dict[tuple[int, int, str, str, str, str], pd.DataFrame] = {}
+        self._solar_feature_cache: dict[tuple[int, str, str], pd.DataFrame] = {}
         validate_compatibility(manifest, current_fingerprints(), cfg.general.reject_dataset_fingerprint_mismatch)
 
     @classmethod
@@ -117,7 +120,7 @@ class ForecastService:
             raise ForecastDataError("forecast origin must exist in tenant history")
         if tenant_cut["tenant_id"].nunique() != 5:
             raise ForecastDataError("all five tenants must have sufficient history")
-        built = build_load_features(tenant_cut, park_cut, self.cfg).frame
+        built = self._cached_load_features(tenant_cut, park_cut)
         rows = built[built["forecast_origin_local"] == origin]
         rows = rows[rows["horizon_hours"] <= horizon_hours]
         if rows["horizon_hours"].nunique() != horizon_hours or len(rows) != horizon_hours * 5:
@@ -132,7 +135,7 @@ class ForecastService:
         park_cut = park.copy()
         if origin not in set(park_cut["timestamp_local"]):
             raise ForecastDataError("forecast origin must exist in park history")
-        built = build_solar_features(park_cut, self.cfg).frame
+        built = self._cached_solar_features(park_cut)
         rows = built[(built["forecast_origin_local"] == origin) & (built["horizon_hours"] <= horizon_hours)]
         if rows["horizon_hours"].nunique() != horizon_hours:
             raise ForecastDataError("insufficient history for requested solar horizon")
@@ -148,7 +151,7 @@ class ForecastService:
         for q, col in [(0.1, "raw_p10_kw"), (0.5, "raw_p50_kw"), (0.9, "raw_p90_kw")]:
             preds = []
             for h in range(1, horizon_hours + 1):
-                model = load_model(model_path(self.model_root, task, h, q))
+                model = self._load_cached_model(task, h, q)
                 h_rows = rows[rows["horizon_hours"] == h]
                 preds.append(pd.Series(model.predict(h_rows[feature_cols]), index=h_rows.index))
                 model_ids[f"h{h}_q{q}"] = f"{task}_h{h:02d}_q{int(q * 100):02d}"
@@ -158,6 +161,24 @@ class ForecastService:
         output = reconcile_quantiles(output, task, capacity)
         output = output.rename(columns={"forecast_origin_local": "origin_local", "forecast_origin_utc": "origin_utc", "target_timestamp_local": "timestamp_local", "target_timestamp_utc": "timestamp_utc"})
         return output
+
+    def _load_cached_model(self, task: str, horizon: int, quantile: float):
+        key = (task, horizon, float(quantile))
+        if key not in self._model_cache:
+            self._model_cache[key] = load_model(model_path(self.model_root, task, horizon, quantile))
+        return self._model_cache[key]
+
+    def _cached_load_features(self, tenant: pd.DataFrame, park: pd.DataFrame) -> pd.DataFrame:
+        key = _load_cache_key(tenant, park)
+        if key not in self._load_feature_cache:
+            self._load_feature_cache[key] = build_load_features(tenant, park, self.cfg).frame
+        return self._load_feature_cache[key]
+
+    def _cached_solar_features(self, park: pd.DataFrame) -> pd.DataFrame:
+        key = _park_cache_key(park)
+        if key not in self._solar_feature_cache:
+            self._solar_feature_cache[key] = build_solar_features(park, self.cfg).frame
+        return self._solar_feature_cache[key]
 
 
 def _metadata(task: str, origin: pd.Timestamp, horizon: int, manifest: dict, corrected: bool) -> ForecastMetadata:
@@ -179,3 +200,25 @@ def _metadata(task: str, origin: pd.Timestamp, horizon: int, manifest: dict, cor
 def _validate_quantiles(df: pd.DataFrame) -> None:
     if not ((df["p10_kw"] <= df["p50_kw"]) & (df["p50_kw"] <= df["p90_kw"])).all():
         raise ForecastDataError("forecast quantiles are not ordered")
+
+
+def _load_cache_key(tenant: pd.DataFrame, park: pd.DataFrame) -> tuple[int, int, str, str, str, str]:
+    tenant_ts = pd.to_datetime(tenant["timestamp_local"])
+    park_ts = pd.to_datetime(park["timestamp_local"])
+    return (
+        len(tenant),
+        len(park),
+        str(tenant_ts.min()),
+        str(tenant_ts.max()),
+        str(park_ts.min()),
+        str(park_ts.max()),
+    )
+
+
+def _park_cache_key(park: pd.DataFrame) -> tuple[int, str, str]:
+    park_ts = pd.to_datetime(park["timestamp_local"])
+    return (
+        len(park),
+        str(park_ts.min()),
+        str(park_ts.max()),
+    )

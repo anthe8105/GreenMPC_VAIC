@@ -15,14 +15,17 @@ def add_load_baseline_predictions(features: pd.DataFrame, tenant_hourly: pd.Data
     history = tenant_hourly.copy()
     history["timestamp_local"] = pd.to_datetime(history["timestamp_local"])
     lookup = history.set_index(["tenant_id", "timestamp_local"])["load_kw"]
+    target_timestamps = pd.to_datetime(data["target_timestamp_local"])
+    data["baseline_previous_day_source_timestamp"] = target_timestamps - pd.Timedelta(hours=24)
+    data["baseline_previous_week_source_timestamp"] = target_timestamps - pd.Timedelta(hours=168)
     data["baseline_current_value"] = data["current_load_kw"]
     data["baseline_previous_day_same_hour"] = [
-        lookup.get((tenant, ts - pd.Timedelta(hours=24)), np.nan)
-        for tenant, ts in zip(data["tenant_id"], pd.to_datetime(data["target_timestamp_local"]))
+        lookup.get((tenant, ts), np.nan)
+        for tenant, ts in zip(data["tenant_id"], data["baseline_previous_day_source_timestamp"])
     ]
     data["baseline_previous_week_same_hour"] = [
-        lookup.get((tenant, ts - pd.Timedelta(hours=168)), np.nan)
-        for tenant, ts in zip(data["tenant_id"], pd.to_datetime(data["target_timestamp_local"]))
+        lookup.get((tenant, ts), np.nan)
+        for tenant, ts in zip(data["tenant_id"], data["baseline_previous_week_source_timestamp"])
     ]
     return data
 
@@ -33,9 +36,12 @@ def add_solar_baseline_predictions(features: pd.DataFrame, park_hourly: pd.DataF
     history["timestamp_local"] = pd.to_datetime(history["timestamp_local"])
     lookup = history.set_index("timestamp_local")["pv_available_kw"]
     capacity = float(history["installed_pv_capacity_kw"].iloc[0])
+    target_timestamps = pd.to_datetime(data["target_timestamp_local"])
+    data["baseline_previous_day_source_timestamp"] = target_timestamps - pd.Timedelta(hours=24)
+    data["baseline_previous_week_source_timestamp"] = target_timestamps - pd.Timedelta(hours=168)
     data["baseline_current_value"] = data["current_pv_available_kw"]
-    data["baseline_previous_day_same_hour"] = [lookup.get(ts - pd.Timedelta(hours=24), np.nan) for ts in pd.to_datetime(data["target_timestamp_local"])]
-    data["baseline_previous_week_same_hour"] = [lookup.get(ts - pd.Timedelta(hours=168), np.nan) for ts in pd.to_datetime(data["target_timestamp_local"])]
+    data["baseline_previous_day_same_hour"] = [lookup.get(ts, np.nan) for ts in data["baseline_previous_day_source_timestamp"]]
+    data["baseline_previous_week_same_hour"] = [lookup.get(ts, np.nan) for ts in data["baseline_previous_week_source_timestamp"]]
     for col in ["baseline_current_value", "baseline_previous_day_same_hour", "baseline_previous_week_same_hour"]:
         data[col] = data[col].clip(lower=0.0, upper=capacity)
         if "target_is_daylight" in data:

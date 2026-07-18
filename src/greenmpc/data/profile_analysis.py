@@ -73,8 +73,8 @@ def analyze_profiles(hourly: pd.DataFrame, cfg: object) -> pd.DataFrame:
             "hourly_ramp_p95": float(valid.diff().abs().quantile(0.95)),
             "daily_peak_hour_mode": int(daily_peak_hours.mode().iloc[0]) if not daily_peak_hours.empty else -1,
             "daily_peak_hour_entropy": entropy,
-            "lag_24_autocorrelation": float(valid.autocorr(24)) if len(valid) > 24 else 0,
-            "lag_168_autocorrelation": float(valid.autocorr(168)) if len(valid) > 168 else 0,
+            "lag_24_autocorrelation": _safe_autocorrelation(valid, 24),
+            "lag_168_autocorrelation": _safe_autocorrelation(valid, 168),
         })
     out = pd.DataFrame(rows).fillna(0)
     out["eligible"] = (
@@ -92,3 +92,15 @@ def _longest_run(flags: list[bool]) -> int:
         current = current + 1 if flag else 0
         longest = max(longest, current)
     return longest
+
+
+def _safe_autocorrelation(series: pd.Series, lag: int) -> float:
+    """Return zero when autocorrelation is undefined for constant profiles."""
+    if len(series) <= lag:
+        return 0.0
+    current = series.iloc[lag:]
+    previous = series.iloc[:-lag]
+    if current.std() == 0 or previous.std() == 0:
+        return 0.0
+    value = pd.Series(current.to_numpy()).corr(pd.Series(previous.to_numpy()))
+    return 0.0 if pd.isna(value) else float(value)

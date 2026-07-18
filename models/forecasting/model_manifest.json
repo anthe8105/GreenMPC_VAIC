@@ -2,12 +2,13 @@
   "dataset_version": "stage2_v1",
   "feature_manifest_path": "data/outputs/forecast_feature_manifest.json",
   "fingerprints": {
-    "forecasting_config": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83",
-    "park_hourly": "4b36c0d7de6f09a5fdacff53a86f34dd27b40d9fb099ba8fa5a8893ed5b891c6",
-    "selected_profiles": "2976ea89acb7c14c109232e47e67bce32fa822ff3350957095adff6c066cf931",
-    "tenant_hourly": "853ca7b4c486bd2f5a6a9c1ef2c743377755d19654c66f5a6d1db17a831fbd27"
+    "forecasting_config_yaml_sha256": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83",
+    "park_hourly_csv_sha256": "4b36c0d7de6f09a5fdacff53a86f34dd27b40d9fb099ba8fa5a8893ed5b891c6",
+    "selected_profiles_lock_yaml_sha256": "2976ea89acb7c14c109232e47e67bce32fa822ff3350957095adff6c066cf931",
+    "selected_tenant_profiles_csv_sha256": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
+    "tenant_hourly_csv_sha256": "853ca7b4c486bd2f5a6a9c1ef2c743377755d19654c66f5a6d1db17a831fbd27"
   },
-  "forecasting_config_fingerprint": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83",
+  "forecasting_config_yaml_sha256": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83",
   "load_training_seconds": 25.937118750007357,
   "metrics_path": "data/outputs/forecast_metrics.csv",
   "model_count": 36,
@@ -4496,7 +4497,8 @@
       ]
     }
   ],
-  "selected_profile_lock_fingerprint": "2976ea89acb7c14c109232e47e67bce32fa822ff3350957095adff6c066cf931",
+  "selected_profiles_lock_yaml_sha256": "2976ea89acb7c14c109232e47e67bce32fa822ff3350957095adff6c066cf931",
+  "selected_tenant_profiles_csv_sha256": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
   "solar_training_seconds": 5.595164083002601,
   "split_manifest_path": "data/outputs/forecast_split_manifest.json",
   "trained_at_utc": "2026-07-17T23:44:16+00:00",

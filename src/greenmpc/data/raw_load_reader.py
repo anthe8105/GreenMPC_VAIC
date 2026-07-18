@@ -30,7 +30,7 @@ def iter_source_year_chunks(zip_path: Path, cfg: object) -> Iterator[pd.DataFram
                 first = chunk.columns[0]
                 chunk = chunk.rename(columns={first: "source_timestamp"})
                 chunk["source_timestamp"] = pd.to_datetime(chunk["source_timestamp"], errors="coerce")
-                yield chunk[chunk["source_timestamp"].dt.year == cfg.build.source_year]
+                yield chunk.loc[chunk["source_timestamp"].dt.year == cfg.build.source_year].copy()
 
 
 def load_hourly_profiles(zip_path: Path, cfg: object, selected_columns: list[str] | None = None) -> tuple[pd.DataFrame, dict]:
@@ -46,7 +46,7 @@ def load_hourly_profiles(zip_path: Path, cfg: object, selected_columns: list[str
         client_cols = [column for column in chunk.columns if column != "source_timestamp"]
         for column in client_cols:
             before = chunk[column].isna().sum()
-            chunk[column] = pd.to_numeric(chunk[column], errors="coerce")
+            chunk.loc[:, column] = pd.to_numeric(chunk[column], errors="coerce")
             nonnumeric += int(chunk[column].isna().sum() - before)
         missing += int(chunk[client_cols].isna().sum().sum())
         rows_kept += len(chunk)

@@ -39,6 +39,8 @@ def main() -> int:
     checks.append(("model manifest exists", manifest_path.exists(), str(manifest_path)))
     manifest = read_model_manifest(manifest_path)
     checks.append(("dataset fingerprints match", manifest.get("fingerprints") == current_fingerprints(), "current fingerprints"))
+    fingerprint_keys = set(manifest.get("fingerprints", {}))
+    checks.append(("selected-profile fingerprint keys are explicit", "selected_profiles" not in fingerprint_keys and {"selected_tenant_profiles_csv_sha256", "selected_profiles_lock_yaml_sha256"}.issubset(fingerprint_keys), str(sorted(fingerprint_keys))))
     load_models = [m for m in manifest.get("models", []) if m["task"] == "load"]
     solar_models = [m for m in manifest.get("models", []) if m["task"] == "solar"]
     checks.append(("18 load quantile models exist", len(load_models) == 18, str(len(load_models))))
@@ -79,6 +81,28 @@ def main() -> int:
     checks.append(("metrics file exists", metrics_path.exists(), str(metrics_path)))
     checks.append(("baseline metrics exist", metrics["model_name"].str.startswith("baseline_").any(), "baseline rows"))
     checks.append(("interval metrics exist", metrics["metric_name"].eq("empirical_coverage").any(), "coverage rows"))
+    audit_paths = [
+        "data/outputs/baseline_audit/solar_previous_day.csv",
+        "data/outputs/baseline_audit/solar_previous_week.csv",
+        "data/outputs/baseline_audit/solar_audit_summary.json",
+        "data/outputs/baseline_audit/load_audit_summary.csv",
+        "data/outputs/baseline_audit/root_cause.md",
+        "data/outputs/baseline_audit/forecast_latency_audit.json",
+        "data/outputs/forecast_latency_audit.json",
+    ]
+    for path in audit_paths:
+        checks.append((f"{path} exists", (PROJECT_ROOT / path).exists(), path))
+    try:
+        audit = __import__("json").loads((PROJECT_ROOT / "data/outputs/baseline_audit/solar_audit_summary.json").read_text(encoding="utf-8"))
+        day_rows = pd.read_csv(PROJECT_ROOT / "data/outputs/baseline_audit/solar_previous_day.csv")
+        week_rows = pd.read_csv(PROJECT_ROOT / "data/outputs/baseline_audit/solar_previous_week.csv")
+        checks.append(("solar audit stores lag source timestamps", {"baseline_source_timestamp", "target_timestamp"}.issubset(day_rows.columns), "solar audit columns"))
+        checks.append(("solar previous-day source differs from target", (pd.to_datetime(day_rows["baseline_source_timestamp"]) != pd.to_datetime(day_rows["target_timestamp"])).all(), "minus 24h"))
+        checks.append(("solar previous-week source differs from target", (pd.to_datetime(week_rows["baseline_source_timestamp"]) != pd.to_datetime(week_rows["target_timestamp"])).all(), "minus 168h"))
+        checks.append(("PV integrity audit completed", "pv_integrity" in audit and audit["pv_integrity"]["unique_solar_resource_values"] > 1, "raw solar variation"))
+        checks.append(("latency audit deterministic", bool(audit["latency"]["deterministic_predictions"]) and not bool(audit["latency"]["models_reloaded_per_call"]), "cache and determinism"))
+    except Exception as exc:
+        checks.append(("baseline audit outputs are readable", False, repr(exc)))
     for path in [
         "data/outputs/stage4_example/load_forecast.csv",
         "data/outputs/stage4_example/solar_forecast.csv",
