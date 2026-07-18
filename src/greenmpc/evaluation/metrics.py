@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import itertools
+from pathlib import Path
 
 import pandas as pd
 
@@ -125,6 +126,67 @@ def reconcile_metric_row(summary_row: pd.Series, recomputed: dict, tolerance: fl
         if abs(left - right) > tolerance * max(1.0, abs(left), abs(right)):
             errors.append(f"{field}: summary={left}, recomputed={right}")
     return errors
+
+
+def terminal_inventory_adjustment(
+    *,
+    initial_battery_energy_kwh: float,
+    final_battery_energy_kwh: float,
+    raw_operating_cost_vnd: float,
+    valuation_price_vnd_per_kwh: float,
+) -> dict[str, float]:
+    """Calculate a terminal battery inventory fairness adjustment.
+
+    Positive adjustment means the controller ended with less stored energy than
+    it started with and is charged for replenishment. Negative adjustment means
+    the controller ended with more stored energy and receives inventory credit.
+    """
+
+    energy_change = float(final_battery_energy_kwh) - float(initial_battery_energy_kwh)
+    adjustment = -energy_change * float(valuation_price_vnd_per_kwh)
+    return {
+        "initial_battery_energy_kwh": float(initial_battery_energy_kwh),
+        "final_battery_energy_kwh": float(final_battery_energy_kwh),
+        "battery_energy_inventory_change_kwh": energy_change,
+        "valuation_price_vnd_per_kwh": float(valuation_price_vnd_per_kwh),
+        "raw_operating_cost_vnd": float(raw_operating_cost_vnd),
+        "terminal_inventory_adjustment_vnd": adjustment,
+        "inventory_adjusted_operating_cost_vnd": float(raw_operating_cost_vnd) + adjustment,
+    }
+
+
+def terminal_inventory_adjusted_costs_from_histories(
+    benchmark_dir: str | Path,
+    valuation_price_vnd_per_kwh: float,
+    scenarios: list[str] | tuple[str, ...],
+    controllers: list[str] | tuple[str, ...],
+) -> pd.DataFrame:
+    """Compute inventory-adjusted costs from existing Stage 6 history CSVs."""
+
+    rows = []
+    root = Path(benchmark_dir)
+    for scenario_id in scenarios:
+        for controller_id in controllers:
+            history_dir = root / scenario_id / controller_id
+            park = pd.read_csv(history_dir / "park_energy.csv")
+            if park.empty:
+                raise ValueError(f"empty park_energy history: {history_dir}")
+            values = terminal_inventory_adjustment(
+                initial_battery_energy_kwh=float(park["battery_energy_before_kwh"].iloc[0]),
+                final_battery_energy_kwh=float(park["battery_energy_after_kwh"].iloc[-1]),
+                raw_operating_cost_vnd=float(park["step_operating_cost_vnd"].sum()),
+                valuation_price_vnd_per_kwh=valuation_price_vnd_per_kwh,
+            )
+            rows.append({"scenario_id": scenario_id, "controller_id": controller_id, **values})
+    return pd.DataFrame(rows)
+
+
+def rank_inventory_adjusted_costs(adjusted: pd.DataFrame) -> pd.DataFrame:
+    """Rank controllers within each scenario by inventory-adjusted cost."""
+
+    ranked = adjusted.copy()
+    ranked["inventory_adjusted_rank"] = ranked.groupby("scenario_id")["inventory_adjusted_operating_cost_vnd"].rank(method="min")
+    return ranked.sort_values(["scenario_id", "inventory_adjusted_rank", "controller_id"]).reset_index(drop=True)
 
 
 def paired_comparisons(metrics: pd.DataFrame) -> pd.DataFrame:

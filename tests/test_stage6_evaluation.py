@@ -5,7 +5,7 @@ from dataclasses import replace
 
 from greenmpc.config import load_config
 from greenmpc.evaluation.history_adapter import ObservedHistoryAdapter
-from greenmpc.evaluation.metrics import paired_comparisons
+from greenmpc.evaluation.metrics import paired_comparisons, rank_inventory_adjusted_costs, terminal_inventory_adjustment
 from greenmpc.evaluation.rule_based import build_rule_based_action, build_rule_based_action_with_trace
 from greenmpc.evaluation.runner import _is_cache_compatible
 from greenmpc.simulation.park import IndustrialParkSimulator
@@ -72,6 +72,42 @@ def test_paired_comparison_handles_zero_denominator():
     ])
     result = paired_comparisons(metrics)
     assert result["operating_cost_percentage_difference"].isna().any()
+
+
+def test_terminal_inventory_adjustment_charges_battery_depletion():
+    result = terminal_inventory_adjustment(
+        initial_battery_energy_kwh=1500.0,
+        final_battery_energy_kwh=300.0,
+        raw_operating_cost_vnd=1_000_000.0,
+        valuation_price_vnd_per_kwh=2_000.0,
+    )
+    assert result["battery_energy_inventory_change_kwh"] == -1200.0
+    assert result["terminal_inventory_adjustment_vnd"] == 2_400_000.0
+    assert result["inventory_adjusted_operating_cost_vnd"] == 3_400_000.0
+
+
+def test_terminal_inventory_adjustment_credits_extra_terminal_energy():
+    result = terminal_inventory_adjustment(
+        initial_battery_energy_kwh=1500.0,
+        final_battery_energy_kwh=1800.0,
+        raw_operating_cost_vnd=1_000_000.0,
+        valuation_price_vnd_per_kwh=2_000.0,
+    )
+    assert result["battery_energy_inventory_change_kwh"] == 300.0
+    assert result["terminal_inventory_adjustment_vnd"] == -600_000.0
+    assert result["inventory_adjusted_operating_cost_vnd"] == 400_000.0
+
+
+def test_inventory_adjusted_rank_uses_adjusted_cost():
+    frame = pd.DataFrame(
+        [
+            {"scenario_id": "normal", "controller_id": "a", "inventory_adjusted_operating_cost_vnd": 20.0},
+            {"scenario_id": "normal", "controller_id": "b", "inventory_adjusted_operating_cost_vnd": 10.0},
+        ]
+    )
+    ranked = rank_inventory_adjusted_costs(frame)
+    assert ranked.iloc[0]["controller_id"] == "b"
+    assert ranked.iloc[0]["inventory_adjusted_rank"] == 1.0
 
 
 def test_benchmark_outputs_exist_without_mutating_duration_cache():
