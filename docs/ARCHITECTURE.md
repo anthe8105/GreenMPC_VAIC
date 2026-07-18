@@ -35,6 +35,7 @@ Lower layers must not import Streamlit. Algorithms must receive configuration va
 - Stage 3 implements the simulator action contract and strict validation only. The reference feasible-action helper exists for simulator verification and is not an operational controller.
 - Stage 4 implements forecasting pipelines that consume validated processed history and emit forecast bundles. Forecasting does not import simulator internals, CVXPY, Streamlit, MPC code, or production controllers.
 - Stage 5 implements a controller that consumes forecast bundles and simulator observations, solves a continuous LP with HIGHS, extracts a first `ParkAction`, and validates it through the simulator without mutating simulator state. Closed-loop evaluation remains out of scope for the control layer.
+- Stage 6 owns closed-loop orchestration. It clones simulator state per controller, shares forecast bundles fairly, executes one action per hour, and computes realized KPIs from simulator histories.
 
 ## Mermaid Diagram
 

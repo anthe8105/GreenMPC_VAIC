@@ -1,0 +1,55 @@
+schema_version: 1
+
+benchmark:
+  start_timestamp: "2013-11-01T17:00:00+07:00"
+  default_hours: 72
+  quick_hours: 24
+  event_visibility_policy: unannounced
+  random_seed: 42
+
+controllers:
+  - rule_based
+  - deterministic_mpc
+  - greenmpc_conservative
+
+scenarios:
+  normal:
+    description: No active stress event.
+    events: []
+  cloudy:
+    description: Multi-hour unannounced PV reduction.
+    events:
+      - event_id: stage6_cloudy_cloud
+        event_type: cloud_event
+        offset_hours: 14
+        duration_hours: 6
+        affected_tenant_id:
+        load_multiplier: 1.0
+        pv_multiplier: 0.45
+        dppa_multiplier: 1.0
+  production_shift:
+    description: Temporary load multiplier for one tenant.
+    events:
+      - event_id: stage6_shift_textile
+        event_type: production_shift_event
+        offset_hours: 10
+        duration_hours: 5
+        affected_tenant_id: Textile_C
+        load_multiplier: 1.35
+        pv_multiplier: 1.0
+        dppa_multiplier: 1.0
+  combined_stress:
+    description: PV reduction, tenant load increase, and DPPA availability reduction.
+    events:
+      - event_id: stage6_combined
+        event_type: combined_stress_event
+        offset_hours: 14
+        duration_hours: 8
+        affected_tenant_id:
+        load_multiplier: 1.20
+        pv_multiplier: 0.40
+        dppa_multiplier: 0.60
+
+outputs:
+  output_directory: data/outputs/stage6_benchmark
+  artifact_path: artifacts/closed_loop_benchmark.html

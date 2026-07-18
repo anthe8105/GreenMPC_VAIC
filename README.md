@@ -130,6 +130,18 @@ python scripts/verify_stage5.py
 
 Stage 5 adds a transparent six-interval continuous linear MPC using CVXPY and HIGHS. Interval 0 uses the current effective digital-twin state; intervals 1-5 use Stage 4 forecast quantiles plus known tariff, DPPA, and transformer schedules. The controller returns a first `ParkAction` and validates it with the simulator, but it does not execute simulator steps or run closed-loop benchmarks.
 
+## Closed-Loop Evaluation
+
+```bash
+python scripts/run_closed_loop_benchmark.py --quick
+python scripts/run_closed_loop_benchmark.py
+python scripts/run_closed_loop_benchmark.py --scenario combined_stress
+python scripts/run_closed_loop_benchmark.py --status
+python scripts/verify_stage6.py
+```
+
+Stage 6 compares `rule_based`, `deterministic_mpc`, and `greenmpc_conservative` in receding-horizon simulation. KPIs are realized from simulator histories. Stress events are synthetic and unannounced, and results are not actual VRG operational savings.
+
 ## Streamlit Demo
 
 ```bash
@@ -171,4 +183,4 @@ This repository does not use actual VRG operational data, actual VRG tenant data
 
 ## Future Stages
 
-Stages 0-5 are complete in this working tree. Stage 6 will add closed-loop evaluation. Stage 7 will build the live Streamlit demonstration. Stage 8 will add investment and renewable ledger workflows. Stage 9 will harden the submission package.
+Stages 0-6 are complete in this working tree. Stage 7 will build the live Streamlit demonstration. Stage 8 will add investment and renewable ledger workflows. Stage 9 will harden the submission package.

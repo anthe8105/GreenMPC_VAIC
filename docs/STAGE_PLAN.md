@@ -26,7 +26,7 @@ Implement the continuous linear GreenMPC control engine with expected P50/P50 mo
 
 ## Stage 6: Closed-Loop Evaluation
 
-Run receding-horizon backtests, compare controllers, calculate KPIs, and evaluate event scenarios.
+Run receding-horizon benchmarks for `rule_based`, `deterministic_mpc`, and `greenmpc_conservative`, calculate realized KPIs from simulator histories, and evaluate normal plus synthetic stress scenarios. Stage 6 does not implement the Streamlit Control Room.
 
 ## Stage 7: Live Streamlit Demonstration
 
