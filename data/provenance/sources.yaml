@@ -1,5 +1,5 @@
 schema_version: 1
-generated_at_utc: '2026-07-17T23:54:52+00:00'
+generated_at_utc: '2026-07-18T11:06:24+00:00'
 sources:
 - source_id: uci_electricity_load_diagrams
   display_name: UCI Electricity Load Diagrams 2011-2014

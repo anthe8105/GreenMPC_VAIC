@@ -14,7 +14,7 @@ authors = [
 dependencies = [
   "numpy",
   "pandas",
-  "scikit-learn",
+  "scikit-learn==1.8.0",
   "cvxpy",
   "highspy",
   "streamlit",
