@@ -1,0 +1,15 @@
+{
+  "valuation_choice": "configured off-peak replenishment price from configs/demo.yaml",
+  "primary_valuation_price_vnd_per_kwh": 1100.0,
+  "formula": "adjusted_cost = raw_operating_cost + (initial_battery_energy_kwh - final_battery_energy_kwh) * valuation_price_vnd_per_kwh",
+  "sensitivity_prices_vnd_per_kwh": [
+    1500.0,
+    2000.0,
+    2500.0
+  ],
+  "outputs": {
+    "primary": "data/outputs/stage6_audit/terminal_inventory_adjusted_costs.csv",
+    "sensitivity": "data/outputs/stage6_audit/terminal_inventory_sensitivity.csv",
+    "rankings": "data/outputs/stage6_audit/terminal_inventory_rankings.csv"
+  }
+}

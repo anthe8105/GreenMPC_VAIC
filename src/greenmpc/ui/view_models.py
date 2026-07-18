@@ -41,6 +41,8 @@ def current_kpis(session: LiveControlSession) -> dict[str, float | str]:
         "transformer_utilization_fraction": 0.0 if ex.transformer_capacity_kw <= 0 else latest_external / ex.transformer_capacity_kw,
         "renewable_share_fraction": renewable_share,
         "operating_cost_vnd": cumulative.total_operating_cost_vnd,
+        "total_load_energy_kwh": cumulative.total_load_energy_kwh,
+        "renewable_energy_to_tenants_kwh": cumulative.renewable_energy_to_tenants_kwh,
         "tariff_period": ex.tariff_period,
         "dppa_available_kw": ex.dppa_available_kw,
         "renewable_shortfall_kwh": sum(
@@ -354,12 +356,16 @@ def benchmark_view(resources: ControlRoomResources, valuation_price_vnd_per_kwh:
         return metrics
     scenarios = tuple(metrics["scenario_id"].drop_duplicates())
     controllers = tuple(metrics["controller_id"].drop_duplicates())
-    adjusted = terminal_inventory_adjusted_costs_from_histories(
-        PROJECT_ROOT / resources.evaluation_config.output_directory,
-        valuation_price_vnd_per_kwh,
-        scenarios,
-        controllers,
-    )
+    adjusted = resources.terminal_inventory_costs.copy(deep=True)
+    if not adjusted.empty and "valuation_price_vnd_per_kwh" in adjusted.columns:
+        adjusted = adjusted[adjusted["valuation_price_vnd_per_kwh"].round(6) == round(float(valuation_price_vnd_per_kwh), 6)]
+    if adjusted.empty:
+        adjusted = terminal_inventory_adjusted_costs_from_histories(
+            PROJECT_ROOT / resources.evaluation_config.output_directory,
+            valuation_price_vnd_per_kwh,
+            scenarios,
+            controllers,
+        )
     adjusted = rank_inventory_adjusted_costs(adjusted)
     merged = metrics.merge(
         adjusted[

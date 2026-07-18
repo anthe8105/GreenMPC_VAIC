@@ -1,0 +1,180 @@
+{
+  "stage": 6,
+  "software_version": "stage6_audit_v4",
+  "requested_hours": 72,
+  "completed_hours": 72,
+  "minimum_completed_hours": 72,
+  "hours": 72,
+  "run_mode": "full",
+  "requested_scenarios": [
+    "normal",
+    "cloudy",
+    "production_shift",
+    "combined_stress"
+  ],
+  "requested_controllers": [
+    "rule_based",
+    "deterministic_mpc",
+    "greenmpc_conservative"
+  ],
+  "scenarios": [
+    "normal",
+    "cloudy",
+    "production_shift",
+    "combined_stress"
+  ],
+  "controllers": [
+    "rule_based",
+    "deterministic_mpc",
+    "greenmpc_conservative"
+  ],
+  "start_timestamp": "2013-11-01T17:00:00+07:00",
+  "end_timestamp": "2013-11-04T16:00:00+07:00",
+  "event_visibility_policy": "unannounced",
+  "initial_state_signatures": {
+    "normal": {
+      "timestamp": "2013-11-01T17:00:00+07:00",
+      "battery_energy": 1500.0,
+      "battery_soc": 0.5,
+      "tenant_ids": [
+        "Electronics_A",
+        "Semiconductor_B",
+        "Textile_C",
+        "Warehouse_D",
+        "Electronics_E"
+      ],
+      "dataset_version": "stage2_v1"
+    },
+    "cloudy": {
+      "timestamp": "2013-11-01T17:00:00+07:00",
+      "battery_energy": 1500.0,
+      "battery_soc": 0.5,
+      "tenant_ids": [
+        "Electronics_A",
+        "Semiconductor_B",
+        "Textile_C",
+        "Warehouse_D",
+        "Electronics_E"
+      ],
+      "dataset_version": "stage2_v1"
+    },
+    "production_shift": {
+      "timestamp": "2013-11-01T17:00:00+07:00",
+      "battery_energy": 1500.0,
+      "battery_soc": 0.5,
+      "tenant_ids": [
+        "Electronics_A",
+        "Semiconductor_B",
+        "Textile_C",
+        "Warehouse_D",
+        "Electronics_E"
+      ],
+      "dataset_version": "stage2_v1"
+    },
+    "combined_stress": {
+      "timestamp": "2013-11-01T17:00:00+07:00",
+      "battery_energy": 1500.0,
+      "battery_soc": 0.5,
+      "tenant_ids": [
+        "Electronics_A",
+        "Semiconductor_B",
+        "Textile_C",
+        "Warehouse_D",
+        "Electronics_E"
+      ],
+      "dataset_version": "stage2_v1"
+    }
+  },
+  "fingerprints": {
+    "tenant_hourly_csv_sha256": "93eb3df8c8bdc6302030c8477a66e6b81acc87ef464bc8a3d107ae419ee53590",
+    "park_hourly_csv_sha256": "f883bb0bcae240a2699209f115fd51f4329612f9386cd62c47bbb19d083eacff",
+    "selected_tenant_profiles_csv_sha256": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
+    "selected_profiles_lock_yaml_sha256": "dfab4561ef646fa1b36f492837042f8d278be966aae2ea75f4c70a50a55a6639",
+    "forecasting_config_yaml_sha256": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83"
+  },
+  "evaluation_config_fingerprint": "b6ba6210e7c3fe60f65336aea49b33be1149ae0616401e55ba5f7adffd0d6e6b",
+  "dataset_fingerprints": {
+    "tenant_hourly_csv_sha256": "93eb3df8c8bdc6302030c8477a66e6b81acc87ef464bc8a3d107ae419ee53590",
+    "park_hourly_csv_sha256": "f883bb0bcae240a2699209f115fd51f4329612f9386cd62c47bbb19d083eacff",
+    "selected_tenant_profiles_csv_sha256": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
+    "selected_profiles_lock_yaml_sha256": "dfab4561ef646fa1b36f492837042f8d278be966aae2ea75f4c70a50a55a6639",
+    "forecasting_config_yaml_sha256": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83"
+  },
+  "model_registry_fingerprint": "591aeda4ca803bbaf1ed463c478278cbb82ba0ddc87816bcb19720749fb14315",
+  "mpc_config_fingerprint": "48c79e66eb625a97c6eafaebf29b1415b645c40d3ab9313db623f4c5f3b5ac76",
+  "scenario_ids": [
+    "normal",
+    "cloudy",
+    "production_shift",
+    "combined_stress"
+  ],
+  "controller_ids": [
+    "rule_based",
+    "deterministic_mpc",
+    "greenmpc_conservative"
+  ],
+  "benchmark_start_timestamp": "2013-11-01T17:00:00+07:00",
+  "requested_duration_hours": 72,
+  "event_definitions": {
+    "normal": {
+      "description": "No active stress event.",
+      "events": []
+    },
+    "cloudy": {
+      "description": "Multi-hour unannounced PV reduction.",
+      "events": [
+        {
+          "event_id": "stage6_cloudy_cloud",
+          "event_type": "cloud_event",
+          "offset_hours": 14,
+          "duration_hours": 6,
+          "affected_tenant_id": null,
+          "load_multiplier": 1.0,
+          "pv_multiplier": 0.45,
+          "dppa_multiplier": 1.0
+        }
+      ]
+    },
+    "production_shift": {
+      "description": "Temporary load multiplier for one tenant.",
+      "events": [
+        {
+          "event_id": "stage6_shift_textile",
+          "event_type": "production_shift_event",
+          "offset_hours": 10,
+          "duration_hours": 5,
+          "affected_tenant_id": "Textile_C",
+          "load_multiplier": 1.35,
+          "pv_multiplier": 1.0,
+          "dppa_multiplier": 1.0
+        }
+      ]
+    },
+    "combined_stress": {
+      "description": "PV reduction, tenant load increase, and DPPA availability reduction.",
+      "events": [
+        {
+          "event_id": "stage6_combined",
+          "event_type": "combined_stress_event",
+          "offset_hours": 14,
+          "duration_hours": 8,
+          "affected_tenant_id": null,
+          "load_multiplier": 1.2,
+          "pv_multiplier": 0.4,
+          "dppa_multiplier": 0.6
+        }
+      ]
+    }
+  },
+  "initial_battery_state": {
+    "soc_fraction": 0.5,
+    "renewable_fraction": 1.0,
+    "capacity_kwh": 3000.0
+  },
+  "random_seed": 42,
+  "python_version": "3.12.2",
+  "cache_fingerprint": "d1b7d6b9c3047acedca48041b256fb234aed49f9c843a9296e685def24622269",
+  "total_runtime_seconds": 543.0158615830005,
+  "completed_successfully": true,
+  "no_future_actual_data_policy": "observed-history adapter records realized effective observations through origin; forecast diagnostics compare predictions with realized t+h targets after execution"
+}

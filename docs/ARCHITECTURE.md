@@ -9,14 +9,16 @@ GreenMPC Twin uses a layered Python architecture with explicit module boundaries
 - Digital-twin layer: park state, physical energy transitions, battery state, cost accounting, renewable-energy allocation, event effects, and action validation.
 - Control layer: continuous linear MPC formulation, solver execution, post-solve validation, and clearly labeled fallback behavior.
 - Evaluation layer: closed-loop backtesting, controller comparison, KPI calculation, and scenario evaluation.
-- Reporting layer: renewable-energy ledger, tenant summaries, CSV export, and audit-ready HTML evidence reports.
-- UI layer: Streamlit session state, charts, user controls, event injection, recommendation displays, and investment scenario interaction.
+- Investment layer: cloned baseline/proposal scenario analyses, candidate-only PV/BESS/DPPA overrides, realized technical metrics, illustrative financial calculations, tenant renewable evidence, and checksum-backed export packages.
+- Reporting layer: renewable-energy ledger, tenant summaries, CSV export, and evidence package assembly.
+- UI layer: React/FastAPI pages, session state, charts, user controls, event injection, recommendation displays, investment scenario interaction, with Streamlit kept as a fallback.
 
 ## Dependency Direction
 
 Dependencies flow from user-facing layers toward core services and data structures:
 
 UI -> Reporting, Evaluation, Control, Forecasting, Simulation
+Investment -> Evaluation, Control, Forecasting, Simulation, Reporting
 Evaluation -> Control, Forecasting, Simulation, Reporting
 Control -> Forecasting outputs and validated simulator interfaces
 Simulation -> Configured state, actions, and event definitions
@@ -37,6 +39,7 @@ Lower layers must not import Streamlit. Algorithms must receive configuration va
 - Stage 5 implements a controller that consumes forecast bundles and simulator observations, solves a continuous LP with HIGHS, extracts a first `ParkAction`, and validates it through the simulator without mutating simulator state. Closed-loop evaluation remains out of scope for the control layer.
 - Stage 6 owns closed-loop orchestration. It clones simulator state per controller, shares forecast bundles fairly, executes one action per hour, and computes realized KPIs from simulator histories.
 - Stage 7 owns the Live Control Room. The primary interface is React + FastAPI, with Streamlit preserved as a technical fallback. The API adapter is thin: it caches heavy offline resources, isolates mutable simulator sessions, validates duplicate/stale execution requests, triggers forecast/plan/execute only through explicit user or timer actions, and reads Stage 6 benchmark outputs without rerunning them.
+- Stage 8 owns the Investment Scenario Lab. It clones baseline/proposal simulator/controller instances, applies proposal-only infrastructure overrides, runs bounded analyses outside Stage 6 outputs, calculates realized metrics from simulator histories, and exports tenant evidence packages with checksums.
 
 ## Mermaid Diagram
 
@@ -52,7 +55,11 @@ flowchart LR
     Sim --> Eval[Evaluation layer]
     Control --> Eval
     Forecast --> Eval
+    Eval --> Invest[Investment layer]
+    Control --> Invest
+    Forecast --> Invest
     Eval --> Report[Reporting layer]
+    Invest --> Report
     Report --> UI[React/FastAPI UI layer]
     Control --> UI
     Sim --> UI

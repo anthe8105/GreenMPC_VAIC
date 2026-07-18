@@ -1,0 +1,45 @@
+schema_version: 1
+
+# Editable demonstration assumptions only.
+# These are not supplier quotations, investment advice, or official DPPA settlement terms.
+defaults:
+  controller_id: deterministic_mpc
+  scenario_id: normal
+  duration_hours: 24
+  terminal_inventory_valuation_vnd_per_kwh: 2000.0
+
+durations:
+  smoke_hours: 6
+  quick_hours: 24
+  evidence_hours: 72
+
+pv:
+  capacity_min_multiplier: 0.5
+  capacity_max_multiplier: 2.0
+  capacity_step_kw: 250.0
+
+battery:
+  energy_min_multiplier: 0.5
+  energy_max_multiplier: 2.0
+  power_min_multiplier: 0.5
+  power_max_multiplier: 2.0
+  energy_step_kwh: 250.0
+  power_step_kw: 100.0
+
+financial:
+  pv_capex_vnd_per_kwp: 14500000.0
+  bess_energy_capex_vnd_per_kwh: 6800000.0
+  bess_power_capex_vnd_per_kw: 2100000.0
+  fixed_implementation_cost_vnd: 250000000.0
+  annual_pv_om_fraction: 0.015
+  annual_bess_om_fraction: 0.020
+  project_life_years: 12
+  annual_operating_days: 300
+  discount_rate: 0.10
+  terminal_battery_valuation_prices_vnd_per_kwh: [1100.0, 1500.0, 2000.0, 2500.0]
+  assumptions_version: investment_demo_v1
+
+outputs:
+  output_directory: data/outputs/stage8_investment
+  cache_directory: data/outputs/stage8_investment/cache
+  export_directory: data/outputs/stage8_investment/exports

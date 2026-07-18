@@ -737,6 +737,15 @@ i.grid { background: #2563eb; }
   background: #f0fdf4;
 }
 
+.investment-saved-grid {
+  grid-template-columns: 1.4fr repeat(4, 1fr);
+}
+
+.empty-row {
+  grid-column: 1 / -1;
+  color: #64748b;
+}
+
 .valuation-select {
   display: block;
   max-width: 300px;
@@ -772,6 +781,198 @@ i.grid { background: #2563eb; }
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
 }
 
+.investment-intro {
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.investment-setup .investment-grid,
+.investment-grid,
+.comparison-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: 24px;
+}
+
+.setup-panel,
+.proposal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.baseline-panel,
+.expected-direction,
+.progress-panel {
+  border: 1px solid #e8edf3;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 18px;
+}
+
+.baseline-panel dl,
+.financial-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.baseline-panel div,
+.financial-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #e8edf3;
+  padding-bottom: 8px;
+}
+
+.baseline-panel dt,
+.financial-list dt,
+.number-field span {
+  color: #64748b;
+}
+
+.baseline-panel dd,
+.financial-list dd {
+  margin: 0;
+  color: #0f172a;
+  font-weight: 750;
+  text-align: right;
+}
+
+.number-field div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.number-field span {
+  font-size: 12px;
+}
+
+.expected-direction {
+  margin-top: 18px;
+}
+
+.progress-head,
+.comparison-row,
+.evidence-toolbar,
+.tenant-evidence-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.progress-track {
+  height: 10px;
+  margin: 14px 0 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.progress-track div {
+  height: 100%;
+  background: #16a34a;
+  border-radius: 999px;
+}
+
+.comparison-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(280px, 0.8fr);
+}
+
+.comparison-grid h3 {
+  margin: 0 0 12px;
+  color: #0f172a;
+}
+
+.comparison-row {
+  padding: 10px 0;
+  border-bottom: 1px solid #e8edf3;
+}
+
+.comparison-row span {
+  color: #64748b;
+}
+
+.comparison-row strong {
+  min-width: 96px;
+  text-align: right;
+}
+
+.source-mix {
+  margin-bottom: 16px;
+}
+
+.source-mix span {
+  display: block;
+  margin-bottom: 7px;
+  color: #64748b;
+}
+
+.source-mix div {
+  display: flex;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.source-mix i {
+  display: block;
+  min-width: 2px;
+}
+
+.evidence-toolbar {
+  margin-bottom: 14px;
+}
+
+.evidence-toolbar label {
+  width: 260px;
+}
+
+.primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: #16a34a;
+  color: #ffffff;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.tenant-evidence-list {
+  display: grid;
+  gap: 8px;
+}
+
+.tenant-evidence-row {
+  flex-wrap: wrap;
+  padding: 12px 0;
+  border-bottom: 1px solid #e8edf3;
+}
+
+.tenant-evidence-row strong {
+  min-width: 220px;
+}
+
+.tenant-evidence-row span {
+  color: #475569;
+}
+
+.alert-banner.error {
+  margin: 12px 0;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  background: #fff1f2;
+  color: #991b1b;
+  padding: 14px 16px;
+}
+
 @media (max-width: 1180px) {
   .product-header,
   .intro-strip,
@@ -788,11 +989,26 @@ i.grid { background: #2563eb; }
   .headline-metrics,
   .insight-row,
   .allocation-legend,
-  .advanced-grid {
+  .advanced-grid,
+  .investment-grid,
+  .comparison-grid,
+  .setup-panel,
+  .proposal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .story-page {
     padding: 18px;
+  }
+}
+
+@media (max-width: 760px) {
+  .headline-metrics,
+  .investment-grid,
+  .comparison-grid,
+  .setup-panel,
+  .proposal-grid,
+  .investment-intro {
+    grid-template-columns: 1fr;
   }
 }

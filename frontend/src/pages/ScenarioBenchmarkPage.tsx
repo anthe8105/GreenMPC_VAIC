@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { listInvestmentAnalyses } from "../api/client";
+import type { InvestmentJobStatus } from "../types/api";
+
 export function ScenarioBenchmarkPage({
   benchmark,
   provenance,
@@ -12,6 +16,10 @@ export function ScenarioBenchmarkPage({
   const rows = Array.isArray(benchmark?.rows) ? benchmark.rows as Array<Record<string, unknown>> : [];
   const data = (provenance?.data ?? {}) as Record<string, unknown>;
   const disclosures = Array.isArray(data.disclosures) ? data.disclosures as string[] : [];
+  const [analyses, setAnalyses] = useState<InvestmentJobStatus[]>([]);
+  useEffect(() => {
+    void listInvestmentAnalyses().then((payload) => setAnalyses(payload.analyses ?? [])).catch(() => setAnalyses([]));
+  }, []);
   return (
     <main className="story-page">
       <section className="story-section">
@@ -28,6 +36,28 @@ export function ScenarioBenchmarkPage({
             <option value={2500}>2,500 VND/kWh</option>
           </select>
         </label>
+      </section>
+
+      <section className="story-section">
+        <h2>Saved investment analyses</h2>
+        <p>Completed Stage 8 analyses are loaded from the local Investment Lab cache. Partial or failed jobs are not accepted as completed evidence.</p>
+        <div className="benchmark-grid investment-saved-grid" role="table" aria-label="saved investment analyses">
+          <div className="table-head">Analysis</div>
+          <div className="table-head">Status</div>
+          <div className="table-head">Completed hours</div>
+          <div className="table-head">Elapsed</div>
+          <div className="table-head">Cache</div>
+          {analyses.length === 0 && <div className="empty-row">No completed investment analyses in this runtime yet.</div>}
+          {analyses.map((row) => (
+            <>
+              <div>{row.analysis_id}</div>
+              <div>{row.status}</div>
+              <div>{row.completed_hours} / {row.requested_hours}</div>
+              <div>{Number(row.elapsed_seconds ?? 0).toFixed(1)}s</div>
+              <div>{row.loaded_from_cache ? "cached" : "runtime"}</div>
+            </>
+          ))}
+        </div>
       </section>
 
       <section className="story-section">

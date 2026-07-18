@@ -52,6 +52,62 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+## Fresh Clone Demo Setup
+
+Use these commands for a clean teammate checkout. The repository includes the compact processed runtime data, trained forecasting models, controller configs, and read-only Stage 6 evidence needed by the local React/FastAPI demo.
+
+```bash
+git clone <repository-url>
+cd <repository>
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+python -m pip install -e . --no-build-isolation
+
+python scripts/verify_runtime_assets.py
+```
+
+Windows PowerShell activation:
+
+```powershell
+.\.venv\Scripts\activate
+```
+
+Build the frontend and launch the single-URL local demo:
+
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+
+python scripts/run_command_center.py
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000
+```
+
+Bounded fresh-clone smoke check:
+
+```bash
+python scripts/smoke_fresh_clone.py
+```
+
+Git LFS is not required for the current runtime assets. The largest required file is the processed tenant-hourly CSV, which remains below normal GitHub file-size limits.
+
+Common setup problems:
+
+- Missing Node.js: install a current LTS Node.js release, then rerun `npm install` inside `frontend/`.
+- Missing model files: run `python scripts/verify_runtime_assets.py` to identify the missing artifact path.
+- Incompatible Python environment: use Python 3.11 or 3.12 and reinstall with `python -m pip install -e . --no-build-isolation`.
+- Port 8000 already in use: stop the existing local process or run `python -m uvicorn backend.main:app --port 8001` for development.
+- Frontend not built: run `cd frontend && npm run build` before `python scripts/run_command_center.py`.
+
 ## Tests
 
 ```bash
@@ -182,6 +238,19 @@ python scripts/verify_web_control_room.py
 
 The React/FastAPI interface is the primary competition interface. It provides Manual Approval, Auto Pilot Demo, and Shadow Mode workflows, all backed by the approved simulator, forecasters, controllers, action validation, and read-only Stage 6 evidence.
 
+## Investment Scenario Lab
+
+Stage 8 extends the React/FastAPI product with an Investment Lab:
+
+```bash
+python -m pytest tests/test_investment_lab.py -q -x
+cd frontend && npm test -- --run
+cd frontend && npm run build
+python scripts/verify_stage8.py
+```
+
+The lab compares baseline infrastructure against a proposed PV/BESS/DPPA configuration using cloned digital-twin runs. It produces realized technical metrics, illustrative financial metrics, and a tenant renewable evidence ZIP. It does not retrain models, rerun Stage 6 benchmarks, mutate global configs, or claim official renewable certification.
+
 ## Streamlit Fallback
 
 ```bash
@@ -224,4 +293,4 @@ This repository does not use actual VRG operational data, actual VRG tenant data
 
 ## Future Stages
 
-Stages 0-7 are complete in this working tree. Stage 8 will add investment and renewable ledger workflows. Stage 9 will harden the submission package.
+Stages 0-8 are complete in this working tree. Stage 9 will harden the submission package.

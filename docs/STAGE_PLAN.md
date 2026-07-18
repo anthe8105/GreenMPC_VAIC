@@ -32,9 +32,9 @@ Run receding-horizon benchmarks for `rule_based`, `deterministic_mpc`, and `gree
 
 Implemented the offline Live Control Room. The primary competition interface is a React + FastAPI industrial command center, while Streamlit remains available as a technical fallback. Stage 7 includes cached resources, isolated mutable sessions, deterministic reset, Manual Approval, bounded Auto Pilot Demo, Shadow Mode, forecast/replan/execute workflow, controller selection, scenario events, current KPIs, topology, plan diagnostics, read-only benchmark evidence, terminal inventory-adjusted cost diagnostics, and provenance disclosures. Stage 7 does not implement investment simulation or final tenant reports.
 
-## Stage 8: Investment Lab and Tenant Renewable Ledger
+## Stage 8: Investment Lab and Tenant Renewable Evidence
 
-Add cloned-state investment scenarios, tenant renewable-energy allocation, CSV export, summaries, and audit-ready HTML evidence reports.
+Implemented an offline React/FastAPI Investment Lab that compares immutable baseline infrastructure against a proposal using cloned digital-twin analyses. Stage 8 includes PV capacity scaling, BESS/DPPA/target overrides, asynchronous bounded jobs, realized technical metrics, illustrative financial metrics, tenant source-level renewable accounting, and checksum-backed evidence ZIP exports. It does not provide investment advice, legal DPPA settlement, official certification, model retraining, or Stage 9 submission hardening.
 
 ## Stage 9: Safety Hardening and Submission Package
 

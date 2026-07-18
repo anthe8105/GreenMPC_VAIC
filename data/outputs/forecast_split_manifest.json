@@ -1,0 +1,82 @@
+{
+  "first_usable_origin": "2013-01-09 00:00:00+07:00",
+  "last_usable_origin": "2013-12-31 22:00:00+07:00",
+  "train_target_start": "2013-01-09 01:00:00+07:00",
+  "train_target_end": "2013-09-15 20:00:00+07:00",
+  "validation_target_start": "2013-09-15 21:00:00+07:00",
+  "validation_target_end": "2013-11-08 09:00:00+07:00",
+  "test_target_start": "2013-11-08 10:00:00+07:00",
+  "test_target_end": "2013-12-31 23:00:00+07:00",
+  "sample_counts_by_task": {
+    "('load', 'test')": 38580,
+    "('load', 'train')": 179805,
+    "('load', 'validation')": 38550
+  },
+  "sample_counts_by_horizon": {
+    "(1, 'test')": 6430,
+    "(1, 'train')": 29980,
+    "(1, 'validation')": 6425,
+    "(2, 'test')": 6430,
+    "(2, 'train')": 29975,
+    "(2, 'validation')": 6425,
+    "(3, 'test')": 6430,
+    "(3, 'train')": 29970,
+    "(3, 'validation')": 6425,
+    "(4, 'test')": 6430,
+    "(4, 'train')": 29965,
+    "(4, 'validation')": 6425,
+    "(5, 'test')": 6430,
+    "(5, 'train')": 29960,
+    "(5, 'validation')": 6425,
+    "(6, 'test')": 6430,
+    "(6, 'train')": 29955,
+    "(6, 'validation')": 6425
+  },
+  "excluded_warm_up_hours": 168,
+  "excluded_boundary_hours": 6,
+  "solar": {
+    "first_usable_origin": "2013-01-09 00:00:00+07:00",
+    "last_usable_origin": "2013-12-31 22:00:00+07:00",
+    "train_target_start": "2013-01-09 01:00:00+07:00",
+    "train_target_end": "2013-09-15 20:00:00+07:00",
+    "validation_target_start": "2013-09-15 21:00:00+07:00",
+    "validation_target_end": "2013-11-08 09:00:00+07:00",
+    "test_target_start": "2013-11-08 10:00:00+07:00",
+    "test_target_end": "2013-12-31 23:00:00+07:00",
+    "sample_counts_by_task": {
+      "('solar', 'test')": 7716,
+      "('solar', 'train')": 35961,
+      "('solar', 'validation')": 7710
+    },
+    "sample_counts_by_horizon": {
+      "(1, 'test')": 1286,
+      "(1, 'train')": 5996,
+      "(1, 'validation')": 1285,
+      "(2, 'test')": 1286,
+      "(2, 'train')": 5995,
+      "(2, 'validation')": 1285,
+      "(3, 'test')": 1286,
+      "(3, 'train')": 5994,
+      "(3, 'validation')": 1285,
+      "(4, 'test')": 1286,
+      "(4, 'train')": 5993,
+      "(4, 'validation')": 1285,
+      "(5, 'test')": 1286,
+      "(5, 'train')": 5992,
+      "(5, 'validation')": 1285,
+      "(6, 'test')": 1286,
+      "(6, 'train')": 5991,
+      "(6, 'validation')": 1285
+    },
+    "excluded_warm_up_hours": 168,
+    "excluded_boundary_hours": 6
+  },
+  "dataset_version": "stage2_v1",
+  "dataset_fingerprint": {
+    "tenant_hourly_csv_sha256": "93eb3df8c8bdc6302030c8477a66e6b81acc87ef464bc8a3d107ae419ee53590",
+    "park_hourly_csv_sha256": "f883bb0bcae240a2699209f115fd51f4329612f9386cd62c47bbb19d083eacff",
+    "selected_tenant_profiles_csv_sha256": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
+    "selected_profiles_lock_yaml_sha256": "dfab4561ef646fa1b36f492837042f8d278be966aae2ea75f4c70a50a55a6639",
+    "forecasting_config_yaml_sha256": "90d444efcbbe1964abc68e92feaf10a1abd1ab5b597256c7ec6c054ed4806b83"
+  }
+}

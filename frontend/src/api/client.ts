@@ -1,4 +1,4 @@
-import type { ApiResponse, ControllerId, OperationMode, ScenarioId, SessionResponse } from "../types/api";
+import type { ApiResponse, ControllerId, InvestmentCandidate, InvestmentDefaults, InvestmentFinancial, InvestmentJobStatus, InvestmentResult, OperationMode, ScenarioId, SessionResponse } from "../types/api";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 
@@ -47,6 +47,33 @@ export async function loadBenchmark(valuationPrice: number): Promise<Record<stri
 
 export async function loadProvenance(): Promise<Record<string, unknown>> {
   return get("/api/v1/provenance");
+}
+
+export async function loadInvestmentDefaults(): Promise<InvestmentDefaults> {
+  return get("/api/v1/investment/defaults");
+}
+
+export async function createInvestmentAnalysis(payload: {
+  scenario_id: ScenarioId;
+  controller_id: ControllerId;
+  duration_hours: number;
+  candidate: InvestmentCandidate;
+  financial: InvestmentFinancial;
+  request_id: string;
+}): Promise<InvestmentJobStatus> {
+  return post("/api/v1/investment/analyses", payload);
+}
+
+export async function getInvestmentStatus(analysisId: string): Promise<InvestmentJobStatus> {
+  return get(`/api/v1/investment/analyses/${analysisId}`);
+}
+
+export async function getInvestmentResult(analysisId: string): Promise<InvestmentResult> {
+  return get(`/api/v1/investment/analyses/${analysisId}/result`);
+}
+
+export async function listInvestmentAnalyses(): Promise<{ analyses: InvestmentJobStatus[] }> {
+  return get("/api/v1/investment/analyses");
 }
 
 function envelope(run_id: string, expected_timestamp: string, request_id: string) {

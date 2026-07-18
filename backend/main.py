@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from backend.routers import benchmark, control, health, provenance, session
+from backend.routers import benchmark, control, health, investment, provenance, session
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FRONTEND_DIST = PROJECT_ROOT / "frontend/dist"
@@ -29,6 +29,7 @@ def create_app() -> FastAPI:
     app.include_router(session.router)
     app.include_router(control.router)
     app.include_router(benchmark.router)
+    app.include_router(investment.router)
     app.include_router(provenance.router)
 
     @app.exception_handler(Exception)

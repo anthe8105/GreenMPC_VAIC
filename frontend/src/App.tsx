@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { LiveTwinPage } from "./pages/LiveTwinPage";
 import { ScenarioBenchmarkPage } from "./pages/ScenarioBenchmarkPage";
+import { InvestmentLabPage } from "./pages/InvestmentLabPage";
 import { useCommandCenter } from "./hooks/useCommandCenter";
 import { loadBenchmark, loadProvenance } from "./api/client";
 import { controllerLabel, scenarioLabel } from "./types/labels";
 
-type Page = "live" | "results";
+type Page = "live" | "investment" | "results";
 
 export function App() {
   const command = useCommandCenter();
@@ -42,6 +43,7 @@ export function App() {
         </div>
         <nav className="top-nav" aria-label="Primary navigation">
           <button className={page === "live" ? "active" : ""} onClick={() => setPage("live")}>Live Demo</button>
+          <button className={page === "investment" ? "active" : ""} onClick={() => setPage("investment")}>Investment Lab</button>
           <button className={page === "results" ? "active" : ""} onClick={() => setPage("results")}>Results and Evidence</button>
         </nav>
         <div className="header-status">
@@ -98,6 +100,8 @@ export function App() {
           error={command.error}
         />
       )}
+
+      {page === "investment" && <InvestmentLabPage />}
 
       {page === "results" && (
         <ScenarioBenchmarkPage

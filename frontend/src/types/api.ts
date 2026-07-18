@@ -104,3 +104,72 @@ export interface PlanRow {
   transformer_capacity_kw: number;
   battery_soc_end: number;
 }
+
+export interface InvestmentCandidate {
+  pv_capacity_kw: number;
+  battery_energy_capacity_kwh: number;
+  battery_power_kw: number;
+  minimum_soc_fraction: number;
+  initial_soc_fraction: number;
+  dppa_available_kw: number;
+  dppa_price_vnd_per_kwh: number;
+  dppa_availability_multiplier: number;
+  renewable_target_fraction: number;
+  transformer_capacity_kw: number;
+  terminal_inventory_valuation_vnd_per_kwh: number;
+}
+
+export interface InvestmentFinancial {
+  pv_capex_vnd_per_kwp: number;
+  bess_energy_capex_vnd_per_kwh: number;
+  bess_power_capex_vnd_per_kw: number;
+  fixed_implementation_cost_vnd: number;
+  annual_pv_om_fraction: number;
+  annual_bess_om_fraction: number;
+  project_life_years: number;
+  annual_operating_days: number;
+  discount_rate: number;
+  assumptions_version: string;
+}
+
+export interface InvestmentDefaults {
+  baseline: InvestmentCandidate;
+  proposal: InvestmentCandidate;
+  financial: InvestmentFinancial;
+  defaults: Record<string, number | string>;
+  durations: Record<string, number>;
+  valuation_prices: number[];
+  disclosure: string;
+}
+
+export interface InvestmentJobStatus {
+  analysis_id: string;
+  status: "queued" | "running" | "completed" | "failed" | "cancelled";
+  progress_percentage: number;
+  current_phase: string;
+  completed_hours: number;
+  requested_hours: number;
+  elapsed_seconds: number;
+  eta_seconds?: number | null;
+  error?: string | null;
+  loaded_from_cache?: boolean;
+  estimated_work_units?: number;
+}
+
+export interface InvestmentResult {
+  analysis_id: string;
+  scenario_id: ScenarioId;
+  controller_id: ControllerId;
+  duration_hours: number;
+  completed_successfully: boolean;
+  completed_hours: number;
+  baseline_configuration: InvestmentCandidate;
+  proposal_configuration: InvestmentCandidate;
+  technical_metrics: Record<string, any>;
+  financial_metrics: Record<string, any>;
+  tenant_summary: Array<Record<string, any>>;
+  evidence_zip_path: string;
+  loaded_from_cache: boolean;
+  runtime_seconds: number;
+  assumptions: string[];
+}

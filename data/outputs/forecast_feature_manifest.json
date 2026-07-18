@@ -1,0 +1,1293 @@
+{
+  "load": {
+    "categorical_columns": [
+      "tenant_id",
+      "archetype",
+      "scenario_industry",
+      "current_tariff_period",
+      "target_tariff_period"
+    ],
+    "feature_columns": [
+      "tenant_id",
+      "archetype",
+      "scenario_industry",
+      "current_load_kw",
+      "target_p95_load_kw",
+      "scaling_factor",
+      "tenant_load_lag_1h_kw",
+      "tenant_load_lag_2h_kw",
+      "tenant_load_lag_3h_kw",
+      "tenant_load_lag_6h_kw",
+      "tenant_load_lag_12h_kw",
+      "tenant_load_lag_24h_kw",
+      "tenant_load_lag_48h_kw",
+      "tenant_load_lag_168h_kw",
+      "tenant_load_rolling_mean_3h_kw",
+      "tenant_load_rolling_mean_6h_kw",
+      "tenant_load_rolling_mean_24h_kw",
+      "tenant_load_rolling_mean_168h_kw",
+      "tenant_load_rolling_std_6h_kw",
+      "tenant_load_rolling_std_24h_kw",
+      "tenant_load_rolling_std_168h_kw",
+      "tenant_load_rolling_min_24h_kw",
+      "tenant_load_rolling_max_24h_kw",
+      "current_park_load_kw",
+      "current_pv_available_kw",
+      "current_temperature_c",
+      "current_relative_humidity_pct",
+      "current_precipitation",
+      "current_wind_speed",
+      "current_solar_resource_raw",
+      "current_grid_price_vnd_per_kwh",
+      "current_tariff_period",
+      "park_load_lag_1h_kw",
+      "park_load_lag_24h_kw",
+      "park_load_lag_168h_kw",
+      "temperature_lag_1h",
+      "humidity_lag_1h",
+      "precipitation_lag_1h",
+      "wind_lag_1h",
+      "solar_resource_lag_1h",
+      "temperature_lag_2h",
+      "humidity_lag_2h",
+      "precipitation_lag_2h",
+      "wind_lag_2h",
+      "solar_resource_lag_2h",
+      "temperature_lag_3h",
+      "humidity_lag_3h",
+      "precipitation_lag_3h",
+      "wind_lag_3h",
+      "solar_resource_lag_3h",
+      "temperature_lag_6h",
+      "humidity_lag_6h",
+      "precipitation_lag_6h",
+      "wind_lag_6h",
+      "solar_resource_lag_6h",
+      "temperature_lag_24h",
+      "humidity_lag_24h",
+      "precipitation_lag_24h",
+      "wind_lag_24h",
+      "solar_resource_lag_24h",
+      "horizon_hours",
+      "target_hour",
+      "target_day_of_week",
+      "target_day_of_month",
+      "target_month",
+      "target_is_weekend",
+      "target_tariff_period",
+      "target_hour_sin",
+      "target_hour_cos",
+      "target_day_of_week_sin",
+      "target_day_of_week_cos",
+      "target_day_of_year_sin",
+      "target_day_of_year_cos"
+    ],
+    "features": [
+      {
+        "allowed": true,
+        "feature_name": "tenant_id",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "archetype",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "scenario_industry",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_load_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_p95_load_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "scaling_factor",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_1h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_2h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_3h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_6h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_12h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -12
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_48h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -48
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_lag_168h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "tenant-specific lag",
+        "source_timestamp_offset_hours": -168
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_mean_3h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_mean_6h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_mean_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_mean_168h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_std_6h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_std_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_std_168h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_min_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "tenant_load_rolling_max_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_park_load_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_pv_available_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_temperature_c",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_relative_humidity_pct",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_precipitation",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_wind_speed",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_solar_resource_raw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_grid_price_vnd_per_kwh",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_tariff_period",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "park_load_lag_1h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "park lag",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "park_load_lag_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "park lag",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "park_load_lag_168h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "park lag",
+        "source_timestamp_offset_hours": -168
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "horizon_hours",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_hour",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_week",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_month",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_month",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_is_weekend",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_tariff_period",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_hour_sin",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_hour_cos",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_week_sin",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_week_cos",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_year_sin",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_year_cos",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      }
+    ],
+    "leakage_checks": {
+      "future_actual_weather_absent": true,
+      "preprocessing_fit_training_only": true,
+      "quantile_reconciliation_uses_no_labels": true,
+      "rolling_features_end_at_origin": true,
+      "runtime_event_catalog_absent": true,
+      "target_column_excluded": true
+    },
+    "target_column": "target_load_kw"
+  },
+  "solar": {
+    "categorical_columns": [
+      "target_tariff_period"
+    ],
+    "feature_columns": [
+      "current_pv_available_kw",
+      "current_solar_resource_raw",
+      "current_temperature_c",
+      "current_relative_humidity_pct",
+      "current_precipitation",
+      "current_wind_speed",
+      "installed_pv_capacity_kw",
+      "pv_lag_1h_kw",
+      "solar_resource_lag_1h",
+      "pv_lag_2h_kw",
+      "solar_resource_lag_2h",
+      "pv_lag_3h_kw",
+      "solar_resource_lag_3h",
+      "pv_lag_6h_kw",
+      "solar_resource_lag_6h",
+      "pv_lag_24h_kw",
+      "solar_resource_lag_24h",
+      "pv_lag_48h_kw",
+      "solar_resource_lag_48h",
+      "pv_lag_168h_kw",
+      "solar_resource_lag_168h",
+      "temperature_lag_1h",
+      "humidity_lag_1h",
+      "precipitation_lag_1h",
+      "wind_lag_1h",
+      "temperature_lag_2h",
+      "humidity_lag_2h",
+      "precipitation_lag_2h",
+      "wind_lag_2h",
+      "temperature_lag_3h",
+      "humidity_lag_3h",
+      "precipitation_lag_3h",
+      "wind_lag_3h",
+      "temperature_lag_6h",
+      "humidity_lag_6h",
+      "precipitation_lag_6h",
+      "wind_lag_6h",
+      "temperature_lag_24h",
+      "humidity_lag_24h",
+      "precipitation_lag_24h",
+      "wind_lag_24h",
+      "pv_rolling_mean_3h_kw",
+      "solar_resource_rolling_mean_3h",
+      "pv_rolling_mean_6h_kw",
+      "solar_resource_rolling_mean_6h",
+      "pv_rolling_mean_24h_kw",
+      "solar_resource_rolling_mean_24h",
+      "pv_rolling_std_6h_kw",
+      "solar_resource_rolling_std_6h",
+      "pv_rolling_std_24h_kw",
+      "solar_resource_rolling_std_24h",
+      "horizon_hours",
+      "target_hour",
+      "target_day_of_week",
+      "target_day_of_month",
+      "target_month",
+      "target_is_weekend",
+      "target_tariff_period",
+      "target_hour_sin",
+      "target_hour_cos",
+      "target_day_of_week_sin",
+      "target_day_of_week_cos",
+      "target_day_of_year_sin",
+      "target_day_of_year_cos",
+      "target_is_daylight",
+      "target_day_of_year"
+    ],
+    "features": [
+      {
+        "allowed": true,
+        "feature_name": "current_pv_available_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_solar_resource_raw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_temperature_c",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_relative_humidity_pct",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_precipitation",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "current_wind_speed",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "installed_pv_capacity_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_lag_1h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "PV lag",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "solar resource lag",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_lag_2h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "PV lag",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "solar resource lag",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_lag_3h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "PV lag",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "solar resource lag",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_lag_6h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "PV lag",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "solar resource lag",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_lag_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "PV lag",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "solar resource lag",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_lag_48h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "PV lag",
+        "source_timestamp_offset_hours": -48
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_48h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "solar resource lag",
+        "source_timestamp_offset_hours": -48
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_lag_168h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "PV lag",
+        "source_timestamp_offset_hours": -168
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_lag_168h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "solar resource lag",
+        "source_timestamp_offset_hours": -168
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_1h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -1
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_2h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -2
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -3
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -6
+      },
+      {
+        "allowed": true,
+        "feature_name": "temperature_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "humidity_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "precipitation_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "wind_lag_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "weather lag available at origin",
+        "source_timestamp_offset_hours": -24
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_rolling_mean_3h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_rolling_mean_3h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_rolling_mean_6h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_rolling_mean_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_rolling_mean_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_rolling_mean_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_rolling_std_6h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_rolling_std_6h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "pv_rolling_std_24h_kw",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "solar_resource_rolling_std_24h",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "rolling window ending at origin",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "horizon_hours",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": false,
+        "reason": "current observation or static metadata",
+        "source_timestamp_offset_hours": 0
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_hour",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_week",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_month",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_month",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_is_weekend",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_tariff_period",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_hour_sin",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_hour_cos",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_week_sin",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_week_cos",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_year_sin",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_year_cos",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_is_daylight",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      },
+      {
+        "allowed": true,
+        "feature_name": "target_day_of_year",
+        "known_at_forecast_origin": true,
+        "known_calendar_metadata": true,
+        "reason": "known target calendar metadata",
+        "source_timestamp_offset_hours": 1
+      }
+    ],
+    "leakage_checks": {
+      "future_actual_weather_absent": true,
+      "preprocessing_fit_training_only": true,
+      "quantile_reconciliation_uses_no_labels": true,
+      "rolling_features_end_at_origin": true,
+      "runtime_event_catalog_absent": true,
+      "target_column_excluded": true
+    },
+    "target_column": "target_pv_available_kw"
+  }
+}

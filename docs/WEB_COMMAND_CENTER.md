@@ -20,6 +20,13 @@ Heavy immutable resources are cached once per backend process. Mutable simulator
 - `POST /api/v1/sessions/{session_id}/control-cycle`
 - `GET /api/v1/benchmark`
 - `GET /api/v1/provenance`
+- `GET /api/v1/investment/defaults`
+- `POST /api/v1/investment/analyses`
+- `GET /api/v1/investment/analyses`
+- `GET /api/v1/investment/analyses/{analysis_id}`
+- `GET /api/v1/investment/analyses/{analysis_id}/result`
+- `POST /api/v1/investment/analyses/{analysis_id}/cancel`
+- `GET /api/v1/investment/analyses/{analysis_id}/export`
 
 Every mutating request carries `request_id`, `run_id`, and `expected_timestamp`. Duplicate and stale execution requests are rejected or returned idempotently without advancing the simulator twice.
 
@@ -53,6 +60,10 @@ python scripts/run_command_center.py
 ```
 
 After dependencies and frontend assets are installed, the runtime is offline and serves one local URL.
+
+## Investment Lab
+
+The Investment Lab is the Stage 8 product page. It guides users through defining a target, configuring a proposal, running a bounded digital-twin analysis, comparing baseline against proposal, and exporting tenant renewable evidence. The backend uses in-memory jobs and writes completed analyses under `data/outputs/stage8_investment`. Stage 6 benchmark files remain read-only.
 
 ## Disclosures
 
