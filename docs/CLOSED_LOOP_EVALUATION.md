@@ -23,3 +23,27 @@ Stress events are synthetic and unannounced. They affect realized simulator load
 KPIs are calculated from executed simulator history, not planned MPC objectives. Reported operating-cost proxy includes grid energy cost, DPPA energy cost, and battery degradation proxy. MPC objective penalties are control preferences, not electricity bills.
 
 These benchmark results use hybrid public/scenario data and are not actual VRG operating savings.
+
+## Audit Corrections
+
+Benchmark cache reuse is exact-match only. The manifest records requested and
+completed hours, run mode, scenarios, controllers, timestamps, event
+definitions, event visibility, dataset/model/MPC/evaluation fingerprints,
+initial battery state, random seed, and a Stage 6 software-version identifier.
+A 24-hour quick run is not compatible with a 72-hour full request.
+
+The rule-based baseline writes `data/outputs/stage6_audit/rule_based_battery_trace.csv`.
+Each row records tariff period, SOC, charge/discharge headroom, load, PV, DPPA,
+transformer headroom, selected branch, battery power, and the reason for using
+or not using the battery. The controller remains current-observation only and
+uses no forecasts or optimization.
+
+MPC fallback events write `data/outputs/stage6_audit/conservative_fallbacks.csv`.
+Fallbacks are counted separately from successful GreenMPC planning and include
+solver status, selected conservative load/PV values, fallback action,
+validation status, and an inferred hard-constraint diagnostic.
+
+Forecast diagnostics compare forecast origin `t` to realized event-adjusted
+targets at `t+h` for horizons 1 through 6. The diagnostics include actual
+values, P10/P50/P90, absolute error, bias, interval width, and interval
+coverage.

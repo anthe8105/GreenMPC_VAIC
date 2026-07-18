@@ -17,6 +17,7 @@ def main() -> int:
     parser.add_argument("--scenario", choices=["normal", "cloudy", "production_shift", "combined_stress"])
     parser.add_argument("--hours", type=int)
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--profile", action="store_true", help="Print live per-step timing for bottleneck diagnosis.")
     parser.add_argument("--status", action="store_true")
     args = parser.parse_args()
     cfg = load_evaluation_config(PROJECT_ROOT / "configs/evaluation.yaml")
@@ -25,7 +26,7 @@ def main() -> int:
     if args.status:
         print(json.dumps({"output_directory": str(output_dir), "manifest_exists": manifest.exists(), "manifest": json.loads(manifest.read_text()) if manifest.exists() else None}, indent=2))
         return 0
-    summary = run_benchmark(quick=args.quick, hours=args.hours, scenario_filter=args.scenario, force=args.force)
+    summary = run_benchmark(quick=args.quick, hours=args.hours, scenario_filter=args.scenario, force=args.force, profile=args.profile)
     print(json.dumps(summary, indent=2))
     return 0
 

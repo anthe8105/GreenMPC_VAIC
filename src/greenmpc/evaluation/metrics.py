@@ -61,6 +61,72 @@ def controller_metrics(simulator, scenario_id: str, controller_id: str, fallback
     }
 
 
+def recompute_metrics_from_histories(history_dir) -> dict:
+    """Independently recompute realized KPIs from exported history CSV files."""
+
+    history_dir = pd.io.common.stringify_path(history_dir)
+    park = pd.read_csv(f"{history_dir}/park_energy.csv")
+    tenant = pd.read_csv(f"{history_dir}/tenant_energy.csv")
+    actions = pd.read_csv(f"{history_dir}/actions.csv")
+    if park.empty or tenant.empty:
+        raise ValueError(f"missing detailed simulator history in {history_dir}")
+    load = float(tenant["effective_load_kwh"].sum())
+    renewable = float(tenant["total_renewable_delivery_kwh"].sum())
+    throughput = float((park["pv_to_battery_kwh"] + park["dppa_to_battery_kwh"] + park["total_battery_to_tenants_kwh"]).sum())
+    result = {
+        "completed_steps": int(len(park)),
+        "action_count": int(len(actions)),
+        "tenant_energy_rows": int(len(tenant)),
+        "total_load_served_kwh": load,
+        "total_realized_operating_cost_proxy_vnd": float(park["step_operating_cost_vnd"].sum()),
+        "park_renewable_share": 0.0 if load <= 0 else renewable / load,
+        "pv_curtailment_kwh": float(park["pv_curtailment_kwh"].sum()),
+        "battery_throughput_kwh": throughput,
+        "peak_grid_import_kw": float(park["total_grid_to_tenants_kwh"].max()),
+        "peak_external_import_kw": float(park["external_import_kwh"].max()),
+        "final_soc": float(park["battery_soc_after"].iloc[-1]),
+        "minimum_soc": float(park["battery_soc_after"].min()),
+        "maximum_soc": float(park["battery_soc_after"].max()),
+        "fallback_count": int((actions["controller_name"] == "safe_reference_fallback").sum()) if "controller_name" in actions.columns else 0,
+    }
+    for tenant_id, group in tenant.groupby("tenant_id"):
+        target = float(group["renewable_target_fraction"].iloc[0])
+        tenant_load = float(group["effective_load_kwh"].sum())
+        tenant_renewable = float(group["total_renewable_delivery_kwh"].sum())
+        result[f"renewable_shortfall_{tenant_id}_kwh"] = max(0.0, target * tenant_load - tenant_renewable)
+    result["renewable_shortfall_total_kwh"] = sum(value for key, value in result.items() if key.startswith("renewable_shortfall_") and key.endswith("_kwh"))
+    return result
+
+
+def reconcile_metric_row(summary_row: pd.Series, recomputed: dict, tolerance: float = 1e-6) -> list[str]:
+    """Return mismatch messages between summary metrics and detailed histories."""
+
+    fields = [
+        "completed_steps",
+        "total_load_served_kwh",
+        "total_realized_operating_cost_proxy_vnd",
+        "park_renewable_share",
+        "pv_curtailment_kwh",
+        "battery_throughput_kwh",
+        "peak_grid_import_kw",
+        "peak_external_import_kw",
+        "final_soc",
+        "minimum_soc",
+        "maximum_soc",
+        "renewable_shortfall_total_kwh",
+        "fallback_count",
+    ]
+    errors: list[str] = []
+    for field in fields:
+        if field not in summary_row or field not in recomputed:
+            continue
+        left = float(summary_row[field])
+        right = float(recomputed[field])
+        if abs(left - right) > tolerance * max(1.0, abs(left), abs(right)):
+            errors.append(f"{field}: summary={left}, recomputed={right}")
+    return errors
+
+
 def paired_comparisons(metrics: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for scenario_id, group in metrics.groupby("scenario_id"):

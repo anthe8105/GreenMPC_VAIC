@@ -172,12 +172,14 @@ class ForecastService:
         key = _load_cache_key(tenant, park)
         if key not in self._load_feature_cache:
             self._load_feature_cache[key] = build_load_features(tenant, park, self.cfg).frame
+            _trim_cache(self._load_feature_cache, max_entries=4)
         return self._load_feature_cache[key]
 
     def _cached_solar_features(self, park: pd.DataFrame) -> pd.DataFrame:
         key = _park_cache_key(park)
         if key not in self._solar_feature_cache:
             self._solar_feature_cache[key] = build_solar_features(park, self.cfg).frame
+            _trim_cache(self._solar_feature_cache, max_entries=4)
         return self._solar_feature_cache[key]
 
 
@@ -202,7 +204,7 @@ def _validate_quantiles(df: pd.DataFrame) -> None:
         raise ForecastDataError("forecast quantiles are not ordered")
 
 
-def _load_cache_key(tenant: pd.DataFrame, park: pd.DataFrame) -> tuple[int, int, str, str, str, str]:
+def _load_cache_key(tenant: pd.DataFrame, park: pd.DataFrame) -> tuple[int, int, str, str, str, str, str, str]:
     tenant_ts = pd.to_datetime(tenant["timestamp_local"])
     park_ts = pd.to_datetime(park["timestamp_local"])
     return (
@@ -212,13 +214,30 @@ def _load_cache_key(tenant: pd.DataFrame, park: pd.DataFrame) -> tuple[int, int,
         str(tenant_ts.max()),
         str(park_ts.min()),
         str(park_ts.max()),
+        _frame_hash(tenant, ["timestamp_local", "tenant_id", "load_kw", "load_kwh"]),
+        _frame_hash(park, ["timestamp_local", "park_load_kw", "park_load_kwh", "pv_available_kw", "pv_available_kwh", "dppa_available_kw"]),
     )
 
 
-def _park_cache_key(park: pd.DataFrame) -> tuple[int, str, str]:
+def _park_cache_key(park: pd.DataFrame) -> tuple[int, str, str, str]:
     park_ts = pd.to_datetime(park["timestamp_local"])
     return (
         len(park),
         str(park_ts.min()),
         str(park_ts.max()),
+        _frame_hash(park, ["timestamp_local", "pv_available_kw", "pv_available_kwh", "dppa_available_kw"]),
     )
+
+
+def _frame_hash(frame: pd.DataFrame, columns: list[str]) -> str:
+    subset = frame[columns].copy()
+    for column in subset.columns:
+        if "timestamp" in column:
+            subset[column] = pd.to_datetime(subset[column]).astype("int64")
+    values = pd.util.hash_pandas_object(subset, index=False).values
+    return str(pd.Series(values).sum())
+
+
+def _trim_cache(cache: dict, max_entries: int) -> None:
+    while len(cache) > max_entries:
+        cache.pop(next(iter(cache)))
