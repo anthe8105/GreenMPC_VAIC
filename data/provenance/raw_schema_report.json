@@ -1,0 +1,119 @@
+{
+  "nasa_power_hourly": {
+    "columns": [
+      "YEAR",
+      "MO",
+      "DY",
+      "HR",
+      "ALLSKY_SFC_SW_DWN",
+      "T2M",
+      "RH2M",
+      "PRECTOTCORR",
+      "WS10M"
+    ],
+    "coverage_includes_requested_period": true,
+    "expected_parameters_present": true,
+    "missing_value_sentinel_counts": {
+      "ALLSKY_SFC_SW_DWN": 0,
+      "DY": 0,
+      "HR": 0,
+      "MO": 0,
+      "PRECTOTCORR": 0,
+      "RH2M": 0,
+      "T2M": 0,
+      "WS10M": 0,
+      "YEAR": 0
+    },
+    "path": "/Users/anthe/Documents/VAIC 2026/data/raw/nasa_power/nasa_power_hourly_2013_utc.csv",
+    "raw_header_preserved": true,
+    "requested_end_date": "2013-12-31",
+    "requested_start_date": "2013-01-01",
+    "row_count": 8760,
+    "time_columns": [
+      "YEAR",
+      "MO",
+      "DY",
+      "HR"
+    ],
+    "time_standard": "UTC",
+    "validation_level": "structural"
+  },
+  "uci_electricity_load_diagrams": {
+    "complete_statistical_validation": false,
+    "decimal_separator_behavior": "comma decimal values observed or accepted",
+    "delimiter": ";",
+    "encoding": "utf-8-sig",
+    "large_file_extracted": false,
+    "member_count": 3,
+    "members": [
+      "LD2011_2014.txt",
+      "__MACOSX/",
+      "__MACOSX/._LD2011_2014.txt"
+    ],
+    "numeric_client_values_in_first_20": 20,
+    "path": "/Users/anthe/Documents/VAIC 2026/data/raw/uci_electricity_load_diagrams/electricityloaddiagrams20112014.zip",
+    "primary_member": "LD2011_2014.txt",
+    "sample_client_column_count": 370,
+    "sample_column_count": 371,
+    "sample_line_count": 44,
+    "timestamp_column": "",
+    "timestamp_example": "2011-01-01 00:15:00",
+    "timezone_caveat": "Source timestamps use Portuguese local hour; daylight-saving handling is preserved for later stages.",
+    "validation_level": "structural",
+    "zip_valid": true
+  },
+  "uci_steel_industry": {
+    "categorical_fields": [
+      "date",
+      "WeekStatus",
+      "Day_of_week",
+      "Load_Type"
+    ],
+    "columns": [
+      "date",
+      "Usage_kWh",
+      "Lagging_Current_Reactive.Power_kVarh",
+      "Leading_Current_Reactive_Power_kVarh",
+      "CO2(tCO2)",
+      "Lagging_Current_Power_Factor",
+      "Leading_Current_Power_Factor",
+      "NSM",
+      "WeekStatus",
+      "Day_of_week",
+      "Load_Type"
+    ],
+    "missing_value_count": 0,
+    "numeric_fields": [
+      "Usage_kWh",
+      "Lagging_Current_Reactive.Power_kVarh",
+      "Leading_Current_Reactive_Power_kVarh",
+      "CO2(tCO2)",
+      "Lagging_Current_Power_Factor",
+      "Leading_Current_Power_Factor",
+      "NSM"
+    ],
+    "path": "/Users/anthe/Documents/VAIC 2026/data/raw/uci_steel_industry/Steel_industry_data.csv",
+    "raw_columns_preserved": true,
+    "row_count": 35040,
+    "timestamp_column_candidate": "date",
+    "timestamp_examples": [
+      "01/01/2018 00:15",
+      "01/01/2018 00:30",
+      "01/01/2018 00:45"
+    ],
+    "units_as_reported_by_source": "as published in raw source columns",
+    "validation_level": "structural"
+  },
+  "vietnam_tariff_reference": {
+    "decision_number": "Decision No. 1279/QD-BCT",
+    "effective_date": null,
+    "issue_date": "2025-05-09",
+    "manual_review_required": true,
+    "official_source_reachable": false,
+    "operational_values_imported": false,
+    "path": "/Users/anthe/Documents/VAIC 2026/data/raw/vietnam_tariff/tariff_reference.yaml",
+    "selected_customer_category": null,
+    "selected_voltage_level": null,
+    "validation_level": "metadata"
+  }
+}

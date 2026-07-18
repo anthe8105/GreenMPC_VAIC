@@ -1,0 +1,105 @@
+schema_version: 1
+
+storage:
+  raw_root: data/raw
+  provenance_root: data/provenance
+  temporary_suffix: .part
+  overwrite_existing: false
+  keep_compressed_archives: true
+  extract_large_archives_by_default: false
+
+network:
+  connect_timeout_seconds: 20
+  read_timeout_seconds: 120
+  maximum_retries: 2
+  retry_backoff_seconds: 2
+  user_agent: "GreenMPC-Twin/0.1 public-data-provenance (offline demo research)"
+
+sources:
+  uci_electricity_load_diagrams:
+    source_id: uci_electricity_load_diagrams
+    display_name: UCI Electricity Load Diagrams 2011-2014
+    enabled: true
+    source_type: measured anonymous electricity consumption profiles
+    publisher: UCI Machine Learning Repository
+    official_landing_page: https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014
+    download_url: https://archive.ics.uci.edu/static/public/321/electricityloaddiagrams20112014.zip
+    expected_format: zip
+    destination_directory: data/raw/uci_electricity_load_diagrams
+    file_name: electricityloaddiagrams20112014.zip
+    license_name: License status to be manually reviewed from UCI metadata
+    license_url: null
+    citation_text: "Dua, D. and Graff, C. UCI Machine Learning Repository: ElectricityLoadDiagrams20112014."
+    required_for_stage: true
+    notes: "Anonymous Portuguese-client electricity profiles; not industry-labeled, not Vietnamese, not VRG, and not selected as tenant profiles in Stage 1."
+
+  uci_steel_industry:
+    source_id: uci_steel_industry
+    display_name: UCI Steel Industry Energy Consumption
+    enabled: true
+    source_type: measured industrial electricity consumption
+    publisher: UCI Machine Learning Repository
+    official_landing_page: https://archive.ics.uci.edu/dataset/851/steel%2Bindustry%2Benergy%2Bconsumption
+    download_url: https://archive.ics.uci.edu/static/public/851/steel%2Bindustry%2Benergy%2Bconsumption.zip
+    expected_format: zip
+    destination_directory: data/raw/uci_steel_industry
+    file_name: steel_industry_energy_consumption.zip
+    license_name: License status to be manually reviewed from UCI metadata
+    license_url: null
+    citation_text: "UCI Machine Learning Repository: Steel Industry Energy Consumption."
+    required_for_stage: true
+    notes: "South Korean steel-industry energy dataset; not Vietnamese, not VRG, and not a proxy for every tenant industry."
+
+  nasa_power_hourly:
+    source_id: nasa_power_hourly
+    display_name: NASA POWER Hourly Weather and Solar Resource
+    enabled: true
+    source_type: satellite-and-model-based meteorological data
+    publisher: NASA POWER
+    official_landing_page: https://power.larc.nasa.gov/docs/services/api/temporal/hourly/
+    endpoint: https://power.larc.nasa.gov/api/temporal/hourly/point
+    expected_format: csv
+    destination_directory: data/raw/nasa_power
+    file_name: nasa_power_hourly_2013_utc.csv
+    license_name: NASA POWER data access terms
+    license_url: https://power.larc.nasa.gov/docs/
+    citation_text: "NASA POWER Project, Hourly API, accessed for configured demonstration coordinates."
+    required_for_stage: true
+    notes: "Coordinates are a southern-Vietnam demonstration assumption; raw data remains UTC and is not an on-site sensor record."
+    latitude: 11.0
+    longitude: 106.65
+    location_label: Southern Vietnam demonstration location
+    is_actual_vrg_location: false
+    community: RE
+    parameters:
+      - ALLSKY_SFC_SW_DWN
+      - T2M
+      - RH2M
+      - PRECTOTCORR
+      - WS10M
+    start_date: "2013-01-01"
+    end_date: "2013-12-31"
+    format: CSV
+    time_standard: UTC
+
+  vietnam_tariff_reference:
+    source_id: vietnam_tariff_reference
+    display_name: Vietnam Retail Electricity Tariff Reference
+    enabled: true
+    source_type: regulatory tariff reference metadata
+    publisher: Vietnam Ministry of Industry and Trade / EVN
+    official_landing_page: https://chinhphu.vn/?docid=213617&pageid=27160
+    government_source_url: https://chinhphu.vn/?docid=213617&pageid=27160
+    evn_source_url: https://en.evn.com.vn/d/en-US/news/RETAIL-ELECTRICITY-TARIFF-Decision-No-1279QD-BCT-dated-9-May-2025-of-Ministry-of-Industry-and-Trade-60-28-252
+    expected_format: curated_metadata
+    destination_directory: data/raw/vietnam_tariff
+    file_name: tariff_reference.yaml
+    license_name: Public government and EVN reference pages; usage status to be manually reviewed
+    license_url: null
+    citation_text: "Decision No. 1279/QD-BCT dated 9 May 2025 and EVN retail-tariff reference page."
+    required_for_stage: true
+    notes: "Reference only; customer category and voltage level are not selected in Stage 1, and values are not imported into operational config."
+    decision_number: "Decision No. 1279/QD-BCT"
+    issue_date: "2025-05-09"
+    selected_category: not_selected
+    manual_review_required: true

@@ -1,0 +1,155 @@
+# GreenMPC Twin Stage 0 demo configuration.
+# Business, asset, tariff, and contract values below are scenario assumptions
+# for an offline demonstration. They are not actual VRG operational values.
+project:
+  name: "GreenMPC Twin: AI Energy Digital Twin"
+  short_name: GreenMPC Twin
+  version: 0.1.0
+  random_seed: 42
+  timezone: Asia/Ho_Chi_Minh
+  currency: VND
+  synthetic_demo_notice: Synthetic and public-data demonstration environment
+
+simulation:
+  start_date: "2026-01-01T00:00:00+07:00"
+  end_date: "2026-01-31T23:00:00+07:00"
+  time_step_hours: 1
+  mpc_horizon_hours: 6
+  default_demo_timestamp: "2026-01-15T08:00:00+07:00"
+  numerical_tolerance: 1.0e-6
+  strict_action_validation: true
+  action_tolerance_kw: 1.0e-6
+  energy_tolerance_kwh: 1.0e-6
+  maximum_event_multiplier: 2.0
+  stop_at_dataset_end: true
+
+tenants:
+  - tenant_id: Electronics_A
+    display_name: Electronics A
+    scenario_industry: Electronics assembly
+    enabled: true
+    nominal_load_kw: 1200.0
+    renewable_target_fraction: 0.45
+    priority_weight: 1.2
+    source_profile_placeholder: Public measured profile to be selected in Stage 1
+  - tenant_id: Semiconductor_B
+    display_name: Semiconductor B
+    scenario_industry: Semiconductor support operations
+    enabled: true
+    nominal_load_kw: 1800.0
+    renewable_target_fraction: 0.55
+    priority_weight: 1.5
+    source_profile_placeholder: Public measured profile to be selected in Stage 1
+  - tenant_id: Textile_C
+    display_name: Textile C
+    scenario_industry: Textile manufacturing
+    enabled: true
+    nominal_load_kw: 950.0
+    renewable_target_fraction: 0.35
+    priority_weight: 1.0
+    source_profile_placeholder: Public measured profile to be selected in Stage 1
+  - tenant_id: Warehouse_D
+    display_name: Warehouse D
+    scenario_industry: Cold-chain and logistics
+    enabled: true
+    nominal_load_kw: 700.0
+    renewable_target_fraction: 0.30
+    priority_weight: 0.8
+    source_profile_placeholder: Public measured profile to be selected in Stage 1
+  - tenant_id: Electronics_E
+    display_name: Electronics E
+    scenario_industry: Electronics finishing
+    enabled: true
+    nominal_load_kw: 1100.0
+    renewable_target_fraction: 0.40
+    priority_weight: 1.1
+    source_profile_placeholder: Public measured profile to be selected in Stage 1
+
+solar:
+  # Portfolio capacity is a demo assumption, not an installed asset statement.
+  installed_capacity_kw: 2500.0
+  system_loss_fraction: 0.14
+  source_type: Derived from public irradiance data
+  irradiance_source_placeholder: Public Vietnam hourly irradiance source to be cached offline in Stage 1
+
+battery:
+  # Battery values are representative assumptions for scenario evaluation.
+  energy_capacity_kwh: 3000.0
+  max_charge_power_kw: 1000.0
+  max_discharge_power_kw: 1000.0
+  charge_efficiency: 0.95
+  discharge_efficiency: 0.95
+  minimum_soc_fraction: 0.10
+  maximum_soc_fraction: 0.90
+  initial_soc_fraction: 0.50
+  # The initial battery renewable-energy status is a configurable demo assumption.
+  initial_renewable_fraction: 1.0
+  allow_simultaneous_charge_discharge: false
+  simultaneous_power_tolerance_kw: 1.0e-6
+  degradation_cost_vnd_per_kwh_throughput: 350.0
+  values_are_demo_assumptions: true
+
+grid:
+  # Tariff numbers are placeholders until a published reference is captured.
+  transformer_capacity_kw: 5200.0
+  transformer_applies_to: all_external_imports
+  external_import_definition:
+    - grid_to_tenant
+    - dppa_to_tenant
+    - dppa_to_battery
+  off_peak_price_vnd_per_kwh: 1100.0
+  normal_price_vnd_per_kwh: 1900.0
+  peak_price_vnd_per_kwh: 3200.0
+  tariff_source_placeholder: Published Vietnam electricity tariff reference to be documented in Stage 1
+  tariff_effective_date_placeholder: To be recorded with source provenance
+  values_are_demo_reference: true
+
+dppa:
+  # DPPA values are contract-scenario assumptions only.
+  enabled: true
+  available_capacity_kw: 1500.0
+  base_price_vnd_per_kwh: 1750.0
+  renewable_eligible: true
+  values_are_contract_scenario_assumptions: true
+
+forecasting:
+  horizons_hours: [1, 2, 3, 4, 5, 6]
+  quantiles: [0.1, 0.5, 0.9]
+  train_fraction: 0.70
+  validation_fraction: 0.15
+  test_fraction: 0.15
+  model_type_placeholder: Quantile-capable scikit-learn baseline to be selected in Stage 4
+
+mpc:
+  solver: HIGHS
+  horizon_hours: 6
+  expected_load_quantile: 0.5
+  expected_solar_quantile: 0.5
+  conservative_load_quantile: 0.9
+  conservative_solar_quantile: 0.1
+  solver_time_limit_seconds: 20.0
+
+objective_weights:
+  peak_demand_penalty_vnd_per_kw: 50000.0
+  curtailment_penalty_vnd_per_kwh: 500.0
+  renewable_shortfall_penalty_vnd_per_kwh: 2500.0
+  battery_throughput_multiplier: 1.0
+
+accounting:
+  include_battery_degradation_proxy: true
+  renewable_battery_inventory_method: proportional_mixing
+  initial_battery_renewable_status_is_assumption: true
+  count_dppa_as_renewable: true
+  count_rooftop_pv_as_renewable: true
+  count_grid_as_renewable: false
+
+events:
+  cloud_reduction_fraction: 0.55
+  production_shift_multiplier: 1.25
+  high_load_multiplier: 1.40
+  default_duration_hours: 3
+
+reporting:
+  ledger_output_path: data/outputs/renewable_ledger.csv
+  html_output_directory: data/outputs/reports
+  official_certificate_claim_allowed: false

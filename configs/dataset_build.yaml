@@ -1,0 +1,127 @@
+schema_version: 1
+
+build:
+  source_year: 2013
+  output_timezone: Asia/Ho_Chi_Minh
+  hourly_frequency: 1h
+  random_seed: 42
+  overwrite_existing: false
+  minimum_complete_local_days: 350
+  remove_incomplete_boundary_days: true
+  preserve_source_columns: true
+
+uci_load:
+  source_timezone: Europe/Lisbon
+  delimiter: ";"
+  decimal_separator: ","
+  encoding: utf-8-sig
+  primary_archive_member: LD2011_2014.txt
+  chunk_size_rows: 20000
+  minimum_nonzero_fraction: 0.02
+  minimum_valid_fraction: 0.95
+  maximum_allowed_pairwise_correlation: 0.98
+  profile_selection_method: deterministic_archetype_scoring
+  use_calendar_preserving_local_time_transfer: true
+
+profile_scaling:
+  method: p95
+  preserve_zero_values: true
+  prevent_negative_values: true
+  maximum_scaling_factor: 100000.0
+  minimum_scaling_factor: 0.000001
+  output_power_unit: kW
+  output_energy_unit: kWh
+
+tenant_mapping:
+  - tenant_id: Electronics_A
+    archetype: two_shift_stable
+    target_p95_load_kw: 1200.0
+    selection_priority: 4
+    scenario_label_only: true
+  - tenant_id: Semiconductor_B
+    archetype: continuous_high_baseload
+    target_p95_load_kw: 1800.0
+    selection_priority: 1
+    scenario_label_only: true
+  - tenant_id: Textile_C
+    archetype: variable_shift_driven
+    target_p95_load_kw: 950.0
+    selection_priority: 3
+    scenario_label_only: true
+  - tenant_id: Warehouse_D
+    archetype: daytime_concentrated
+    target_p95_load_kw: 700.0
+    selection_priority: 2
+    scenario_label_only: true
+  - tenant_id: Electronics_E
+    archetype: spiky_overtime
+    target_p95_load_kw: 1100.0
+    selection_priority: 5
+    scenario_label_only: true
+
+weather:
+  raw_time_standard: UTC
+  output_timezone: Asia/Ho_Chi_Minh
+  requested_parameters: [ALLSKY_SFC_SW_DWN, T2M, RH2M, PRECTOTCORR, WS10M]
+  reject_unknown_units: true
+  missing_value_sentinels: [-999, -999.0]
+  maximum_short_gap_hours_for_interpolation: 2
+  interpolation_enabled: true
+  drop_incomplete_boundary_days: true
+
+pv:
+  irradiance_parameter: ALLSKY_SFC_SW_DWN
+  installed_capacity_kw: 2500.0
+  performance_ratio: 0.86
+  maximum_output_fraction: 1.0
+  nighttime_threshold: 0.0
+  model_name: simple_unit_aware_pr_model
+  values_are_derived: true
+  values_are_measured_inverter_output: false
+
+tariff:
+  source_status: demo_reference
+  customer_category_selected: false
+  voltage_level_selected: false
+  operational_values_from_demo_config: true
+  weekday_peak_hours: [9, 10, 11, 17, 18, 19]
+  weekday_off_peak_hours: [22, 23, 0, 1, 2, 3, 4]
+  saturday_peak_hours: [9, 10, 11]
+  saturday_off_peak_hours: [22, 23, 0, 1, 2, 3, 4]
+  sunday_peak_hours: []
+  sunday_off_peak_hours: [22, 23, 0, 1, 2, 3, 4]
+  default_period: normal
+  schedule_is_demo_assumption: true
+
+dppa:
+  enabled: true
+  availability_method: constant
+  base_available_capacity_kw: 1500.0
+  base_price_vnd_per_kwh: 1750.0
+  renewable_eligible: true
+  availability_is_scenario_assumption: true
+  price_is_contract_scenario_assumption: true
+
+event_catalog:
+  create_catalog: true
+  apply_events_to_baseline_dataset: false
+  cloud_event_duration_hours: 3
+  cloud_event_reduction_fraction: 0.55
+  production_shift_duration_hours: 3
+  production_shift_multiplier: 1.25
+  high_load_duration_hours: 3
+  high_load_multiplier: 1.40
+  combined_stress_duration_hours: 3
+  random_seed: 42
+
+outputs:
+  tenant_hourly_path: data/processed/tenant_hourly.csv
+  park_hourly_path: data/processed/park_hourly.csv
+  selected_profiles_path: data/processed/selected_tenant_profiles.csv
+  candidate_profile_metrics_path: data/processed/candidate_profile_metrics.csv
+  steel_reference_path: data/processed/steel_hourly_reference.csv
+  event_catalog_path: data/processed/scenario_events.csv
+  dataset_manifest_path: data/processed/dataset_manifest.json
+  data_quality_report_path: data/processed/data_quality_report.json
+  processed_lineage_path: data/provenance/processed_lineage.json
+  overview_artifact_path: artifacts/hybrid_dataset_overview.html

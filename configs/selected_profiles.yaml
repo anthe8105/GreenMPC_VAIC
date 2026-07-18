@@ -1,0 +1,38 @@
+selection_version: 1
+source_dataset_fingerprint: f6c4d0e0df12ecdb9ea008dd6eef3518adb52c559d04a9bac2e1b81dcfc8d4e1
+source_year: 2013
+random_seed: 42
+profile_selection_date: '2026-07-17T23:00:35+00:00'
+generated_by_script: scripts/build_hybrid_dataset.py
+manual_override: false
+selected_profiles:
+  Electronics_A:
+    source_client_id: MT_145
+    archetype: two_shift_stable
+    source_metrics:
+      archetype_score: 1.996296918155586
+    target_scaling_value: 1200.0
+  Semiconductor_B:
+    source_client_id: MT_149
+    archetype: continuous_high_baseload
+    source_metrics:
+      archetype_score: 1.2551165738296253
+    target_scaling_value: 1800.0
+  Textile_C:
+    source_client_id: MT_362
+    archetype: variable_shift_driven
+    source_metrics:
+      archetype_score: 1.7398491569084404
+    target_scaling_value: 950.0
+  Warehouse_D:
+    source_client_id: MT_093
+    archetype: daytime_concentrated
+    source_metrics:
+      archetype_score: 2.0126118298180726
+    target_scaling_value: 700.0
+  Electronics_E:
+    source_client_id: MT_186
+    archetype: spiky_overtime
+    source_metrics:
+      archetype_score: 1.005143784731271
+    target_scaling_value: 1100.0

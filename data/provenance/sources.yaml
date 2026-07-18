@@ -1,0 +1,54 @@
+schema_version: 1
+generated_at_utc: '2026-07-17T23:54:52+00:00'
+sources:
+- source_id: uci_electricity_load_diagrams
+  display_name: UCI Electricity Load Diagrams 2011-2014
+  publisher: UCI Machine Learning Repository
+  source_type: measured anonymous electricity consumption profiles
+  official_landing_page: https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014
+  destination_directory: data/raw/uci_electricity_load_diagrams
+  license_name: License status to be manually reviewed from UCI metadata
+  license_url: null
+  citation_text: 'Dua, D. and Graff, C. UCI Machine Learning Repository: ElectricityLoadDiagrams20112014.'
+  required_for_stage: true
+  notes: Anonymous Portuguese-client electricity profiles; not industry-labeled, not
+    Vietnamese, not VRG, and not selected as tenant profiles in Stage 1.
+- source_id: uci_steel_industry
+  display_name: UCI Steel Industry Energy Consumption
+  publisher: UCI Machine Learning Repository
+  source_type: measured industrial electricity consumption
+  official_landing_page: https://archive.ics.uci.edu/dataset/851/steel%2Bindustry%2Benergy%2Bconsumption
+  destination_directory: data/raw/uci_steel_industry
+  license_name: License status to be manually reviewed from UCI metadata
+  license_url: null
+  citation_text: 'UCI Machine Learning Repository: Steel Industry Energy Consumption.'
+  required_for_stage: true
+  notes: South Korean steel-industry energy dataset; not Vietnamese, not VRG, and
+    not a proxy for every tenant industry.
+- source_id: nasa_power_hourly
+  display_name: NASA POWER Hourly Weather and Solar Resource
+  publisher: NASA POWER
+  source_type: satellite-and-model-based meteorological data
+  official_landing_page: https://power.larc.nasa.gov/docs/services/api/temporal/hourly/
+  destination_directory: data/raw/nasa_power
+  license_name: NASA POWER data access terms
+  license_url: https://power.larc.nasa.gov/docs/
+  citation_text: NASA POWER Project, Hourly API, accessed for configured demonstration
+    coordinates.
+  required_for_stage: true
+  notes: Coordinates are a southern-Vietnam demonstration assumption; raw data remains
+    UTC and is not an on-site sensor record.
+- source_id: vietnam_tariff_reference
+  display_name: Vietnam Retail Electricity Tariff Reference
+  publisher: Vietnam Ministry of Industry and Trade / EVN
+  source_type: regulatory tariff reference metadata
+  official_landing_page: https://chinhphu.vn/?docid=213617&pageid=27160
+  destination_directory: data/raw/vietnam_tariff
+  license_name: Public government and EVN reference pages; usage status to be manually
+    reviewed
+  license_url: null
+  citation_text: Decision No. 1279/QD-BCT dated 9 May 2025 and EVN retail-tariff reference
+    page.
+  required_for_stage: true
+  notes: Reference only; customer category and voltage level are not selected in Stage
+    1, and values are not imported into operational config.

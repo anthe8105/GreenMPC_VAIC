@@ -1,0 +1,355 @@
+{
+  "build_script": "scripts/build_hybrid_dataset.py",
+  "build_timestamp_utc": "2026-07-17T23:00:37+00:00",
+  "configuration_fingerprints": {
+    "dataset_build": "24c24d4c08cb6f62cdd833ed31a2c1b6066cbfbdb91245c3efa907b43da021b6",
+    "demo": "e1e578c3e2c84c9a21c6b537e9014718d3dfe7c0c728d3c6e630d75622a26c63"
+  },
+  "dataset_name": "GreenMPC Twin hybrid industrial-park dataset",
+  "dataset_version": "stage2_v1",
+  "dppa": {
+    "assumption_flags": true,
+    "availability_method": "constant",
+    "price_source_classification": "contract scenario assumption"
+  },
+  "final_timestamp_local": "2013-12-31 23:00:00+07:00",
+  "final_timestamp_utc": "2013-12-31 16:00:00+00:00",
+  "first_timestamp_local": "2013-01-02 00:00:00+07:00",
+  "first_timestamp_utc": "2013-01-01 17:00:00+00:00",
+  "git_commit": null,
+  "output_fingerprints": {
+    "candidate_profile_metrics_path": "789639beabe5cef2631f732aedb23abe8df241c9ab5b87f974ac54329c2d5779",
+    "event_catalog_path": "efe9083958eaddf840c5e93d7484d867867b4e62e01c766519f65f51a7cea857",
+    "park_hourly_path": "4b36c0d7de6f09a5fdacff53a86f34dd27b40d9fb099ba8fa5a8893ed5b891c6",
+    "selected_profiles_path": "4eeb0c091b7a1a3ef69117c3af656ffc95494cc1bc5e1cfa0ed75c058703cf7a",
+    "steel_reference_path": "965db443dd83eba0aaec85b0af58399737f7b3212cbda6473382d40af7edfe79",
+    "tenant_hourly_path": "853ca7b4c486bd2f5a6a9c1ef2c743377755d19654c66f5a6d1db17a831fbd27"
+  },
+  "prohibited_interpretations": [
+    "not actual VRG data",
+    "not co-located source measurements",
+    "industry labels are scenarios",
+    "PV is not measured inverter output",
+    "tariff is not a confirmed pilot contract",
+    "DPPA is not an observed market transaction"
+  ],
+  "pv_model": {
+    "formula_type": "unit-aware performance-ratio model",
+    "input_parameter": "ALLSKY_SFC_SW_DWN",
+    "input_unit": "kWh/m^2",
+    "installed_capacity": 2500.0,
+    "measured_status": false,
+    "performance_ratio": 0.86
+  },
+  "quality": {
+    "events": {
+      "baseline_modification_count": 0,
+      "event_count": 4
+    },
+    "final_status": "PASS_WITH_WARNINGS",
+    "park_dataset": {
+      "load_sum_mismatch_count": 0,
+      "row_count": 8736,
+      "transformer_ratio_summary": {
+        "25%": 0.557897823996367,
+        "50%": 0.6112016760451557,
+        "75%": 0.7329641510726541,
+        "count": 8736.0,
+        "max": 1.263913150466157,
+        "mean": 0.6536677387434219,
+        "min": 0.003913111532374481,
+        "std": 0.12067229511534898
+      }
+    },
+    "profiles_excluded": 22,
+    "pv": {
+      "capacity_violation_count": 0,
+      "clipped_outputs": 4475,
+      "maximum_output": 2500.0,
+      "negative_inputs": 0
+    },
+    "selected_profiles": [
+      {
+        "archetype": "two_shift_stable",
+        "archetype_score": 1.996296918155586,
+        "is_actual_industry_identity": false,
+        "is_actual_vrg_tenant": false,
+        "pairwise_correlation_max": 0.0,
+        "rank_within_archetype": 1,
+        "scaling_factor": 14.357597173144878,
+        "scenario_label_only": true,
+        "selection_reason": "highest deterministic two_shift_stable score; lock file reused",
+        "source_client_id": "MT_145",
+        "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+        "source_max_load_kw": 143.38452451269924,
+        "source_mean_load_kw": 75.44089347218063,
+        "source_profile_p95_load_kw": 83.57944477259302,
+        "target_p95_load_kw": 1200.0,
+        "tenant_id": "Electronics_A"
+      },
+      {
+        "archetype": "continuous_high_baseload",
+        "archetype_score": 1.2551165738296253,
+        "is_actual_industry_identity": false,
+        "is_actual_vrg_tenant": false,
+        "pairwise_correlation_max": 0.0,
+        "rank_within_archetype": 1,
+        "scaling_factor": 72.16465207448574,
+        "scenario_label_only": true,
+        "selection_reason": "highest deterministic continuous_high_baseload score; lock file reused",
+        "source_client_id": "MT_149",
+        "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+        "source_max_load_kw": 42.69882659713168,
+        "source_mean_load_kw": 22.51336524322362,
+        "source_profile_p95_load_kw": 24.942959582789992,
+        "target_p95_load_kw": 1800.0,
+        "tenant_id": "Semiconductor_B"
+      },
+      {
+        "archetype": "variable_shift_driven",
+        "archetype_score": 1.7398491569084404,
+        "is_actual_industry_identity": false,
+        "is_actual_vrg_tenant": false,
+        "pairwise_correlation_max": 0.0,
+        "rank_within_archetype": 1,
+        "scaling_factor": 0.0077772433765516125,
+        "scenario_label_only": true,
+        "selection_reason": "highest deterministic variable_shift_driven score; lock file reused",
+        "source_client_id": "MT_362",
+        "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+        "source_max_load_kw": 152875.0,
+        "source_mean_load_kw": 48697.30878995434,
+        "source_profile_p95_load_kw": 122151.24999999999,
+        "target_p95_load_kw": 950.0,
+        "tenant_id": "Textile_C"
+      },
+      {
+        "archetype": "daytime_concentrated",
+        "archetype_score": 2.0126118298180726,
+        "is_actual_industry_identity": false,
+        "is_actual_vrg_tenant": false,
+        "pairwise_correlation_max": 0.0,
+        "rank_within_archetype": 1,
+        "scaling_factor": 3.563192403346146,
+        "scenario_label_only": true,
+        "selection_reason": "highest deterministic daytime_concentrated score; lock file reused",
+        "source_client_id": "MT_093",
+        "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+        "source_max_load_kw": 238.705583756345,
+        "source_mean_load_kw": 24.06818603249658,
+        "source_profile_p95_load_kw": 196.45304568527914,
+        "target_p95_load_kw": 700.0,
+        "tenant_id": "Warehouse_D"
+      },
+      {
+        "archetype": "spiky_overtime",
+        "archetype_score": 1.005143784731271,
+        "is_actual_industry_identity": false,
+        "is_actual_vrg_tenant": false,
+        "pairwise_correlation_max": 0.0,
+        "rank_within_archetype": 1,
+        "scaling_factor": 1.6145922746781118,
+        "scenario_label_only": true,
+        "selection_reason": "highest deterministic spiky_overtime score; lock file reused",
+        "source_client_id": "MT_186",
+        "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+        "source_max_load_kw": 937.1345029239765,
+        "source_mean_load_kw": 139.614375550749,
+        "source_profile_p95_load_kw": 681.2865497076023,
+        "target_p95_load_kw": 1100.0,
+        "tenant_id": "Electronics_E"
+      }
+    ],
+    "tenant_dataset": {
+      "duplicate_rows": 0,
+      "negative_loads": 0,
+      "row_count": 43680
+    },
+    "uci_source": {
+      "ambiguous_fall_back_timestamps": 0,
+      "approximate_peak_memory_mb": null,
+      "duplicate_local_timestamps": 0,
+      "invalid_timestamp_count": 0,
+      "local_23_hour_days": 0,
+      "local_25_hour_days": 0,
+      "missing_local_hours": 0,
+      "missing_value_count": 0,
+      "nonexistent_spring_forward_timestamps": 0,
+      "nonnumeric_value_count": 0,
+      "rows_inspected": 35040,
+      "rows_that_cannot_be_localized": 0,
+      "selected_resolution_policy": "quarter-hour values aggregated by hour; duplicate local hours averaged; calendar-preserving transfer to Vietnam local time",
+      "source_client_count": 370,
+      "source_year_rows": 35040
+    },
+    "warnings": [
+      "The industrial-park dataset combines measured public load-profile shapes with Vietnam weather data and transparent scenario assumptions."
+    ],
+    "weather": {
+      "complete_local_days": 364,
+      "imputed_count_per_parameter": {
+        "ALLSKY_SFC_SW_DWN": 0,
+        "PRECTOTCORR": 0,
+        "RH2M": 0,
+        "T2M": 0,
+        "WS10M": 0
+      },
+      "missing_count_per_parameter": {
+        "ALLSKY_SFC_SW_DWN": 0,
+        "PRECTOTCORR": 0,
+        "RH2M": 0,
+        "T2M": 0,
+        "WS10M": 0
+      },
+      "raw_timestamp_count": 8760,
+      "removed_boundary_timestamps": 24,
+      "units": {
+        "ALLSKY_SFC_SW_DWN": "kWh/m^2",
+        "PRECTOTCORR": "2 Precipitation Corrected (mm/day)",
+        "RH2M": "2 Relative Humidity at 2 Meters (%)",
+        "T2M": "2 Temperature at 2 Meters (C)",
+        "WS10M": "2 Wind Speed at 10 Meters (m/s)"
+      },
+      "unknown_unit_incidents": []
+    }
+  },
+  "random_seed": 42,
+  "source_classification": {
+    "actual_vrg_status": false,
+    "derived": [
+      "hourly loads",
+      "PV availability"
+    ],
+    "measured": [
+      "UCI load shapes",
+      "UCI steel reference"
+    ],
+    "rescaled": [
+      "tenant loads"
+    ],
+    "satellite_model_based": [
+      "NASA POWER"
+    ],
+    "scenario_assumption": [
+      "tenant labels",
+      "tariff schedule",
+      "DPPA"
+    ]
+  },
+  "source_fingerprints": {
+    "nasa": "4c8fe35d994d8b4146acc92f3f13acedbd0c689b0723897f7f9a7fb61ff10c1d",
+    "tariff": "fd8fb59974e59efe39780d15aa1f6040af8cfab88d48248a7a679a2feb2a6942",
+    "uci_load": "f6c4d0e0df12ecdb9ea008dd6eef3518adb52c559d04a9bac2e1b81dcfc8d4e1",
+    "uci_steel": "d82d28b33780ff1582507fcf08ae764ff648af459d58234370c551e62aadeaef"
+  },
+  "tariff": {
+    "category_selected": false,
+    "official_page_retrieval_warning": "Government page cache failed in Stage 1; curated metadata retained.",
+    "operational_prices_imported_from_official_source": false,
+    "reference_decision": "Decision No. 1279/QD-BCT",
+    "schedule_assumption_status": true,
+    "voltage_level_selected": false
+  },
+  "temporal_alignment": {
+    "boundary_day_policy": "complete-day intersection",
+    "calendar_transfer_method": "Scenario alignment by Vietnam-local calendar after calendar-preserving profile transfer.",
+    "dst_policy": "duplicate local hours averaged; missing hourly slots flagged or interpolated only for isolated gaps",
+    "nasa_raw_timezone": "UTC",
+    "output_timezone": "Asia/Ho_Chi_Minh",
+    "source_load_timezone": "Europe/Lisbon"
+  },
+  "tenant_summary": [
+    {
+      "archetype": "two_shift_stable",
+      "archetype_score": 1.996296918155586,
+      "is_actual_industry_identity": false,
+      "is_actual_vrg_tenant": false,
+      "pairwise_correlation_max": 0.0,
+      "rank_within_archetype": 1,
+      "scaling_factor": 14.357597173144878,
+      "scenario_label_only": true,
+      "selection_reason": "highest deterministic two_shift_stable score; lock file reused",
+      "source_client_id": "MT_145",
+      "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+      "source_max_load_kw": 143.38452451269924,
+      "source_mean_load_kw": 75.44089347218063,
+      "source_profile_p95_load_kw": 83.57944477259302,
+      "target_p95_load_kw": 1200.0,
+      "tenant_id": "Electronics_A"
+    },
+    {
+      "archetype": "continuous_high_baseload",
+      "archetype_score": 1.2551165738296253,
+      "is_actual_industry_identity": false,
+      "is_actual_vrg_tenant": false,
+      "pairwise_correlation_max": 0.0,
+      "rank_within_archetype": 1,
+      "scaling_factor": 72.16465207448574,
+      "scenario_label_only": true,
+      "selection_reason": "highest deterministic continuous_high_baseload score; lock file reused",
+      "source_client_id": "MT_149",
+      "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+      "source_max_load_kw": 42.69882659713168,
+      "source_mean_load_kw": 22.51336524322362,
+      "source_profile_p95_load_kw": 24.942959582789992,
+      "target_p95_load_kw": 1800.0,
+      "tenant_id": "Semiconductor_B"
+    },
+    {
+      "archetype": "variable_shift_driven",
+      "archetype_score": 1.7398491569084404,
+      "is_actual_industry_identity": false,
+      "is_actual_vrg_tenant": false,
+      "pairwise_correlation_max": 0.0,
+      "rank_within_archetype": 1,
+      "scaling_factor": 0.0077772433765516125,
+      "scenario_label_only": true,
+      "selection_reason": "highest deterministic variable_shift_driven score; lock file reused",
+      "source_client_id": "MT_362",
+      "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+      "source_max_load_kw": 152875.0,
+      "source_mean_load_kw": 48697.30878995434,
+      "source_profile_p95_load_kw": 122151.24999999999,
+      "target_p95_load_kw": 950.0,
+      "tenant_id": "Textile_C"
+    },
+    {
+      "archetype": "daytime_concentrated",
+      "archetype_score": 2.0126118298180726,
+      "is_actual_industry_identity": false,
+      "is_actual_vrg_tenant": false,
+      "pairwise_correlation_max": 0.0,
+      "rank_within_archetype": 1,
+      "scaling_factor": 3.563192403346146,
+      "scenario_label_only": true,
+      "selection_reason": "highest deterministic daytime_concentrated score; lock file reused",
+      "source_client_id": "MT_093",
+      "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+      "source_max_load_kw": 238.705583756345,
+      "source_mean_load_kw": 24.06818603249658,
+      "source_profile_p95_load_kw": 196.45304568527914,
+      "target_p95_load_kw": 700.0,
+      "tenant_id": "Warehouse_D"
+    },
+    {
+      "archetype": "spiky_overtime",
+      "archetype_score": 1.005143784731271,
+      "is_actual_industry_identity": false,
+      "is_actual_vrg_tenant": false,
+      "pairwise_correlation_max": 0.0,
+      "rank_within_archetype": 1,
+      "scaling_factor": 1.6145922746781118,
+      "scenario_label_only": true,
+      "selection_reason": "highest deterministic spiky_overtime score; lock file reused",
+      "source_client_id": "MT_186",
+      "source_dataset": "UCI ElectricityLoadDiagrams20112014",
+      "source_max_load_kw": 937.1345029239765,
+      "source_mean_load_kw": 139.614375550749,
+      "source_profile_p95_load_kw": 681.2865497076023,
+      "target_p95_load_kw": 1100.0,
+      "tenant_id": "Electronics_E"
+    }
+  ],
+  "total_complete_local_days": 364,
+  "total_hourly_timestamps": 8736
+}

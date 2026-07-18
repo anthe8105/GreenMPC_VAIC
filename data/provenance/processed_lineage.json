@@ -1,0 +1,62 @@
+{
+  "dppa_price_vnd_per_kwh": {
+    "classification": [
+      "contract scenario assumption"
+    ],
+    "source": "configs/demo.yaml"
+  },
+  "grid_price_vnd_per_kwh": {
+    "classification": [
+      "demo operational reference"
+    ],
+    "official_category_selected": false,
+    "source": [
+      "configs/demo.yaml",
+      "tariff-reference metadata"
+    ]
+  },
+  "load_kw": {
+    "actual_vrg_data": false,
+    "classification": [
+      "measured shape",
+      "rescaled",
+      "scenario-labeled"
+    ],
+    "source": "UCI ElectricityLoadDiagrams",
+    "transformation": [
+      "quarter-hour to hourly aggregation",
+      "calendar-preserving transfer",
+      "p95 scaling"
+    ]
+  },
+  "pv_available_kw": {
+    "classification": [
+      "derived"
+    ],
+    "measured_inverter_output": false,
+    "source": "NASA POWER ALLSKY_SFC_SW_DWN",
+    "transformation": [
+      "unit-aware PV derivation",
+      "performance-ratio adjustment",
+      "capacity clipping"
+    ]
+  },
+  "scenario_events": {
+    "applied_to_baseline_dataset": false,
+    "classification": [
+      "synthetic scenario assumption"
+    ],
+    "source": "configs/dataset_build.yaml"
+  },
+  "temperature_c": {
+    "classification": [
+      "satellite/model-based"
+    ],
+    "on_site_sensor": false,
+    "source": "NASA POWER T2M",
+    "transformation": [
+      "UTC to Asia/Ho_Chi_Minh",
+      "boundary-day filtering"
+    ]
+  }
+}

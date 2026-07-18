@@ -1,0 +1,91 @@
+# Stage 4 forecasting configuration.
+# Forecasts use observations available at the forecast origin t.
+# Future actual weather, future actual load, and runtime scenario events are forbidden
+# in the primary model inputs. Known future calendar fields are allowed.
+schema_version: 1
+
+general:
+  random_seed: 42
+  forecast_horizons_hours: [1, 2, 3, 4, 5, 6]
+  quantiles: [0.1, 0.5, 0.9]
+  output_timezone: Asia/Ho_Chi_Minh
+  frequency: 1h
+  minimum_history_hours: 168
+  quantile_reconciliation_enabled: true
+  reject_dataset_fingerprint_mismatch: true
+
+split:
+  method: chronological_target_timestamp
+  train_fraction: 0.70
+  validation_fraction: 0.15
+  test_fraction: 0.15
+  enforce_common_timestamp_boundaries: true
+  minimum_test_days: 30
+
+load_forecasting:
+  model_scope: global_multi_tenant
+  direct_multi_horizon: true
+  include_tenant_id: true
+  include_archetype: true
+  include_scenario_industry: true
+  include_future_actual_weather: false
+  include_runtime_event_catalog: false
+  estimator_preference:
+    - hist_gradient_boosting_quantile
+    - gradient_boosting_quantile
+  model_hyperparameters:
+    max_iter: 35
+    learning_rate: 0.08
+    max_leaf_nodes: 15
+    l2_regularization: 0.02
+  categorical_encoding: one_hot
+  numeric_imputation_strategy: median
+  categorical_imputation_strategy: most_frequent
+
+solar_forecasting:
+  model_scope: park_level
+  direct_multi_horizon: true
+  include_future_actual_weather: false
+  force_nighttime_zero: true
+  estimator_preference:
+    - hist_gradient_boosting_quantile
+    - gradient_boosting_quantile
+  model_hyperparameters:
+    max_iter: 35
+    learning_rate: 0.08
+    max_leaf_nodes: 15
+    l2_regularization: 0.02
+
+features:
+  load_lags_hours: [1, 2, 3, 6, 12, 24, 48, 168]
+  load_rolling_mean_hours: [3, 6, 24, 168]
+  load_rolling_std_hours: [6, 24, 168]
+  weather_lags_hours: [1, 2, 3, 6, 24]
+  solar_lags_hours: [1, 2, 3, 6, 24, 48, 168]
+  solar_rolling_mean_hours: [3, 6, 24]
+  solar_rolling_std_hours: [6, 24]
+  include_current_observation: true
+  include_target_calendar_features: true
+
+baselines:
+  load: [current_value, previous_day_same_hour, previous_week_same_hour]
+  solar: [current_value, previous_day_same_hour, previous_week_same_hour]
+
+evaluation:
+  primary_point_metric: WAPE
+  interval_lower_quantile: 0.1
+  interval_upper_quantile: 0.9
+  interval_nominal_coverage: 0.8
+  zero_denominator_tolerance: 1.0e-9
+  save_raw_quantile_predictions: true
+  save_reconciled_quantile_predictions: true
+
+outputs:
+  model_root: models/forecasting
+  metrics_path: data/outputs/forecast_metrics.csv
+  prediction_sample_path: data/outputs/forecast_prediction_sample.csv
+  model_manifest_path: models/forecasting/model_manifest.json
+  split_manifest_path: data/outputs/forecast_split_manifest.json
+  feature_manifest_path: data/outputs/forecast_feature_manifest.json
+  evaluation_summary_path: data/outputs/forecast_evaluation_summary.json
+  artifact_directory: artifacts

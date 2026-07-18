@@ -1,0 +1,31 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.streamlit/
+.DS_Store
+*.egg-info/
+
+# Generated local artifacts.
+models/*
+!models/.gitkeep
+!models/forecasting/
+models/forecasting/**/*.joblib
+!models/forecasting/model_manifest.json
+artifacts/*
+!artifacts/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/dataset_manifest.json
+!data/processed/data_quality_report.json
+data/outputs/*
+!data/outputs/.gitkeep
+
+# Local environment and editor files.
+.env
+.env.*
+.idea/
+.vscode/
+*.swp
