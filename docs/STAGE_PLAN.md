@@ -22,7 +22,7 @@ Implemented chronological splits, leakage-safe features, quantile load and solar
 
 ## Stage 5: GreenMPC Controller
 
-Implement rule-based control, deterministic MPC with P50 inputs, conservative GreenMPC with P90 load and P10 solar, solver execution, validation, and fallback behavior.
+Implement the continuous linear GreenMPC control engine with expected P50/P50 mode, quantile-conservative P90/P10 mode, HIGHS solver execution, post-solve simulator validation, diagnostics, and clearly labeled current-step fallback behavior. Stage 5 does not run closed-loop benchmarks.
 
 ## Stage 6: Closed-Loop Evaluation
 

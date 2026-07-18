@@ -120,6 +120,16 @@ Stage 4 trains direct multi-horizon P10/P50/P90 forecasters for tenant load and 
 
 Forecast reporting distinguishes AI versus reactive persistence from AI versus seasonal persistence. A pre-Stage 5 upstream correction fixed the Stage 2 PV unit conversion from NASA `Wh/m^2`; old forecasting artifacts trained on the saturated PV series are incompatible and must be regenerated after rebuilding the dataset. `scripts/audit_forecast_baselines.py` independently verifies solar persistence baselines from processed data.
 
+## GreenMPC Control
+
+```bash
+python scripts/run_mpc_diagnostic.py
+python scripts/run_mpc_example.py
+python scripts/verify_stage5.py
+```
+
+Stage 5 adds a transparent six-interval continuous linear MPC using CVXPY and HIGHS. Interval 0 uses the current effective digital-twin state; intervals 1-5 use Stage 4 forecast quantiles plus known tariff, DPPA, and transformer schedules. The controller returns a first `ParkAction` and validates it with the simulator, but it does not execute simulator steps or run closed-loop benchmarks.
+
 ## Streamlit Demo
 
 ```bash
@@ -161,4 +171,4 @@ This repository does not use actual VRG operational data, actual VRG tenant data
 
 ## Future Stages
 
-Stages 0-4 are complete in this working tree. Stage 5 will add GreenMPC control. Stage 6 will add closed-loop evaluation. Stage 7 will build the live Streamlit demonstration. Stage 8 will add investment and renewable ledger workflows. Stage 9 will harden the submission package.
+Stages 0-5 are complete in this working tree. Stage 6 will add closed-loop evaluation. Stage 7 will build the live Streamlit demonstration. Stage 8 will add investment and renewable ledger workflows. Stage 9 will harden the submission package.

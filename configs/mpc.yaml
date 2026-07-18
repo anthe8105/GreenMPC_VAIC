@@ -1,0 +1,81 @@
+schema_version: 1
+
+general:
+  controller_name: GreenMPC
+  planning_horizon_hours: 6
+  time_step_hours: 1.0
+  current_interval_uses_observed_values: true
+  future_intervals_use_forecasts: true
+  forecast_intervals_used: 5
+  additional_forecast_horizon_for_diagnostics: 6
+  numerical_tolerance_kw: 1.0e-6
+  energy_tolerance_kwh: 1.0e-6
+  objective_tolerance: 1.0e-4
+  random_seed: 42
+
+solver:
+  name: HIGHS
+  verbose: false
+  time_limit_seconds: 20.0
+  accept_optimal_inaccurate: false
+  warm_start: true
+  maximum_resolve_attempts: 2
+
+modes:
+  expected:
+    load_quantile: 0.5
+    solar_quantile: 0.5
+  conservative:
+    load_quantile: 0.9
+    solar_quantile: 0.1
+
+battery:
+  enforce_no_simultaneous_charge_discharge: true
+  simultaneous_power_tolerance_kw: 1.0e-6
+  direction_fixing_repair_enabled: true
+  terminal_reserve_enabled: true
+  terminal_soc_target_fraction: 0.50
+  terminal_reserve_is_soft: true
+
+renewable_targets:
+  enabled: true
+  accounting_basis: cumulative_to_date_plus_planning_horizon
+  use_simulator_cumulative_metrics: true
+  shortfall_is_soft: true
+  battery_is_renewable_only_when_mvp_assumptions_hold: true
+
+objective:
+  include_grid_energy_cost: true
+  include_dppa_energy_cost: true
+  include_battery_degradation_proxy: true
+  include_grid_peak_penalty: true
+  include_pv_curtailment_penalty: true
+  include_renewable_shortfall_penalty: true
+  include_terminal_reserve_penalty: true
+  peak_metric: grid_import
+  weights:
+    grid_peak_penalty_vnd_per_kw: 50000.0
+    pv_curtailment_penalty_vnd_per_kwh: 500.0
+    renewable_shortfall_penalty_vnd_per_kwh: 2500.0
+    terminal_reserve_shortfall_penalty_vnd_per_kwh: 2000.0
+    battery_throughput_multiplier: 1.0
+
+postprocessing:
+  clip_only_within_numerical_tolerance: true
+  validate_first_action_with_simulator: true
+  reject_large_repairs: true
+  maximum_balance_repair_kw: 1.0e-5
+
+fallback:
+  enabled: true
+  use_reference_feasible_action_constructor: true
+  fallback_is_evaluation_baseline: false
+  fallback_on_solver_error: true
+  fallback_on_infeasible: true
+  fallback_on_invalid_extracted_action: true
+
+outputs:
+  plan_output_directory: data/outputs/stage5_example
+  example_output_directory: data/outputs/stage5_example
+  diagnostic_output_directory: data/outputs/stage5_diagnostic
+  artifact_directory: artifacts

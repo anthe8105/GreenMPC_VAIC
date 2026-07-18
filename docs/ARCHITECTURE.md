@@ -7,7 +7,7 @@ GreenMPC Twin uses a layered Python architecture with explicit module boundaries
 - Data layer: source acquisition, local raw-data caching, preprocessing, timestamp alignment, resampling, profile selection, scaling, provenance, and validation.
 - Forecasting layer: feature construction, chronological splitting, model training, quantile forecasts, inference, and forecast metrics.
 - Digital-twin layer: park state, physical energy transitions, battery state, cost accounting, renewable-energy allocation, event effects, and action validation.
-- Control layer: rule-based control, MPC formulation, solver execution, post-solve validation, and fallback behavior.
+- Control layer: continuous linear MPC formulation, solver execution, post-solve validation, and clearly labeled fallback behavior.
 - Evaluation layer: closed-loop backtesting, controller comparison, KPI calculation, and scenario evaluation.
 - Reporting layer: renewable-energy ledger, tenant summaries, CSV export, and audit-ready HTML evidence reports.
 - UI layer: Streamlit session state, charts, user controls, event injection, recommendation displays, and investment scenario interaction.
@@ -34,6 +34,7 @@ Lower layers must not import Streamlit. Algorithms must receive configuration va
 - Reporting consumes validated simulation records rather than controller internals.
 - Stage 3 implements the simulator action contract and strict validation only. The reference feasible-action helper exists for simulator verification and is not an operational controller.
 - Stage 4 implements forecasting pipelines that consume validated processed history and emit forecast bundles. Forecasting does not import simulator internals, CVXPY, Streamlit, MPC code, or production controllers.
+- Stage 5 implements a controller that consumes forecast bundles and simulator observations, solves a continuous LP with HIGHS, extracts a first `ParkAction`, and validates it through the simulator without mutating simulator state. Closed-loop evaluation remains out of scope for the control layer.
 
 ## Mermaid Diagram
 
