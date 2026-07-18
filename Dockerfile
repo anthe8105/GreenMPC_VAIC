@@ -7,6 +7,8 @@ COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
 RUN npm run build
+# Fail the build immediately if the SPA bundle was not produced.
+RUN test -f dist/index.html && ls -la dist
 
 # ---- Stage 2: Python runtime (FastAPI + core library) ----
 FROM python:3.12-slim AS runtime
@@ -27,6 +29,8 @@ RUN pip install -r requirements.txt
 # with the freshly built bundle from stage 1.
 COPY . .
 COPY --from=frontend /app/frontend/dist ./frontend/dist
+# Fail loudly (and print the tree) if the built SPA did not land in the image.
+RUN test -f frontend/dist/index.html && ls -la frontend/dist
 
 # Editable install keeps greenmpc.__file__ under /app/src so that
 # PROJECT_ROOT (= parents[3]) resolves to /app, where models/ and data/ live.

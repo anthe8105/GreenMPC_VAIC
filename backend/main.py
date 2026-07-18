@@ -37,12 +37,19 @@ def create_app() -> FastAPI:
         logging.getLogger(__name__).exception("unhandled API error")
         return JSONResponse(status_code=500, content={"detail": {"code": "INTERNAL_ERROR", "message": str(exc)}})
 
-    if FRONTEND_DIST.exists():
+    index_html = FRONTEND_DIST / "index.html"
+    if index_html.exists():
+        logging.getLogger(__name__).info("Mounting SPA from %s", FRONTEND_DIST)
         app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
 
         @app.get("/{path:path}", include_in_schema=False)
         def spa(_: str = ""):
-            return FileResponse(FRONTEND_DIST / "index.html")
+            return FileResponse(index_html)
+    else:
+        logging.getLogger(__name__).warning(
+            "frontend/dist not found at %s - SPA/root routes NOT mounted (built frontend is missing)",
+            FRONTEND_DIST,
+        )
 
     return app
 
