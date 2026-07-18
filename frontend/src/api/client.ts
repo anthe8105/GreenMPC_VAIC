@@ -95,9 +95,26 @@ async function post(path: string, body: unknown) {
 }
 
 async function parse(response: Response) {
-  const data = await response.json();
+  const text = await response.text();
+  let data: any = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(
+        response.ok
+          ? "The server returned a non-JSON response."
+          : `Server error (HTTP ${response.status}).`
+      );
+    }
+  }
   if (!response.ok) {
-    throw new Error(data?.detail?.message ?? data?.detail ?? response.statusText);
+    throw new Error(data?.detail?.message ?? data?.detail ?? `Server error (HTTP ${response.status}).`);
+  }
+  if (data === null) {
+    throw new Error(
+      `The server returned an empty response (HTTP ${response.status}) - it may have run out of memory or restarted. Try the rule-based controller or a larger instance.`
+    );
   }
   return data;
 }

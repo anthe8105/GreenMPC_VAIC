@@ -18,7 +18,13 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 # cvxpy / highspy / scikit-learn all ship manylinux wheels, so no compiler
-# toolchain is needed. setuptools/wheel are required for the editable install below.
+# toolchain is needed. libgomp1 provides the OpenMP runtime the native solver /
+# sklearn code links against (the slim base omits it).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# setuptools/wheel are required for the editable install below.
 RUN pip install --upgrade pip setuptools wheel
 
 # Dependency layer (cached unless requirements change)
