@@ -23,20 +23,57 @@ def current_kpis(session: LiveControlSession) -> dict[str, float | str]:
     cumulative = state.cumulative
     total_load = sum(ex.effective_tenant_load_kw.values())
     external_import = cumulative.peak_external_import_kw
+    park_history = session.simulator.get_park_energy_history()
+    latest_external = 0.0 if park_history.empty else float(park_history.iloc[-1]["external_import_kwh"])
+    latest_grid = 0.0 if park_history.empty else float(park_history.iloc[-1]["total_grid_to_tenants_kwh"])
+    latest_dppa = 0.0 if park_history.empty else float(park_history.iloc[-1]["total_dppa_to_tenants_kwh"] + park_history.iloc[-1]["dppa_to_battery_kwh"])
     renewable_share = 0.0 if cumulative.total_load_energy_kwh <= 0 else cumulative.renewable_energy_to_tenants_kwh / cumulative.total_load_energy_kwh
     return {
         "timestamp_local": state.timestamp_local.isoformat(),
         "park_load_kw": total_load,
         "pv_available_kw": ex.effective_pv_available_kw,
         "battery_soc_fraction": state.battery.soc_fraction,
+        "grid_import_kw": latest_grid,
+        "dppa_import_kw": latest_dppa,
+        "external_import_kw": latest_external,
         "grid_import_kw_last_peak": cumulative.peak_grid_import_kw,
         "external_import_kw_last_peak": external_import,
-        "transformer_utilization_fraction": 0.0 if ex.transformer_capacity_kw <= 0 else external_import / ex.transformer_capacity_kw,
+        "transformer_utilization_fraction": 0.0 if ex.transformer_capacity_kw <= 0 else latest_external / ex.transformer_capacity_kw,
         "renewable_share_fraction": renewable_share,
         "operating_cost_vnd": cumulative.total_operating_cost_vnd,
         "tariff_period": ex.tariff_period,
         "dppa_available_kw": ex.dppa_available_kw,
+        "renewable_shortfall_kwh": sum(
+            max(0.0, session.simulator.tenant_targets[tenant] * state.cumulative_load_by_tenant_kwh[tenant] - state.cumulative_renewable_by_tenant_kwh[tenant])
+            for tenant in session.simulator.tenant_ids
+        ),
     }
+
+
+def primary_kpi_cards(session: LiveControlSession) -> list[dict[str, str]]:
+    """Return four prominent command-center KPI card definitions."""
+
+    kpis = current_kpis(session)
+    return [
+        {"label": "Renewable share", "value": f"{kpis['renewable_share_fraction']:.1%}", "detail": "realized cumulative"},
+        {"label": "Operating cost", "value": f"{kpis['operating_cost_vnd']/1_000_000:,.2f}M VND", "detail": "realized proxy"},
+        {"label": "Battery SOC", "value": f"{kpis['battery_soc_fraction']:.1%}", "detail": "current inventory"},
+        {"label": "Transformer utilization", "value": f"{kpis['transformer_utilization_fraction']:.1%}", "detail": "latest external import"},
+    ]
+
+
+def secondary_kpi_cards(session: LiveControlSession) -> list[dict[str, str]]:
+    """Return compact secondary command-center KPI card definitions."""
+
+    kpis = current_kpis(session)
+    return [
+        {"label": "Park load", "value": f"{kpis['park_load_kw']:,.0f} kW"},
+        {"label": "PV available", "value": f"{kpis['pv_available_kw']:,.0f} kW"},
+        {"label": "Grid import", "value": f"{kpis['grid_import_kw']:,.0f} kW"},
+        {"label": "DPPA import", "value": f"{kpis['dppa_import_kw']:,.0f} kW"},
+        {"label": "External import", "value": f"{kpis['external_import_kw']:,.0f} kW"},
+        {"label": "Renewable shortfall", "value": f"{kpis['renewable_shortfall_kwh']:,.0f} kWh"},
+    ]
 
 
 def current_energy_flow(session: LiveControlSession) -> pd.DataFrame:
@@ -65,12 +102,95 @@ def current_energy_flow(session: LiveControlSession) -> pd.DataFrame:
     )
 
 
+def energy_topology(session: LiveControlSession) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Return command-center topology nodes and source-to-sink edge flows."""
+
+    tenant_ids = list(session.simulator.tenant_ids)
+    nodes = pd.DataFrame(
+        [{"node": node, "kind": kind} for node, kind in [
+            ("Rooftop PV", "source"),
+            ("DPPA", "source"),
+            ("Grid", "source"),
+            ("BESS", "storage"),
+            ("Park bus", "bus"),
+            ("Curtailment", "sink"),
+            *[(tenant, "tenant") for tenant in tenant_ids],
+        ]]
+    )
+    action = session.latest_action
+    park = session.simulator.get_park_energy_history()
+    edges: list[dict[str, Any]] = []
+    if action is not None:
+        for tenant in tenant_ids:
+            edges.extend(
+                [
+                    _edge("Rooftop PV", tenant, action.pv_to_tenant_kw[tenant], "pv"),
+                    _edge("DPPA", tenant, action.dppa_to_tenant_kw[tenant], "dppa"),
+                    _edge("Grid", tenant, action.grid_to_tenant_kw[tenant], "grid"),
+                    _edge("BESS", tenant, action.battery_to_tenant_kw[tenant], "battery"),
+                ]
+            )
+        edges.extend(
+            [
+                _edge("Rooftop PV", "BESS", action.pv_to_battery_kw, "pv"),
+                _edge("DPPA", "BESS", action.dppa_to_battery_kw, "dppa"),
+                _edge("Rooftop PV", "Curtailment", action.pv_curtailment_kw, "curtailment"),
+            ]
+        )
+    elif not park.empty:
+        last = park.iloc[-1]
+        tenant_energy = session.simulator.get_tenant_energy_history()
+        latest_ts = tenant_energy["timestamp_local"].iloc[-1] if not tenant_energy.empty else None
+        latest_tenant = tenant_energy[tenant_energy["timestamp_local"] == latest_ts] if latest_ts is not None else pd.DataFrame()
+        for _, row in latest_tenant.iterrows():
+            tenant = row["tenant_id"]
+            edges.extend(
+                [
+                    _edge("Rooftop PV", tenant, float(row["rooftop_pv_kwh"]), "pv"),
+                    _edge("DPPA", tenant, float(row["dppa_kwh"]), "dppa"),
+                    _edge("Grid", tenant, float(row["grid_kwh"]), "grid"),
+                    _edge("BESS", tenant, float(row["battery_delivery_kwh"]), "battery"),
+                ]
+            )
+        edges.extend(
+            [
+                _edge("Rooftop PV", "BESS", float(last["pv_to_battery_kwh"]), "pv"),
+                _edge("DPPA", "BESS", float(last["dppa_to_battery_kwh"]), "dppa"),
+                _edge("Rooftop PV", "Curtailment", float(last["pv_curtailment_kwh"]), "curtailment"),
+            ]
+        )
+    else:
+        edges.extend(_edge(source, target, 0.0, style) for source, target, style in _default_edges(tenant_ids))
+    edge_frame = pd.DataFrame(edges)
+    if not edge_frame.empty:
+        max_kw = max(float(edge_frame["kw"].max()), 1.0)
+        edge_frame["active"] = edge_frame["kw"] > 1e-6
+        edge_frame["width"] = edge_frame["kw"].apply(lambda value: 1.0 + 7.0 * float(value) / max_kw)
+    return nodes, edge_frame
+
+
 def forecast_frames(session: LiveControlSession) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Return load and solar forecast frames for charts."""
 
     load = session.latest_load_forecast.to_dataframe() if session.latest_load_forecast else pd.DataFrame()
     solar = session.latest_solar_forecast.to_dataframe() if session.latest_solar_forecast else pd.DataFrame()
     return load, solar
+
+
+def aggregate_forecast_frame(session: LiveControlSession) -> pd.DataFrame:
+    """Build total-load and solar forecast frame with current observed values."""
+
+    load, solar = forecast_frames(session)
+    if load.empty or solar.empty:
+        return pd.DataFrame()
+    load_group = load.groupby(["timestamp_local", "horizon_hours"], as_index=False)[["p10_kw", "p50_kw", "p90_kw"]].sum()
+    load_group["series"] = "Total load"
+    solar_group = solar[["timestamp_local", "horizon_hours", "p10_kw", "p50_kw", "p90_kw"]].copy()
+    solar_group["series"] = "Solar PV"
+    current = current_kpis(session)
+    combined = pd.concat([load_group, solar_group], ignore_index=True)
+    combined["current_observed_kw"] = combined["series"].map({"Total load": current["park_load_kw"], "Solar PV": current["pv_available_kw"]})
+    return combined
 
 
 def plan_frames(session: LiveControlSession) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -80,6 +200,12 @@ def plan_frames(session: LiveControlSession) -> tuple[pd.DataFrame, pd.DataFrame
     if plan is None:
         return pd.DataFrame(), pd.DataFrame()
     return plan.tenant_plan.copy(deep=True), plan.park_plan.copy(deep=True)
+
+
+def rolling_history_frame(session: LiveControlSession) -> pd.DataFrame:
+    """Return the most recent live execution history rows."""
+
+    return pd.DataFrame(session.rolling_history[-24:])
 
 
 def tenant_summary(session: LiveControlSession, tenant_id: str) -> dict[str, float | str | bool]:
@@ -134,6 +260,69 @@ def solver_diagnostics(session: LiveControlSession) -> dict[str, Any]:
         "active_constraints": ", ".join(plan.constraint_diagnostics.active_constraint_codes),
         "warnings": "; ".join(plan.warnings),
     }
+
+
+def recommended_action_card(session: LiveControlSession) -> dict[str, str | float | bool | None]:
+    """Summarize the latest recommended or executed action."""
+
+    action = session.latest_action
+    if action is None:
+        return {
+            "plan_timestamp": session.plan_timestamp,
+            "controller": session.controller_id,
+            "solver_status": "not ready",
+            "validation_result": "not validated",
+            "fallback_state": session.fallback_visible,
+        }
+    total_pv = sum(action.pv_to_tenant_kw.values())
+    total_dppa = sum(action.dppa_to_tenant_kw.values()) + action.dppa_to_battery_kw
+    total_grid = sum(action.grid_to_tenant_kw.values())
+    total_battery = sum(action.battery_to_tenant_kw.values())
+    total_charge = action.pv_to_battery_kw + action.dppa_to_battery_kw
+    ex = session.simulator.get_effective_exogenous()
+    external = total_grid + total_dppa
+    validation = session.latest_validation
+    return {
+        "plan_timestamp": session.plan_timestamp,
+        "controller": session.controller_id,
+        "solver_status": solver_diagnostics(session).get("solver_status"),
+        "grid_import_kw": total_grid,
+        "dppa_allocation_kw": total_dppa,
+        "pv_allocation_kw": total_pv,
+        "battery_discharge_kw": total_battery,
+        "battery_charge_kw": total_charge,
+        "curtailment_kw": action.pv_curtailment_kw,
+        "transformer_utilization_fraction": 0.0 if ex.transformer_capacity_kw <= 0 else external / ex.transformer_capacity_kw,
+        "validation_result": "valid" if validation is not None and validation.valid else "invalid",
+        "fallback_state": session.fallback_visible,
+        "fallback_reason": session.fallback_reason,
+    }
+
+
+def alert_cards(session: LiveControlSession) -> list[dict[str, str]]:
+    """Derive visible operational alerts from real state and plan status."""
+
+    alerts: list[dict[str, str]] = []
+    kpis = current_kpis(session)
+    if float(kpis["transformer_utilization_fraction"]) >= 0.85:
+        alerts.append({"severity": "warning", "message": "High transformer utilization"})
+    if float(kpis["battery_soc_fraction"]) <= 0.15:
+        alerts.append({"severity": "warning", "message": "Low battery SOC"})
+    if float(kpis["renewable_shortfall_kwh"]) > 0:
+        alerts.append({"severity": "info", "message": "Renewable target shortfall remains"})
+    aggregate = aggregate_forecast_frame(session)
+    if not aggregate.empty:
+        spread = (aggregate["p90_kw"] - aggregate["p10_kw"]).max()
+        center = max(float(aggregate["p50_kw"].mean()), 1.0)
+        if float(spread) / center > 0.35:
+            alerts.append({"severity": "info", "message": "High forecast uncertainty"})
+    if session.fallback_visible:
+        alerts.append({"severity": "error", "message": f"Fallback active: {session.fallback_reason or 'current-step fallback'}"})
+    if session.last_error:
+        alerts.append({"severity": "error", "message": session.last_error})
+    if session.plan_is_stale and session.latest_action is not None:
+        alerts.append({"severity": "warning", "message": "Plan is stale and cannot execute"})
+    return alerts
 
 
 def objective_breakdown(session: LiveControlSession) -> pd.DataFrame:
@@ -239,6 +428,41 @@ def action_preview(session: LiveControlSession) -> pd.DataFrame:
         }
     )
     return pd.DataFrame(rows)
+
+
+def ui_status(session: LiveControlSession, countdown_seconds: float | None = None) -> dict[str, str]:
+    """Return compact live-loop status strings."""
+
+    return {
+        "status": session.latest_status,
+        "operation_mode": session.operation_mode,
+        "countdown": "paused" if countdown_seconds is None else f"{countdown_seconds:.0f}s",
+        "completed_hours": f"{session.simulated_hours_completed}",
+        "maximum_hours": f"{session.maximum_simulated_hours}",
+        "forecast_latency": f"{session.timings.get('forecast_seconds', 0.0):.2f}s",
+        "planning_latency": f"{session.timings.get('planning_seconds', 0.0):.2f}s",
+    }
+
+
+def _edge(source: str, target: str, kw: float, style: str) -> dict[str, Any]:
+    return {"source": source, "target": target, "kw": max(0.0, float(kw)), "style": style}
+
+
+def _default_edges(tenant_ids: list[str]) -> list[tuple[str, str, str]]:
+    edges = []
+    for tenant in tenant_ids:
+        edges.extend([
+            ("Rooftop PV", tenant, "pv"),
+            ("DPPA", tenant, "dppa"),
+            ("Grid", tenant, "grid"),
+            ("BESS", tenant, "battery"),
+        ])
+    edges.extend([
+        ("Rooftop PV", "BESS", "pv"),
+        ("DPPA", "BESS", "dppa"),
+        ("Rooftop PV", "Curtailment", "curtailment"),
+    ])
+    return edges
 
 
 def _find_lineage_value(lineage: dict[str, Any], key: str, nested_key: str) -> str:

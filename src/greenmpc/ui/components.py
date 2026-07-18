@@ -14,29 +14,86 @@ from greenmpc.ui.session import can_execute_latest_plan
 from greenmpc.ui.state import ControlRoomResources, LiveControlSession
 from greenmpc.ui.view_models import (
     action_preview,
+    aggregate_forecast_frame,
+    alert_cards,
     benchmark_view,
     current_energy_flow,
     current_kpis,
+    energy_topology,
     forecast_frames,
     objective_breakdown,
     plan_frames,
+    primary_kpi_cards,
     provenance_summary,
+    recommended_action_card,
+    rolling_history_frame,
+    secondary_kpi_cards,
     solver_diagnostics,
     tenant_summary,
+    ui_status,
 )
 
 
-def render_header(session: LiveControlSession, resources: ControlRoomResources) -> None:
+def apply_command_center_style() -> None:
+    """Apply a dark industrial command-center skin."""
+
+    st.markdown(
+        """
+        <style>
+        .stApp { background: #07111f; color: #e8f1ff; }
+        [data-testid="stSidebar"] { background: #0b1728; border-right: 1px solid #1f3552; }
+        .block-container { padding-top: 1.2rem; max-width: 1500px; }
+        .gm-header {
+            border: 1px solid #24405f; border-radius: 14px; padding: 18px 20px;
+            background: linear-gradient(135deg, #0e2138 0%, #091729 62%, #10271f 100%);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+        }
+        .gm-title { font-size: 30px; font-weight: 760; letter-spacing: 0; margin: 0 0 10px 0; color: #f6fbff; }
+        .gm-chip { display: inline-block; padding: 6px 10px; border-radius: 999px; margin: 4px 6px 0 0; background: #142842; border: 1px solid #2d4e74; color: #d7e8ff; font-size: 13px; }
+        .gm-chip.good { border-color: #24c99a; color: #aefce4; background: #0c2b25; }
+        .gm-chip.warn { border-color: #ffbf5c; color: #ffe1af; background: #332614; }
+        .gm-card {
+            min-height: 104px; padding: 16px 16px; border-radius: 14px; border: 1px solid #23425f;
+            background: #0d1c30; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .gm-card.small { min-height: 80px; }
+        .gm-label { color: #9fb3c8; font-size: 13px; line-height: 1.2; margin-bottom: 8px; white-space: normal; }
+        .gm-value { color: #ffffff; font-size: 26px; font-weight: 740; line-height: 1.15; white-space: normal; overflow-wrap: anywhere; }
+        .gm-detail { color: #6fd9bd; font-size: 12px; margin-top: 8px; }
+        .gm-section { color: #f5fbff; margin: 12px 0 8px 0; font-size: 20px; font-weight: 700; }
+        .gm-alert { padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #31506f; background: #0d2036; }
+        .gm-alert.error { border-color: #ff5f78; background: #331621; color: #ffd5dc; }
+        .gm-alert.warning { border-color: #ffbf5c; background: #302412; color: #ffe2b4; }
+        .gm-alert.info { border-color: #50a0ff; background: #11233b; color: #d5e8ff; }
+        div[data-testid="stMetricValue"] { white-space: normal; overflow-wrap: anywhere; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_header(session: LiveControlSession, resources: ControlRoomResources, countdown_seconds: float | None = None) -> None:
     """Render top-level status and disclosure."""
 
     kpis = current_kpis(session)
-    st.title("GreenMPC Twin Control Room")
-    cols = st.columns([1.5, 1, 1, 1, 1])
-    cols[0].metric("Local timestamp", str(kpis["timestamp_local"]))
-    cols[1].metric("Controller", session.controller_id)
-    cols[2].metric("Scenario", session.scenario_id)
-    cols[3].metric("Model/data", "compatible")
-    cols[4].metric("Offline", "yes")
+    status = ui_status(session, countdown_seconds)
+    state_class = "good" if status["status"] in {"Running", "Plan Ready", "Shadow Recommendation"} else "warn"
+    st.markdown(
+        f"""
+        <div class="gm-header">
+          <div class="gm-title">GreenMPC Twin — Eco-Industrial Park Command Center</div>
+          <span class="gm-chip">{kpis["timestamp_local"]}</span>
+          <span class="gm-chip {state_class}">{status["status"]}</span>
+          <span class="gm-chip">{status["operation_mode"]}</span>
+          <span class="gm-chip">{session.controller_id}</span>
+          <span class="gm-chip">{session.scenario_id}</span>
+          <span class="gm-chip good">offline compatible</span>
+          <span class="gm-chip">next step: {status["countdown"]}</span>
+          <span class="gm-chip">hours: {status["completed_hours"]}/{status["maximum_hours"]}</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.caption(resources.project_config.project.synthetic_demo_notice)
     st.warning("Synthetic scenario demo using public/rescaled data. No actual VRG operational data is claimed.")
 
@@ -44,34 +101,34 @@ def render_header(session: LiveControlSession, resources: ControlRoomResources) 
 def render_kpis(session: LiveControlSession) -> None:
     """Render current KPI cards."""
 
-    kpis = current_kpis(session)
-    cols = st.columns(8)
-    cols[0].metric("Park load", f"{kpis['park_load_kw']:,.0f} kW")
-    cols[1].metric("PV availability", f"{kpis['pv_available_kw']:,.0f} kW")
-    cols[2].metric("Battery SOC", f"{kpis['battery_soc_fraction']:.1%}")
-    cols[3].metric("Peak grid import", f"{kpis['grid_import_kw_last_peak']:,.0f} kW")
-    cols[4].metric("Peak external import", f"{kpis['external_import_kw_last_peak']:,.0f} kW")
-    cols[5].metric("Transformer util.", f"{kpis['transformer_utilization_fraction']:.1%}")
-    cols[6].metric("Renewable share", f"{kpis['renewable_share_fraction']:.1%}")
-    cols[7].metric("Cost proxy", f"{kpis['operating_cost_vnd']/1_000_000:,.2f}M VND")
+    cols = st.columns(4)
+    for col, card in zip(cols, primary_kpi_cards(session)):
+        col.markdown(_card_html(card), unsafe_allow_html=True)
+    small_cols = st.columns(3)
+    secondary = secondary_kpi_cards(session)
+    for index, card in enumerate(secondary):
+        small_cols[index % 3].markdown(_card_html(card, small=True), unsafe_allow_html=True)
 
 
 def render_control_room(session: LiveControlSession, resources: ControlRoomResources, tenant_id: str) -> None:
     """Render the main operational state, forecast, plan, and diagnostics."""
 
     render_kpis(session)
+    _render_alerts(session)
     left, right = st.columns([1, 1])
     with left:
-        st.subheader("Current Energy Flow")
-        st.plotly_chart(charts.energy_flow_bar(current_energy_flow(session)), use_container_width=True)
-        st.dataframe(current_energy_flow(session), use_container_width=True, hide_index=True)
+        st.markdown('<div class="gm-section">Live Energy Topology</div>', unsafe_allow_html=True)
+        nodes, edges = energy_topology(session)
+        st.plotly_chart(charts.energy_topology_figure(nodes, edges), use_container_width=True)
+        st.dataframe(edges[["source", "target", "kw", "active", "style"]], use_container_width=True, hide_index=True)
     with right:
-        st.subheader("Tenant View")
+        st.markdown('<div class="gm-section">Tenant View</div>', unsafe_allow_html=True)
         st.dataframe(pd.DataFrame([tenant_summary(session, tenant_id)]), use_container_width=True, hide_index=True)
 
     load, solar = forecast_frames(session)
     tenant_plan, park_plan = plan_frames(session)
-    st.subheader("Forecast and Plan")
+    st.markdown('<div class="gm-section">Forecast and Plan</div>', unsafe_allow_html=True)
+    st.plotly_chart(charts.aggregate_forecast_figure(aggregate_forecast_frame(session)), use_container_width=True)
     fcols = st.columns(2)
     fcols[0].plotly_chart(charts.load_forecast_figure(load, tenant_id), use_container_width=True)
     fcols[1].plotly_chart(charts.solar_forecast_figure(solar), use_container_width=True)
@@ -81,7 +138,8 @@ def render_control_room(session: LiveControlSession, resources: ControlRoomResou
     if not tenant_plan.empty:
         st.dataframe(tenant_plan, use_container_width=True, hide_index=True)
 
-    st.subheader("First Action and Diagnostics")
+    st.markdown('<div class="gm-section">Recommended Action and Diagnostics</div>', unsafe_allow_html=True)
+    st.dataframe(pd.DataFrame([recommended_action_card(session)]), use_container_width=True, hide_index=True)
     st.dataframe(action_preview(session), use_container_width=True, hide_index=True)
     diag = solver_diagnostics(session)
     if diag.get("fallback_used"):
@@ -92,6 +150,9 @@ def render_control_room(session: LiveControlSession, resources: ControlRoomResou
         st.dataframe(obj, use_container_width=True, hide_index=True)
     ready, reason = can_execute_latest_plan(session)
     st.caption(f"Execution gate: {reason}")
+
+    st.markdown('<div class="gm-section">Rolling Live History</div>', unsafe_allow_html=True)
+    st.plotly_chart(charts.rolling_history_figure(rolling_history_frame(session)), use_container_width=True)
 
 
 def render_events(session: LiveControlSession) -> None:
@@ -157,3 +218,18 @@ def render_provenance(resources: ControlRoomResources, scenario_id: str) -> None
         st.write(f"**{key}:** {value}")
     for disclosure in summary["disclosures"]:
         st.info(disclosure)
+
+
+def _render_alerts(session: LiveControlSession) -> None:
+    alerts = alert_cards(session)
+    if not alerts:
+        st.markdown('<div class="gm-alert info">No active operational alerts.</div>', unsafe_allow_html=True)
+        return
+    for alert in alerts:
+        st.markdown(f'<div class="gm-alert {alert["severity"]}">{alert["message"]}</div>', unsafe_allow_html=True)
+
+
+def _card_html(card: dict[str, str], small: bool = False) -> str:
+    detail = f'<div class="gm-detail">{card.get("detail", "")}</div>' if card.get("detail") else ""
+    cls = "gm-card small" if small else "gm-card"
+    return f'<div class="{cls}"><div class="gm-label">{card["label"]}</div><div class="gm-value">{card["value"]}</div>{detail}</div>'

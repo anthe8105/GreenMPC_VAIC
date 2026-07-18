@@ -8,6 +8,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 sys.modules.setdefault("numexpr", None)
 sys.modules.setdefault("bottleneck", None)
@@ -68,6 +69,19 @@ class LiveControlSession:
     timings: dict[str, float] = field(default_factory=dict)
     execution_history: list[dict[str, Any]] = field(default_factory=list)
     active_event_ids: list[str] = field(default_factory=list)
+    live_mode_enabled: bool = False
+    operation_mode: str = "Manual Approval"
+    playback_interval_seconds: float = 5.0
+    last_control_tick: float | None = None
+    next_control_tick: float | None = None
+    simulated_hours_completed: int = 0
+    maximum_simulated_hours: int = 24
+    step_in_progress: bool = False
+    run_identifier: str = field(default_factory=lambda: uuid4().hex)
+    latest_status: str = "Paused"
+    latest_latency: dict[str, float] = field(default_factory=dict)
+    last_processed_tick_key: str | None = None
+    rolling_history: list[dict[str, Any]] = field(default_factory=list)
 
 
 def load_control_room_resources(project_root: Path = PROJECT_ROOT) -> ControlRoomResources:

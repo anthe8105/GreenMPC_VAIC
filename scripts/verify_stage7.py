@@ -27,9 +27,16 @@ def main() -> int:
         checks.append(("Streamlit app imports", False, str(exc)))
 
     try:
-        from greenmpc.ui.session import can_execute_latest_plan, execute_next_hour, forecast_and_plan
+        from greenmpc.ui.session import (
+            can_execute_latest_plan,
+            configure_live_operation,
+            execute_next_hour,
+            forecast_and_plan,
+            process_control_tick,
+            start_live_demo,
+        )
         from greenmpc.ui.state import initialize_live_session, load_control_room_resources
-        from greenmpc.ui.view_models import benchmark_view, current_kpis
+        from greenmpc.ui.view_models import benchmark_view, current_kpis, energy_topology, rolling_history_frame
 
         resources = load_control_room_resources(PROJECT_ROOT)
         session = initialize_live_session(
@@ -52,11 +59,27 @@ def main() -> int:
         checks.append(("timestamp advances one hour", str(next_timestamp - initial_timestamp) == "1:00:00", next_timestamp.isoformat()))
         ready_after, reason_after = can_execute_latest_plan(session)
         checks.append(("previous plan becomes stale", not ready_after and "No validated action" in reason_after, reason_after))
+        checks.append(("rolling history updates", len(rolling_history_frame(session)) == 1, "one executed row"))
 
         session.controller_id = "greenmpc_conservative"
         session.fallback_visible = True
         session.fallback_reason = "test fallback visibility"
         checks.append(("fallback visibility logic", session.fallback_visible and bool(session.fallback_reason), session.fallback_reason))
+
+        auto = initialize_live_session(resources, scenario_id="normal", controller_id="rule_based", start_timestamp=resources.evaluation_config.start_timestamp)
+        configure_live_operation(auto, operation_mode="Auto Pilot Demo", playback_interval_seconds=2.0, maximum_simulated_hours=3)
+        start_live_demo(auto, now=10.0)
+        process_control_tick(auto, resources, now=12.0)
+        checks.append(("Auto Pilot advances one hour", auto.simulated_hours_completed == 1 and len(auto.execution_history) == 1, auto.simulator.get_state().timestamp_local.isoformat()))
+        _, topology_edges = energy_topology(auto)
+        checks.append(("topology has active flows", not topology_edges.empty and topology_edges["kw"].sum() > 0, f"{len(topology_edges)} edges"))
+
+        shadow = initialize_live_session(resources, scenario_id="normal", controller_id="rule_based", start_timestamp=resources.evaluation_config.start_timestamp)
+        configure_live_operation(shadow, operation_mode="Shadow Mode", playback_interval_seconds=2.0, maximum_simulated_hours=3)
+        shadow_start = shadow.simulator.get_state().timestamp_local
+        start_live_demo(shadow, now=20.0)
+        process_control_tick(shadow, resources, now=22.0)
+        checks.append(("Shadow Mode plans without execution", shadow.latest_action is not None and shadow.simulator.get_state().timestamp_local == shadow_start, shadow.latest_status))
 
         benchmark = benchmark_view(resources, 1500.0)
         checks.append(("benchmark summaries load read-only", not benchmark.empty and "inventory_adjusted_operating_cost_vnd" in benchmark, f"{len(benchmark)} rows"))

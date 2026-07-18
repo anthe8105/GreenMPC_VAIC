@@ -149,7 +149,7 @@ streamlit run streamlit_app.py
 python scripts/verify_stage7.py
 ```
 
-Stage 7 provides a fully offline interactive Control Room. A judge can inspect current state, generate forecasts, solve a six-hour MPC plan, validate and execute one simulated hour, view KPI updates, inspect fallback status, and read Stage 6 benchmark evidence without rerunning the benchmark.
+Stage 7 provides a fully offline interactive Control Room. A judge can inspect current state, generate forecasts, solve a six-hour MPC plan, validate and execute one simulated hour, view KPI updates, inspect fallback status, and read Stage 6 benchmark evidence without rerunning the benchmark. The UI includes Manual Approval, bounded Auto Pilot Demo, and Shadow Mode operation.
 
 ## Repository Structure
 

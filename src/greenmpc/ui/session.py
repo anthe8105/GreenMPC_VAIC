@@ -6,6 +6,7 @@ import time
 import sys
 from dataclasses import replace
 from typing import Any
+from uuid import uuid4
 
 sys.modules.setdefault("numexpr", None)
 sys.modules.setdefault("bottleneck", None)
@@ -17,12 +18,15 @@ from greenmpc.ui.state import ControlRoomResources, LiveControlSession, invalida
 
 
 CONTROLLER_OPTIONS = ("rule_based", "deterministic_mpc", "greenmpc_conservative")
+OPERATION_MODES = ("Manual Approval", "Auto Pilot Demo", "Shadow Mode")
+PLAYBACK_INTERVALS_SECONDS = (2.0, 5.0, 10.0)
 
 
 def forecast_and_plan(session: LiveControlSession, resources: ControlRoomResources) -> LiveControlSession:
     """Generate one shared forecast bundle and a current-step action candidate."""
 
     session.last_error = None
+    session.latest_status = "Planning"
     start_total = time.perf_counter()
     state = session.simulator.get_state()
     effective = session.simulator.get_effective_exogenous()
@@ -75,6 +79,15 @@ def forecast_and_plan(session: LiveControlSession, resources: ControlRoomResourc
     )
     if not validation.valid:
         session.last_error = _validation_message(validation)
+        session.latest_status = "Invalid Action"
+    elif fallback_visible:
+        session.latest_status = "Fallback"
+    elif session.operation_mode == "Shadow Mode":
+        session.latest_status = "Shadow Recommendation"
+    elif session.live_mode_enabled:
+        session.latest_status = "Running"
+    else:
+        session.latest_status = "Plan Ready"
     return session
 
 
@@ -99,8 +112,10 @@ def execute_next_hour(session: LiveControlSession) -> LiveControlSession:
     ok, reason = can_execute_latest_plan(session)
     if not ok:
         session.last_error = reason
+        session.latest_status = "Invalid Action"
         return session
     start = time.perf_counter()
+    session.latest_status = "Executing"
     previous_timestamp = session.simulator.get_state().timestamp_local
     result = session.simulator.step(session.latest_action)
     session.execution_history.append(
@@ -112,9 +127,13 @@ def execute_next_hour(session: LiveControlSession) -> LiveControlSession:
             "fallback_used": session.fallback_visible,
         }
     )
+    _append_rolling_history(session)
     session.timings["execution_seconds"] = time.perf_counter() - start
+    session.latest_latency["execution_seconds"] = session.timings["execution_seconds"]
     invalidate_plan(session)
     session.last_error = None
+    session.simulated_hours_completed += 1
+    session.latest_status = "Running" if session.live_mode_enabled else "Paused"
     return session
 
 
@@ -131,6 +150,134 @@ def run_next_hours(session: LiveControlSession, resources: ControlRoomResources,
     return session
 
 
+def configure_live_operation(
+    session: LiveControlSession,
+    *,
+    operation_mode: str,
+    playback_interval_seconds: float,
+    maximum_simulated_hours: int = 24,
+) -> LiveControlSession:
+    """Update live demo controls without solving or executing."""
+
+    if operation_mode not in OPERATION_MODES:
+        raise ValueError(f"unknown operation mode: {operation_mode}")
+    if float(playback_interval_seconds) not in PLAYBACK_INTERVALS_SECONDS:
+        raise ValueError("playback interval must be 2, 5, or 10 seconds")
+    session.operation_mode = operation_mode
+    session.playback_interval_seconds = float(playback_interval_seconds)
+    session.maximum_simulated_hours = int(maximum_simulated_hours)
+    if operation_mode == "Manual Approval" and session.live_mode_enabled:
+        pause_live_demo(session)
+    return session
+
+
+def start_live_demo(session: LiveControlSession, now: float | None = None) -> LiveControlSession:
+    """Enable scheduled live control ticks."""
+
+    current = time.monotonic() if now is None else float(now)
+    if session.operation_mode == "Manual Approval":
+        session.last_error = "Auto progression is disabled in Manual Approval mode."
+        session.latest_status = "Paused"
+        return session
+    session.live_mode_enabled = True
+    session.latest_status = "Running"
+    session.last_error = None
+    session.last_control_tick = current
+    session.next_control_tick = current + session.playback_interval_seconds
+    session.last_processed_tick_key = None
+    return session
+
+
+def pause_live_demo(session: LiveControlSession) -> LiveControlSession:
+    """Pause scheduled live control ticks without changing simulator state."""
+
+    session.live_mode_enabled = False
+    session.latest_status = "Paused"
+    return session
+
+
+def reset_live_run_state(session: LiveControlSession) -> LiveControlSession:
+    """Cancel an active run identifier and reset live counters."""
+
+    session.live_mode_enabled = False
+    session.latest_status = "Paused"
+    session.last_control_tick = None
+    session.next_control_tick = None
+    session.simulated_hours_completed = 0
+    session.step_in_progress = False
+    session.run_identifier = uuid4().hex
+    session.last_processed_tick_key = None
+    session.rolling_history.clear()
+    invalidate_plan(session)
+    return session
+
+
+def control_tick_due(session: LiveControlSession, now: float | None = None) -> bool:
+    """Return whether a scheduled control tick should execute."""
+
+    current = time.monotonic() if now is None else float(now)
+    return bool(
+        session.live_mode_enabled
+        and not session.step_in_progress
+        and session.next_control_tick is not None
+        and current >= session.next_control_tick
+        and session.simulated_hours_completed < session.maximum_simulated_hours
+    )
+
+
+def seconds_until_next_tick(session: LiveControlSession, now: float | None = None) -> float | None:
+    """Return countdown seconds until the next scheduled live tick."""
+
+    if not session.live_mode_enabled or session.next_control_tick is None:
+        return None
+    current = time.monotonic() if now is None else float(now)
+    return max(0.0, session.next_control_tick - current)
+
+
+def process_control_tick(session: LiveControlSession, resources: ControlRoomResources, now: float | None = None) -> LiveControlSession:
+    """Execute at most one due live control tick."""
+
+    current = time.monotonic() if now is None else float(now)
+    if not control_tick_due(session, current):
+        return session
+    tick_key = f"{session.run_identifier}:{session.next_control_tick:.6f}:{session.simulator.get_state().timestamp_local.isoformat()}"
+    if session.last_processed_tick_key == tick_key:
+        return session
+    session.step_in_progress = True
+    session.last_processed_tick_key = tick_key
+    pre_timestamp = session.simulator.get_state().timestamp_local
+    try:
+        session = forecast_and_plan(session, resources)
+        if session.operation_mode == "Shadow Mode":
+            session.last_control_tick = current
+            session.next_control_tick = current + session.playback_interval_seconds
+            session.latest_status = "Shadow Recommendation"
+            return session
+        ok, reason = can_execute_latest_plan(session)
+        if not ok:
+            session.last_error = reason
+            session.live_mode_enabled = False
+            session.latest_status = "Invalid Action"
+            return session
+        session = execute_next_hour(session)
+        session.last_control_tick = current
+        session.next_control_tick = current + session.playback_interval_seconds
+        if session.simulated_hours_completed >= session.maximum_simulated_hours:
+            session.live_mode_enabled = False
+            session.latest_status = "Paused"
+        return session
+    except Exception as exc:
+        if session.simulator.get_state().timestamp_local != pre_timestamp:
+            session.last_error = f"live tick failed after timestamp changed: {exc}"
+        else:
+            session.last_error = str(exc)
+        session.live_mode_enabled = False
+        session.latest_status = "Error"
+        return session
+    finally:
+        session.step_in_progress = False
+
+
 def switch_controller(session: LiveControlSession, controller_id: str) -> LiveControlSession:
     """Change the selected controller without solving or mutating simulator state."""
 
@@ -140,6 +287,27 @@ def switch_controller(session: LiveControlSession, controller_id: str) -> LiveCo
         session.controller_id = controller_id
         invalidate_plan(session)
     return session
+
+
+def _append_rolling_history(session: LiveControlSession) -> None:
+    park = session.simulator.get_park_energy_history()
+    if park.empty:
+        return
+    last = park.iloc[-1]
+    session.rolling_history.append(
+        {
+            "timestamp_local": str(last["timestamp_local"]),
+            "park_load_kw": float(last["total_effective_load_kwh"]),
+            "pv_to_tenants_kw": float(last["total_pv_to_tenants_kwh"]),
+            "grid_import_kw": float(last["total_grid_to_tenants_kwh"]),
+            "dppa_import_kw": float(last["total_dppa_to_tenants_kwh"] + last["dppa_to_battery_kwh"]),
+            "battery_power_kw": float(last["total_battery_to_tenants_kwh"] - last["pv_to_battery_kwh"] - last["dppa_to_battery_kwh"]),
+            "soc_fraction": float(last["battery_soc_after"]),
+            "transformer_utilization_fraction": float(last["transformer_utilization_fraction"]),
+            "cumulative_cost_vnd": float(session.simulator.get_state().cumulative.total_operating_cost_vnd),
+        }
+    )
+    session.rolling_history[:] = session.rolling_history[-24:]
 
 
 def _validation_message(validation: Any) -> str:

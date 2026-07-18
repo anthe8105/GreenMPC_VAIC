@@ -23,6 +23,16 @@ Heavy read-only resources are loaded through `st.cache_resource`:
 
 Mutable demo state lives in `st.session_state`. Resetting the demo creates a fresh simulator, observed-history adapter, scenario events, and empty forecast/plan/action state.
 
+## Operation Modes
+
+The Control Room supports three explicit modes:
+
+- `Manual Approval`: forecast and planning require **Forecast and Re-optimize**. Execution requires **Approve & Execute Next Hour** or **Approve Fallback Action**.
+- `Auto Pilot Demo`: the UI advances the simulated digital twin on a bounded schedule. Each control cycle reads current state, forecasts, plans, validates, executes one hour, invalidates the old plan, and refreshes views.
+- `Shadow Mode`: the UI forecasts and optimizes on schedule but never executes automatically. It displays the recommended action as advisory output.
+
+The default mode is `Manual Approval`, paused, with a five-second playback interval. Auto runs are limited to 24 simulated hours by default.
+
 ## Live Workflow
 
 1. Initialize or reset the deterministic demo timestamp.
@@ -36,6 +46,24 @@ Mutable demo state lives in `st.session_state`. Resetting the demo creates a fre
 9. The old plan is invalidated after execution and cannot be reused.
 
 `Run Next 3 Hours` repeats the same reforecast, replan, validate, execute sequence one hour at a time. There is no unlimited automatic loop.
+
+## Live Timing
+
+Streamlit fragment-based periodic reruns check the live clock once per second when supported by the installed Streamlit version. Forecasting and MPC are triggered only when the configured playback interval has expired. The app records:
+
+- running, paused, planning, executing, fallback, and error status;
+- next-step countdown;
+- completed and maximum simulated hours;
+- most recent forecast, planning, validation, and execution latency;
+- a run identifier that is reset on demo reset.
+
+The live engine guards against overlapping reruns by marking a step in progress and remembering the processed tick key. Pausing prevents new control ticks. Reset cancels the active run identifier and invalidates any stale plan.
+
+## Command Center Layout
+
+The live tab uses a dark industrial command-center layout. Four primary cards show renewable share, cumulative operating cost, battery SOC, and transformer utilization. Secondary cards show park load, PV availability, grid import, DPPA import, external import, and renewable shortfall.
+
+The topology panel shows Rooftop PV, DPPA, Grid, BESS, Park bus, curtailment, and all five tenants. Connections remain visible when inactive and scale by current kW when active.
 
 ## Controllers
 
