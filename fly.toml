@@ -6,6 +6,10 @@
 app = 'greenmpc-twin'
 primary_region = 'sin'
 
+# Swap buffer so a transient MPC-solve memory spike spills to disk instead of
+# triggering an OOM kill (which surfaces to the client as an HTTP 502).
+swap_size_mb = 512
+
 [build]
   dockerfile = 'Dockerfile'
 
@@ -24,7 +28,10 @@ primary_region = 'sin'
     path = '/api/v1/health'
 
 [[vm]]
-  memory = '2gb'
+  # 4 GB gives the cvxpy/HiGHS MPC solve headroom; the 2 GB preset OOM-killed
+  # the machine on the heaviest hour (HTTP 502). shared-cpu-2x is the smallest
+  # shared preset that supports 4 GB. Scale-to-zero keeps idle cost ~0.
+  memory = '4gb'
   cpu_kind = 'shared'
-  cpus = 1
-  memory_mb = 2048
+  cpus = 2
+  memory_mb = 4096
