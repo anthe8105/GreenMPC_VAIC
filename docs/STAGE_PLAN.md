@@ -30,7 +30,7 @@ Run receding-horizon benchmarks for `rule_based`, `deterministic_mpc`, and `gree
 
 ## Stage 7: Live Streamlit Demonstration
 
-Create the offline interactive demo with session state, controls, event injection, charts, and recommendation displays.
+Implemented the offline Streamlit Control Room with cached resources, deterministic session reset, forecast/replan/execute workflow, controller selection, scenario events, current KPIs, plan diagnostics, read-only benchmark evidence, terminal inventory-adjusted cost diagnostics, and provenance disclosures. Stage 7 does not implement investment simulation or final tenant reports.
 
 ## Stage 8: Investment Lab and Tenant Renewable Ledger
 

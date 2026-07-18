@@ -1,10 +1,10 @@
 # GreenMPC Twin
 
-GreenMPC Twin is an offline-capable AI energy digital twin foundation for industrial-park electricity and renewable-energy management. The MVP will model five scenario tenants, rooftop solar, battery storage, grid purchases, DPPA renewable purchasing, transformer constraints, renewable allocation, and controller comparison for a stable live demonstration.
+GreenMPC Twin is an offline-capable AI energy digital twin foundation for industrial-park electricity and renewable-energy management. The MVP models five scenario tenants, rooftop solar, battery storage, grid purchases, DPPA renewable purchasing, transformer constraints, renewable allocation, controller comparison, and a live Streamlit Control Room.
 
 ## Current Status
 
-Stages 0-4 are initialized: scope, architecture, public-data acquisition, hybrid dataset construction, the controller-independent digital-twin simulator, and leakage-safe forecasting are in place. MPC optimization, controller comparison, investment simulation, final reporting, and advanced UI behavior remain future-stage work.
+Stages 0-7 are implemented: scope, public-data acquisition, hybrid dataset construction, the controller-independent digital twin, leakage-safe forecasting, continuous GreenMPC control, closed-loop evaluation, and the offline Streamlit Control Room. Investment simulation, final tenant evidence reports, and physical SCADA integration remain future-stage work.
 
 ## Architecture Summary
 
@@ -16,7 +16,7 @@ The repository uses a layered Python `src` layout:
 - `greenmpc.control`: rule-based control, MPC formulation, solver execution, validation, and fallback behavior.
 - `greenmpc.evaluation`: closed-loop backtesting, controller comparison, KPIs, and scenario evaluation.
 - `greenmpc.reporting`: renewable ledger, tenant summaries, CSV export, and audit-ready HTML evidence reports.
-- `greenmpc.ui`: Streamlit session state, controls, event injection, displays, and investment interaction.
+- `greenmpc.ui`: Streamlit session state, live controls, forecast/plan/execute workflow, benchmark displays, and provenance views.
 
 ## Hybrid Data Strategy
 
@@ -142,19 +142,20 @@ python scripts/verify_stage6.py
 
 Stage 6 compares `rule_based`, `deterministic_mpc`, and `greenmpc_conservative` in receding-horizon simulation. KPIs are realized from simulator histories. Stress events are synthetic and unannounced, and results are not actual VRG operational savings.
 
-## Streamlit Demo
+## Streamlit Control Room
 
 ```bash
-streamlit run app.py
+streamlit run streamlit_app.py
+python scripts/verify_stage7.py
 ```
 
-The Stage 0 app loads configuration, displays the five configured tenant scenarios, summarizes configured assets and MPC settings, and avoids charts or fake KPIs.
+Stage 7 provides a fully offline interactive Control Room. A judge can inspect current state, generate forecasts, solve a six-hour MPC plan, validate and execute one simulated hour, view KPI updates, inspect fallback status, and read Stage 6 benchmark evidence without rerunning the benchmark.
 
 ## Repository Structure
 
 ```text
 .
-├── app.py
+├── streamlit_app.py
 ├── configs/
 │   └── demo.yaml
 ├── data/
@@ -183,4 +184,4 @@ This repository does not use actual VRG operational data, actual VRG tenant data
 
 ## Future Stages
 
-Stages 0-6 are complete in this working tree. Stage 7 will build the live Streamlit demonstration. Stage 8 will add investment and renewable ledger workflows. Stage 9 will harden the submission package.
+Stages 0-7 are complete in this working tree. Stage 8 will add investment and renewable ledger workflows. Stage 9 will harden the submission package.
