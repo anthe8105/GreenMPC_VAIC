@@ -12,7 +12,7 @@ export function useCommandCenter() {
   const [state, setState] = useState<CommandState | null>(null);
   const [forecast, setForecast] = useState<ForecastPayload | null>(null);
   const [plan, setPlan] = useState<PlanPayload | null>(null);
-  const [controller, setController] = useState<ControllerId>("rule_based");
+  const [controller, setController] = useState<ControllerId>("deterministic_mpc");
   const [scenario, setScenario] = useState<ScenarioId>("normal");
   const [mode, setMode] = useState<OperationMode>("auto");
   const [running, setRunningState] = useState(false);
@@ -257,11 +257,11 @@ export function useCommandCenter() {
     setMaxHours(3);
     setRunningState(true);
     runningRef.current = true;
-    await resetTo("normal", "rule_based", null);
+    await resetTo("normal", "deterministic_mpc", null);
     runningRef.current = true;
     setRunningState(true);
     for (let hour = 0; hour < 3; hour += 1) {
-      const ok = await runOneVisibleCycle("auto", "rule_based");
+      const ok = await runOneVisibleCycle("auto", "deterministic_mpc");
       if (!ok) break;
     }
     runningRef.current = false;

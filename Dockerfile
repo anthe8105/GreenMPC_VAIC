@@ -42,6 +42,17 @@ RUN test -f frontend/dist/index.html && ls -la frontend/dist
 # PROJECT_ROOT (= parents[3]) resolves to /app, where models/ and data/ live.
 RUN pip install -e . --no-build-isolation
 
-# Bind to all interfaces and honor the platform-injected $PORT (Render sets it).
+# HF Spaces runs containers as a non-root user; create one with a writable HOME
+# so any library scratch/cache writes land somewhere writable. /app stays
+# root-owned and world-readable, which is fine (the app is read-only at runtime).
+RUN useradd -m -u 1000 user
+ENV HOME=/home/user \
+    XDG_CACHE_HOME=/home/user/.cache \
+    MPLCONFIGDIR=/home/user/.cache/matplotlib \
+    NUMBA_CACHE_DIR=/home/user/.cache/numba
+USER user
+
+# Bind to all interfaces and honor the platform-injected $PORT (Render sets it;
+# Hugging Face leaves it unset, so we fall back to 8000, matching app_port).
 EXPOSE 8000
 CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
