@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import sys
 import time
 import zipfile
@@ -34,6 +35,7 @@ from greenmpc.simulation.state import BatteryState
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ANALYSIS_SOFTWARE_VERSION = "stage8_investment_v1"
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -192,19 +194,28 @@ def run_investment_analysis(
     financial = _financial_metrics(baseline_candidate, request.candidate, baseline["technical_metrics"], proposal["technical_metrics"], request.financial, request.duration_hours)
     technical_comparison = _comparison_rows(baseline["technical_metrics"], proposal["technical_metrics"])
     tenant_summary = _tenant_summary(baseline["tenant_ledger"], proposal["tenant_ledger"])
-    evidence_zip = _write_evidence_package(
-        analysis_dir,
-        analysis_id,
-        request,
-        baseline_candidate,
-        baseline,
-        proposal,
-        technical_comparison,
-        financial,
-        tenant_summary,
-        cache,
-        resources,
-    )
+    # The metrics the UI renders are already fully computed above; the evidence
+    # package and manifest are on-disk artifacts (downloadable ZIP / result cache).
+    # A read-only or permission-restricted filesystem must not fail an otherwise
+    # complete analysis, so treat these writes as best-effort.
+    try:
+        evidence_zip = _write_evidence_package(
+            analysis_dir,
+            analysis_id,
+            request,
+            baseline_candidate,
+            baseline,
+            proposal,
+            technical_comparison,
+            financial,
+            tenant_summary,
+            cache,
+            resources,
+        )
+        evidence_zip_path = str(evidence_zip.relative_to(PROJECT_ROOT))
+    except OSError as exc:
+        LOGGER.warning("could not write evidence package for %s: %s", analysis_id, exc)
+        evidence_zip_path = None
     result = {
         "analysis_id": analysis_id,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -218,7 +229,7 @@ def run_investment_analysis(
         "technical_metrics": {"baseline": baseline["technical_metrics"], "proposal": proposal["technical_metrics"], "comparison": technical_comparison},
         "financial_metrics": financial,
         "tenant_summary": tenant_summary,
-        "evidence_zip_path": str(evidence_zip.relative_to(PROJECT_ROOT)),
+        "evidence_zip_path": evidence_zip_path,
         "cache_fingerprint": cache["cache_fingerprint"],
         "loaded_from_cache": False,
         "runtime_seconds": time.perf_counter() - started,
@@ -229,7 +240,10 @@ def run_investment_analysis(
         ],
     }
     result["result_checksum"] = _object_hash(result)
-    _atomic_write_json(manifest_path, result)
+    try:
+        _atomic_write_json(manifest_path, result)
+    except OSError as exc:
+        LOGGER.warning("could not persist manifest for %s: %s", analysis_id, exc)
     return result
 
 

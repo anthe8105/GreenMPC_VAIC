@@ -50,6 +50,11 @@ ENV HOME=/home/user \
     XDG_CACHE_HOME=/home/user/.cache \
     MPLCONFIGDIR=/home/user/.cache/matplotlib \
     NUMBA_CACHE_DIR=/home/user/.cache/numba
+# The Investment Lab writes its evidence package + manifest under data/outputs at
+# runtime, so that subtree must be writable by the non-root user (uid 1000). The
+# rest of /app stays root-owned and world-readable.
+RUN mkdir -p /app/data/outputs/stage8_investment \
+ && chown -R user:user /app/data/outputs
 USER user
 
 # Bind to all interfaces and honor the platform-injected $PORT (Render sets it;

@@ -69,7 +69,10 @@ def export_analysis(analysis_id: str) -> FileResponse:
         raise HTTPException(status_code=404, detail={"code": "ANALYSIS_NOT_FOUND", "message": analysis_id}) from exc
     if job.status != "completed" or not job.result:
         raise HTTPException(status_code=409, detail={"code": "ANALYSIS_NOT_COMPLETE", "message": job.status})
-    path = PROJECT_ROOT / job.result["evidence_zip_path"]
+    evidence_zip_path = job.result.get("evidence_zip_path")
+    if not evidence_zip_path:
+        raise HTTPException(status_code=404, detail={"code": "EXPORT_NOT_FOUND", "message": "evidence package was not persisted"})
+    path = PROJECT_ROOT / evidence_zip_path
     if not path.exists():
         raise HTTPException(status_code=404, detail={"code": "EXPORT_NOT_FOUND", "message": str(path.name)})
     return FileResponse(path, media_type="application/zip", filename=path.name)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -135,6 +136,10 @@ class InvestmentJobManager:
             job.completed_hours = int(result["completed_hours"])
             job.current_phase = "Completed"
         except Exception as exc:
+            # This runs on a background worker thread, so the FastAPI global
+            # exception handler never sees it — log the traceback here or the
+            # failure is invisible in the server logs.
+            logging.getLogger(__name__).exception("investment analysis %s failed", job.analysis_id)
             job.error = str(exc)
             job.status = "cancelled" if job.cancel_requested else "failed"
             job.current_phase = "Cancelled" if job.cancel_requested else "Failed"
